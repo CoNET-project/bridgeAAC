@@ -1,0 +1,15 @@
+[package]
+name = "bridge-aac"
+version = "0.1.0"
+edition = "2021"
+description = "Beamio Atomic Asset Container reference gateway for Linux"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "bridge-aac"
+path = "src/main.rs"
+
+[dependencies]
+hex = "0.4"
+sha3 = "0.10"
