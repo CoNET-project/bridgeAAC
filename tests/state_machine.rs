@@ -33,7 +33,7 @@ fn open(intent: AssetIntent) -> (Gateway<MockFinality>, bridge_aac::AacId) {
     assert!(verify_merkle(&tree.root, &leaf, &proof));
     let header_hash = [4u8; 32];
     let mut finality = MockFinality::new();
-    finality.accept(item.source_chain_id, header_hash);
+    finality.accept(item.source_chain_id, header_hash, tree.root);
     let mut gateway = Gateway::new(finality);
     let header = HeaderCommitment {
         chain_id: item.source_chain_id,
@@ -121,7 +121,12 @@ fn replay_and_bad_proof_and_unfinal_header_fail() {
         ..header.clone()
     };
     let other = deposit(AssetIntent::UsdcLockMint, bindings::BASE_CHAIN_ID, bindings::CONET_CHAIN_ID, 8);
-    assert_eq!(gateway.submit(other, &bad, &proof), Err(Error::MerkleMismatch));
+    assert_eq!(gateway.submit(other, &bad, &proof), Err(Error::DigestMismatch));
+
+    let mut forged = proof.clone();
+    forged.siblings.push([1u8; 32]);
+    let mismatched = deposit(AssetIntent::UsdcBurnRelease, bindings::BASE_CHAIN_ID, bindings::CONET_CHAIN_ID, 8);
+    assert_eq!(gateway.submit(mismatched, &header, &forged), Err(Error::MerkleMismatch));
 
     let unknown = HeaderCommitment {
         header_hash: [5u8; 32],

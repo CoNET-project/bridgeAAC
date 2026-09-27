@@ -1,0 +1,10 @@
+/var/log/bridge-aac/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    su peter peter
+}

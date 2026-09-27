@@ -1,0 +1,18 @@
+{
+  "chain_id": 224422,
+  "header_hash": "0x55",
+  "logs": [
+    {
+      "intent": "usdc-burn-release",
+      "source_chain_id": 224422,
+      "destination_chain_id": 8453,
+      "source_gateway": "0xa208982212978550594A7FEEB70a61665d129003",
+      "source_asset": "0x5209865D404aA5646eDe5B91CD4218909eA72eDA",
+      "destination_asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "recipient": "0x1DF0F1826e9085caDB2bDc927A117140FAb39066",
+      "amount": "0x0f4240",
+      "deposit_id": "0x07",
+      "target_domain": "0x08"
+    }
+  ]
+}

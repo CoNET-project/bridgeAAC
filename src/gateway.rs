@@ -2,6 +2,7 @@ use crate::assets::Settlement;
 use crate::error::Error;
 use crate::finality::{FinalityVerifier, HeaderCommitment};
 use crate::merkle::{verify, MerkleProof};
+use crate::mpt::verify_receipt;
 use crate::types::{AacId, AacState, Deposit};
 use std::collections::HashMap;
 
@@ -31,6 +32,15 @@ impl<V: FinalityVerifier> Gateway<V> {
         }
     }
 
+    /// Phase 6 deployment. It starts paused and this type has no resume method.
+    pub fn deployed_paused(verifier: V) -> Self {
+        Self {
+            verifier,
+            records: HashMap::new(),
+            paused: true,
+        }
+    }
+
     pub fn pause(&mut self) {
         self.paused = true;
     }
@@ -43,6 +53,23 @@ impl<V: FinalityVerifier> Gateway<V> {
         self.records.get(id)
     }
 
+    pub fn records(&self) -> &HashMap<AacId, AacRecord> {
+        &self.records
+    }
+
+    /// Restore a journal entry. The leaf must still match the deposit.
+    pub fn insert_loaded(&mut self, record: AacRecord) -> Result<(), Error> {
+        if record.deposit.leaf() != record.leaf {
+            return Err(Error::DigestMismatch);
+        }
+        let id = record.deposit.aac_id();
+        if self.records.contains_key(&id) {
+            return Err(Error::AlreadyExists);
+        }
+        self.records.insert(id, record);
+        Ok(())
+    }
+
     pub fn submit(
         &mut self,
         deposit: Deposit,
@@ -53,7 +80,10 @@ impl<V: FinalityVerifier> Gateway<V> {
         if header.chain_id != deposit.source_chain_id {
             return Err(Error::ChainMismatch);
         }
-        self.verifier.header_is_final(header.chain_id, &header.header_hash)?;
+        let authenticated = self.verifier.authenticate(header.chain_id, &header.header_hash)?;
+        if authenticated.receipts_root != header.state_root {
+            return Err(Error::DigestMismatch);
+        }
         let leaf = deposit.leaf();
         if !verify(&header.state_root, &leaf, proof) {
             return Err(Error::MerkleMismatch);
@@ -71,6 +101,18 @@ impl<V: FinalityVerifier> Gateway<V> {
             },
         );
         Ok(id)
+    }
+
+    /// Check a real receipt proof, then stop. The paused deployment records nothing.
+    pub fn submit_proven_receipt(
+        &mut self,
+        root: &[u8; 32],
+        index: u64,
+        receipt: &[u8],
+        proof: &[Vec<u8>],
+    ) -> Result<(), Error> {
+        verify_receipt(root, index, receipt, proof)?;
+        self.ensure_open()
     }
 
     pub fn reserve(&mut self, id: &AacId) -> Result<(), Error> {

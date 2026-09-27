@@ -1,0 +1,19 @@
+[Unit]
+Description=bridgeAAC read-only shadow observer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=peter
+Group=peter
+WorkingDirectory=/home/peter/bridgeAAC-trial
+ExecStart=/home/peter/bridgeAAC-trial/target/release/bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json --cursor /var/lib/bridge-aac/cursor.json --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --interval 60
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

@@ -4,7 +4,7 @@ Linux reference gateway for the Beamio Atomic Asset Container (AAC).
 
 An AAC is a one-time destination-chain record. The source chain locks or burns an asset. The destination chain accepts that fact only after a state proof, marks the record reserved, and then mints or releases the matching asset once.
 
-This repository is phase 0 of that gateway. It is a Rust library and a small CLI. It does not submit mainnet transactions, and it does not contain a Base or CONET light client.
+This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge.
 
 ## What this crate checks
 
@@ -65,7 +65,7 @@ rustup target add x86_64-unknown-linux-gnu
 cargo build --release --target x86_64-unknown-linux-gnu
 ```
 
-Compute an AAC id for a Base-to-CONET USDC deposit. The ID depends on the source chain, source gateway, deposit id, and target domain. It does not depend on the amount.
+Compute an AAC id:
 
 ```bash
 bridge-aac aac-id 8453 0xa208982212978550594A7FEEB70a61665d129003 \
@@ -73,14 +73,63 @@ bridge-aac aac-id 8453 0xa208982212978550594A7FEEB70a61665d129003 \
   0x0000000000000000000000000000000000000000000000000000000000000002
 ```
 
+Build an inclusion proof from a fixture receipt. Without `--allow-header`, the output does not say the header is final.
+
+```bash
+bridge-aac prove fixtures/base-lock-receipt.json 0
+bridge-aac prove fixtures/base-lock-receipt.json 0 --allow-header 0x44
+```
+
+`--allow-header` only registers the hash with `MockFinality`. It does not check Base or CONET.
+
+Ask an execution client whether a header is at or behind its `finalized` tag. `tag F` is that tag. The third command uses a header that is not a real block, so it must not print `final`.
+
+```bash
+bridge-aac check-header --chain base --rpc https://base-rpc.conet.network --level finalized
+bridge-aac check-header --chain conet --rpc https://publicrpc.conet.network --level finalized
+bridge-aac check-header --chain base --rpc https://base-rpc.conet.network --level finalized --header 0x44
+```
+
+Settle one fixture log on the in-process test ledger. The command refuses `--rpc`. Without `--allow-header` the output does not say the header is final. `--circle-balance 0` keeps a burn-release AAC reserved.
+
+```bash
+bridge-aac settle fixtures/base-lock-receipt.json 0 --allow-header 0x44
+bridge-aac settle fixtures/base-lock-receipt.json 1 --allow-header 0x44
+bridge-aac settle fixtures/conet-burn-release.json 0 --allow-header 0x55 --circle-balance 0
+bridge-aac settle fixtures/base-lock-receipt.json 0 --allow-header 0x44 --journal /tmp/aac-journal.json
+```
+
+`verify-receipt` prints `final true` only when the execution tag accepts the header and the receipt proof matches that header's receipts root.
+
+```bash
+bridge-aac verify-receipt --chain base --rpc https://base-rpc.conet.network \
+  --header <block-hash> --index 0 --receipt <rlp-hex> --proof <node-hex>
+```
+
+`shadow` reads at least two execution clients. It proves one real receipt from TreasuryBridgeV3 or the GB token. A successful source receipt prints `execution-tag yes`, `registry paused`, and `consume denied`. The report does not print `final true`.
+
+```bash
+bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
+  --cursor /var/lib/bridge-aac/cursor.json \
+  --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --once
+```
+
+`shadow-service` scans from the saved cursor through the agreed head, at most 32 blocks per chain. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
+
 ## Library map
 
 | Module | Responsibility |
 | --- | --- |
 | `assets` | Which assets may cross, and whether the destination mints or releases |
 | `merkle` | Phase-0 inclusion proofs |
-| `finality` | Header acceptance. Production verifiers implement the same trait |
+| `execution` | Base and CONET checks against the execution client's safe or finalized tag |
+| `adapter` | Phase-3 test-ledger settlement for the four bridgeable asset classes |
+| `mpt` | Ethereum receipt Merkle-Patricia inclusion against an attested receipts root |
+| `shadow` | Phase-5 read-only observation across two execution clients |
+| `service` | Phase-6 read-only daemon, per-chain cursor, journal, and alerts |
+| `journal` | Restart-safe AAC records for this process |
 | `gateway` | `submit`, `reserve`, `consume`, pause |
+| `receipt` | Phase-1 fixture proof builder |
 | `types` | Deposit leaf and AAC id |
 
 Pause rejects new `submit`, `reserve`, and `consume` calls. It does not delete a record that is already stored.

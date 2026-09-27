@@ -1,7 +1,7 @@
 # bridgeAAC Whitepaper
 
 **Version:** 0.1.0-draft  
-**Status:** Design draft plus a phase-0 Rust reference gateway. Not deployed. Not audited. Not a production light client.
+**Status:** Design draft plus a phase-5 read-only shadow observer. Custody is closed. Not a light client.
 
 ## Abstract
 
@@ -135,11 +135,15 @@ That split is deliberate:
 - Finality proves the root belongs to a source header that will not be reorged away.
 - A header submitted by the relayer, with no finality check, is not a proof. A false header can mint assets.
 
-Base is an OP Stack chain. A Base receipt proof still needs the block to be a finalized output. CONET headers are not automatically available to Base, so the CONET-to-Base direction needs its own CONET finality adapter. Neither adapter is in this crate.
+Base is an OP Stack chain. A Base receipt proof still needs the block to be a finalized output. CONET headers are not automatically available to Base, so the CONET-to-Base direction needs its own CONET finality adapter. An OP output-root check and a CONET beacon-signature check are not in this crate.
 
-`MockFinality` returns success only for hashes the caller registered. Shipping it under another name does not create a light client.
+Phase 2 adds `BaseFinality` and `ConetFinality`. They accept a header only when that chain's execution client reports it as canonical and at or behind `safe` or `finalized`. They do not verify OP fault proofs or CONET beacon signatures. `MockFinality` is still only a test double.
 
-A later `FinalityVerifier` may check OP output roots or a CONET consensus proof. The AAC state machine does not change when that verifier is replaced.
+Phase 3 plans the destination consume for each bridgeable asset and applies it on an in-process test ledger. The command is `bridge-aac settle`. It does not open an RPC connection. A short Base Circle balance leaves the AAC `Reserved`. `executeBridgeMint` runs only for a reserved paid-GB AAC. Miner vote names are rejected. Peer v5 token addresses match across chains only when both sides `createERC20` at the same nonce. The consume selectors are not deployed contracts.
+
+Phase 5 is a shadow observer. Two execution clients must agree on the header. The observer then proves one real receipt under that header's receipts root and reports any legacy bridge log as `decision observe`. It does not mint, release, or broadcast. `custody closed` stays in the report. Miner votes remain the live settlement path.
+
+A later `FinalityVerifier` may check OP output roots or a CONET consensus proof. The AAC state machine does not change when that verifier is replaced. Production custody stays closed until that verifier, the destination contracts, and an independent review exist.
 
 ## 5. Live path until the adapter exists
 
@@ -155,7 +159,7 @@ A paused gateway rejects new submits, reserves, and consumes. Previously stored 
 
 ## 7. Non-goals of this draft
 
-- Mainnet deployment.
+- Deploying AAC consume contracts, or moving custody off miner votes.
 - Replacing the live miner quorum before a reviewed finality adapter exists.
 - Treating an event log, a relayer signature, or a message-bus delivery receipt as a source-chain proof.
 - Opening a cross-chain route for GB-priced developer tokens.

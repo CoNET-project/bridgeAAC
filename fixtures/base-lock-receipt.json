@@ -1,0 +1,30 @@
+{
+  "chain_id": 8453,
+  "header_hash": "0x44",
+  "logs": [
+    {
+      "intent": "usdc-lock-mint",
+      "source_chain_id": 8453,
+      "destination_chain_id": 224422,
+      "source_gateway": "0xa208982212978550594A7FEEB70a61665d129003",
+      "source_asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "destination_asset": "0x5209865D404aA5646eDe5B91CD4218909eA72eDA",
+      "recipient": "0x1DF0F1826e9085caDB2bDc927A117140FAb39066",
+      "amount": "0x0f4240",
+      "deposit_id": "0x01",
+      "target_domain": "0x02"
+    },
+    {
+      "intent": "gb-paid",
+      "source_chain_id": 8453,
+      "destination_chain_id": 224422,
+      "source_gateway": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "source_asset": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "destination_asset": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "recipient": "0x1DF0F1826e9085caDB2bDc927A117140FAb39066",
+      "amount": "0x3b9aca00",
+      "deposit_id": "0x03",
+      "target_domain": "0x04"
+    }
+  ]
+}
