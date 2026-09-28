@@ -52,6 +52,17 @@ pub fn observe_head(chain: &str, rpcs: &[String], journal: Option<&Path>) -> Res
 }
 
 pub fn observe_number(chain: &str, rpcs: &[String], number: u64, journal: Option<&Path>) -> Result<String, Error> {
+    let ceiling = reader_heights(chain, rpcs)?.lower;
+    observe_below(chain, rpcs, number, ceiling, journal)
+}
+
+pub fn observe_below(
+    chain: &str,
+    rpcs: &[String],
+    number: u64,
+    ceiling: u64,
+    journal: Option<&Path>,
+) -> Result<String, Error> {
     if rpcs.len() < 2 {
         return Err(Error::BadFixture);
     }
@@ -60,12 +71,7 @@ pub fn observe_number(chain: &str, rpcs: &[String], number: u64, journal: Option
         "conet" => bindings::CONET_CHAIN_ID,
         _ => return Err(Error::BadFixture),
     };
-    let mut finalized = Vec::new();
-    for rpc in rpcs {
-        finalized.push(finalized_header(rpc, chain_id)?);
-    }
-    let agreed = same_header(&finalized)?;
-    if number > agreed.number {
+    if number > ceiling {
         return Err(Error::UnknownHeader);
     }
     let mut headers = Vec::new();
@@ -76,7 +82,12 @@ pub fn observe_number(chain: &str, rpcs: &[String], number: u64, journal: Option
     observe_agreed(chain, chain_id, block, &fetched_for(rpcs, &block)?, journal)
 }
 
-pub fn finalized_height(chain: &str, rpcs: &[String]) -> Result<u64, Error> {
+pub struct ReaderHeights {
+    pub lower: u64,
+    pub higher: u64,
+}
+
+pub fn reader_heights(chain: &str, rpcs: &[String]) -> Result<ReaderHeights, Error> {
     if rpcs.len() < 2 {
         return Err(Error::BadFixture);
     }
@@ -85,11 +96,22 @@ pub fn finalized_height(chain: &str, rpcs: &[String]) -> Result<u64, Error> {
         "conet" => bindings::CONET_CHAIN_ID,
         _ => return Err(Error::BadFixture),
     };
-    let mut headers = Vec::new();
+    let mut heights = Vec::new();
     for rpc in rpcs {
-        headers.push(finalized_header(rpc, chain_id)?);
+        heights.push(finalized_header(rpc, chain_id)?.number);
     }
-    Ok(same_header(&headers)?.number)
+    Ok(ReaderHeights {
+        lower: heights.iter().copied().min().ok_or(Error::Rpc)?,
+        higher: heights.iter().copied().max().ok_or(Error::Rpc)?,
+    })
+}
+
+pub fn finalized_height(chain: &str, rpcs: &[String]) -> Result<u64, Error> {
+    Ok(reader_heights(chain, rpcs)?.lower)
+}
+
+pub fn lower_finalized(heights: &[u64]) -> Option<u64> {
+    heights.iter().copied().min()
 }
 
 fn fetched_for(rpcs: &[String], block: &AuthenticatedHeader) -> Result<Fetched, Error> {

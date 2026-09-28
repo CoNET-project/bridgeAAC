@@ -4,7 +4,7 @@ Linux reference gateway for the Beamio Atomic Asset Container (AAC).
 
 An AAC is a one-time destination-chain record. The source chain locks or burns an asset. The destination chain accepts that fact only after a state proof, marks the record reserved, and then mints or releases the matching asset once.
 
-This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge.
+This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md).
 
 ## What this crate checks
 
@@ -114,7 +114,7 @@ bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
   --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --once
 ```
 
-`shadow-service` scans from the saved cursor through the agreed head, at most 32 blocks per chain. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
+`shadow-service` scans from the saved cursor through the lower execution-tagged height. A quiet cycle scans at most 32 blocks. While the cursor is more than 64 blocks behind, it scans 128 blocks and starts the next cycle immediately. Both readers must agree on each block hash and receipts root. A reader gap or cursor gap above 64 blocks prints `reader-lag` or `cursor-lag`, raises `BRIDGE_AAC_ALERT`, and keeps `/var/lib/bridge-aac/page.txt` at `page open` until the gap falls back to the threshold. A chain prints `stable yes` only after 256 blocks with both gaps at or below 64. The first run records that height as the deployment floor and does not scan back to block 0. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
 
 ## Library map
 

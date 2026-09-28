@@ -63,6 +63,16 @@ fn main() -> ExitCode {
                 ExitCode::from(2)
             }
         },
+        Some("drill") => match drill(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
         Some("version") => {
             println!("bridge-aac {}", env!("CARGO_PKG_VERSION"));
             println!("shadow read-only");
@@ -89,7 +99,8 @@ fn main() -> ExitCode {
                  bridge-aac settle <fixture.json> <log-index> [--allow-header <hex>] [--circle-balance <dec>] [--journal <file>]\n  \
                  bridge-aac verify-receipt --chain base|conet --rpc <url> --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
-                 bridge-aac shadow-service --journal <file> --cursor <file> --log <file> --alert <file> [--interval <seconds>] [--once]\n  \
+                 bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--interval <seconds>] [--once]\n  \
+                 bridge-aac drill <directory>\n  \
                  bridge-aac version",
                 version = env!("CARGO_PKG_VERSION")
             );
@@ -201,6 +212,7 @@ fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac
 fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::Error> {
     let mut journal = None;
     let mut cursor = None;
+    let mut page = None;
     let mut log = None;
     let mut alert = None;
     let mut interval = 60u64;
@@ -210,6 +222,7 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
         match flag.as_str() {
             "--journal" => journal = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--cursor" => cursor = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--page" => page = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--log" => log = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--alert" => alert = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--interval" => {
@@ -230,6 +243,12 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
             .display()
             .to_string()
     });
+    let page = page.unwrap_or_else(|| {
+        std::path::Path::new(&cursor)
+            .with_file_name("page.txt")
+            .display()
+            .to_string()
+    });
     let log = log.ok_or(bridge_aac::Error::BadLength)?;
     let alert = alert.ok_or(bridge_aac::Error::BadLength)?;
     loop {
@@ -238,13 +257,22 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
         for name in bridge_aac::alerts_for(&prepared.report) {
             println!("BRIDGE_AAC_ALERT {name}");
         }
+        bridge_aac::write_page(std::path::Path::new(&page), &prepared.report)?;
         let logged = bridge_aac::write_cycle(std::path::Path::new(&log), std::path::Path::new(&alert), &prepared.report).is_ok();
         bridge_aac::finish_cycle(std::path::Path::new(&cursor), &prepared, logged)?;
-        if once {
-            return Ok(());
+        if once || !bridge_aac::should_pause(&prepared.report) {
+            if once {
+                return Ok(());
+            }
+            continue;
         }
         std::thread::sleep(std::time::Duration::from_secs(interval));
     }
+}
+
+fn drill(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let dir = args.next().ok_or(bridge_aac::Error::BadLength)?;
+    bridge_aac::drill_report(std::path::Path::new(&dir))
 }
 
 fn shadow(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
