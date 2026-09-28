@@ -107,6 +107,10 @@ A second local beacon on `127.0.0.1:4110` agreed with `:4100` at finalized epoch
 
 A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119` and printed `custody closed`, `broadcast no`, and `settled no`. The live cursor file was not the `--once` target. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.28.0`, PID `751896`, `NRestarts=0`, from tag `bridge-aac-v0.28.0` at `221510b`. After the restart the floors were unchanged. CONET cursor moved forward to `1,485,103` with `stable yes`. Base stayed at cursor `51,922,356`, `cursor-lag 0`, `reader-lag 184`, and `stable 0`, and the page stayed open on `alert reader-lag`. Miner votes remain live.
 
+### Two-period committee handoff — 0.29.0
+
+`0.29.0` repeats the handoff for one older sync-committee period and prints how many periods linked. A cold one-shot stopped at `handoff-periods 1` because the older beacon state was not returned within the read limit. After that state was available, a second one-shot at epoch `48,223`, execution block `1,485,135`, printed `committee-handoff yes`, `handoff-periods 2`, and `handoff-epoch 47870`, with `trusted-committee no`. Both committees still come from this beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `26de70b0edfa91cee9ea2380cf29cdd092f298ced758ffc6b28ba0ed3a124dc0`. `bridge-aac-shadow-prod.service` stays on `0.28.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27

@@ -53,8 +53,10 @@ pub struct ConsensusFacts {
     /// `next_sync_committee` equal to the committee that signed the current
     /// finalized block. That previous committee is still served by this beacon.
     pub committee_handoff: Option<bool>,
-    /// Epoch of the block whose aggregate authenticated the handoff. Zero when unread.
+    /// Epoch of the oldest block whose aggregate authenticated the handoff. Zero when unread.
     pub handoff_epoch: u64,
+    /// How many sync-committee periods were linked. Zero when unread.
+    pub handoff_periods: u64,
 }
 
 /// Observation only. `beacon_agreed` means geth `finalized` matches the FFG
@@ -133,6 +135,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          committee-state {committee_state}\n\
          state-root-binding {binding}\n\
          committee-handoff {handoff}\n\
+         handoff-periods {handoff_periods}\n\
          handoff-epoch {handoff_epoch}\n\
          checkpoint-source head\n\
          light-client-update {update}\n\
@@ -167,6 +170,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         committee_state = committee_state,
         binding = binding,
         handoff = handoff,
+        handoff_periods = facts.handoff_periods,
         handoff_epoch = facts.handoff_epoch,
         sig = yes(signature_check),
     );
@@ -233,6 +237,7 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
                 if let Some(handoff) = committee_handoff(root, slot, &current, &schedule) {
                     facts.committee_handoff = Some(handoff.matched);
                     facts.handoff_epoch = handoff.epoch;
+                    facts.handoff_periods = handoff.periods;
                 }
             }
         }
@@ -294,6 +299,7 @@ pub fn facts_from_reads(
         state_root_bound: None,
         committee_handoff: None,
         handoff_epoch: 0,
+        handoff_periods: 0,
     })
 }
 
@@ -393,7 +399,10 @@ enum StateBind {
 struct Handoff {
     matched: bool,
     epoch: u64,
+    periods: u64,
 }
+
+const HANDOFF_PERIODS: u64 = 2;
 
 /// Last slot before the epoch transition that installs this period's committee.
 fn pre_rotation_slot(finalized_slot: u64) -> Option<u64> {
@@ -405,43 +414,71 @@ fn pre_rotation_slot(finalized_slot: u64) -> Option<u64> {
     Some((period_start - 1) * SLOTS_PER_EPOCH - 1)
 }
 
-/// The previous period's aggregate must authenticate a state whose
-/// `next_sync_committee` is the committee signing the current finalized block.
-/// `None` means that historical state was not read. A match is still the same beacon.
+/// Each earlier period's aggregate must authenticate a state whose
+/// `next_sync_committee` is the committee that signed the next period.
+/// `None` means the first historical state was not read. A match is still the same beacon.
 fn committee_handoff(
     beacon: &str,
     finalized_slot: u64,
     current: &[[u8; 48]],
     schedule: &ForkSchedule,
 ) -> Option<Handoff> {
-    let mut slot = pre_rotation_slot(finalized_slot)?;
-    for _ in 0..SLOTS_PER_EPOCH {
-        let block = match http_json_optional(&format!("{beacon}/eth/v2/beacon/blocks/{slot}")) {
-            Ok(Some(block)) => block,
-            Ok(None) => {
-                if slot == 0 {
-                    return None;
+    let mut expected = current.to_vec();
+    let mut from_slot = finalized_slot;
+    let mut linked = 0u64;
+    let mut epoch = 0u64;
+    for _ in 0..HANDOFF_PERIODS {
+        let Some(mut slot) = pre_rotation_slot(from_slot) else {
+            break;
+        };
+        let mut advanced = false;
+        for _ in 0..SLOTS_PER_EPOCH {
+            let block = match http_json_optional(&format!("{beacon}/eth/v2/beacon/blocks/{slot}")) {
+                Ok(Some(block)) => block,
+                Ok(None) => {
+                    if slot == 0 {
+                        break;
+                    }
+                    slot -= 1;
+                    continue;
                 }
-                slot -= 1;
-                continue;
+                Err(_) => return handoff_so_far(linked, epoch, true),
+            };
+            let block_slot = block
+                .pointer("/data/message/slot")
+                .and_then(|value| json_u64(value).ok())
+                .unwrap_or(slot);
+            let block_epoch = block_slot / SLOTS_PER_EPOCH;
+            match bind_signed_header(beacon, &block, Some(schedule)) {
+                StateBind::Unread => return handoff_so_far(linked, epoch, true),
+                StateBind::Rejected => {
+                    return Some(Handoff { matched: false, epoch: block_epoch, periods: linked });
+                }
+                StateBind::Bound { current: older, next } => {
+                    if next.as_slice() != expected.as_slice() {
+                        return Some(Handoff { matched: false, epoch: block_epoch, periods: linked });
+                    }
+                    linked += 1;
+                    epoch = block_epoch;
+                    expected = older;
+                    from_slot = block_slot;
+                    advanced = true;
+                    break;
+                }
             }
-            Err(_) => return None,
-        };
-        let epoch = block
-            .pointer("/data/message/slot")
-            .and_then(|value| json_u64(value).ok())
-            .unwrap_or(slot)
-            / SLOTS_PER_EPOCH;
-        return match bind_signed_header(beacon, &block, Some(schedule)) {
-            StateBind::Unread => None,
-            StateBind::Rejected => Some(Handoff { matched: false, epoch }),
-            StateBind::Bound { next, .. } => Some(Handoff {
-                matched: next.as_slice() == current,
-                epoch,
-            }),
-        };
+        }
+        if !advanced {
+            break;
+        }
     }
-    None
+    handoff_so_far(linked, epoch, linked > 0)
+}
+
+fn handoff_so_far(periods: u64, epoch: u64, matched: bool) -> Option<Handoff> {
+    if periods == 0 {
+        return None;
+    }
+    Some(Handoff { matched, epoch, periods })
 }
 
 struct ForkSchedule {
@@ -667,6 +704,7 @@ mod tests {
         state_root_bound: None,
         committee_handoff: None,
         handoff_epoch: 0,
+        handoff_periods: 0,
         }
     }
 
@@ -688,6 +726,7 @@ mod tests {
         assert!(report.text.contains("committee-state unread"));
         assert!(report.text.contains("state-root-binding unread"));
         assert!(report.text.contains("committee-handoff unread"));
+        assert!(report.text.contains("handoff-periods 0"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("sync-committee 512"));
@@ -794,6 +833,7 @@ mod tests {
         let report = assess_consensus(&facts);
         assert!(report.text.contains("state-root-binding yes"));
         assert!(report.text.contains("committee-handoff unread"));
+        assert!(report.text.contains("handoff-periods 0"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("light-client no"));
@@ -807,8 +847,10 @@ mod tests {
         facts.state_root_bound = Some(true);
         facts.committee_handoff = Some(true);
         facts.handoff_epoch = 48_126;
+        facts.handoff_periods = 1;
         let report = assess_consensus(&facts);
         assert!(report.text.contains("committee-handoff yes"));
+        assert!(report.text.contains("handoff-periods 1"));
         assert!(report.text.contains("handoff-epoch 48126"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
@@ -819,5 +861,6 @@ mod tests {
     fn the_handoff_slot_is_the_last_slot_before_rotation() {
         let slot = 48_216 * SLOTS_PER_EPOCH;
         assert_eq!(pre_rotation_slot(slot), Some(1_540_063));
+        assert_eq!(pre_rotation_slot(48_126 * SLOTS_PER_EPOCH), Some(1_531_871));
     }
 }
