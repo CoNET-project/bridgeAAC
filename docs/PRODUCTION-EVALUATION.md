@@ -53,7 +53,7 @@ Production settlement therefore remains on `TreasuryBridgeV3.voteBridgeOperation
 
 ### Observer wording remediation — 0.21.0
 
-`bridge-aac` 0.21.0 corrects two reports that could be read as custody passes. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. This build is not installed on the production host.
+`bridge-aac` 0.21.0 corrects two reports that could be read as custody passes. The shadow scan path is unchanged. The later section records the unit switch.
 
 - `destination-consumer` now accepts only `PUSH4` selector hits. Even when `selector-observation present`, the report is `semantic-proof no`, `consume-once no`, `consumer observation-only`, and `custody-gate no`. A raw 4-byte collision is not a hit. The in-process acceptance predicate passes only when selector presence is combined with proof binding, stored consume ids, role separation, atomic rollback, replay rejection, a reentrancy guard, upgrade-layout safety, and an independent audit. The live command always supplies the unproven evidence set.
 - `gb-mint-authority` prints `selectors-absent yes` when `mint`, `mintPaid`, and `voteBridgeMint` are missing, and still prints `upgrade-authority unread` and `mint-closed no`. Selector absence is not mint closure.
