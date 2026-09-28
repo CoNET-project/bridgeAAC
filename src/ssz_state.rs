@@ -214,8 +214,16 @@ fn htr_sync_committee(bytes: &[u8]) -> Result<[u8; 32], Error> {
 }
 
 pub fn sync_committee_pubkeys(state: &[u8]) -> Result<Vec<[u8; 48]>, Error> {
+    committee_pubkeys(state, 22)
+}
+
+pub fn next_sync_committee_pubkeys(state: &[u8]) -> Result<Vec<[u8; 48]>, Error> {
+    committee_pubkeys(state, 23)
+}
+
+fn committee_pubkeys(state: &[u8], field: usize) -> Result<Vec<[u8; 48]>, Error> {
     let fields = state_fields(state)?;
-    let committee = fields[22];
+    let committee = fields.get(field).ok_or(Error::BadLength)?;
     let pubkey_bytes = SYNC_COMMITTEE_SIZE * 48;
     if committee.len() < pubkey_bytes {
         return Err(Error::BadLength);

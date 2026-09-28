@@ -101,6 +101,10 @@ A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,47
 
 A second local beacon on `127.0.0.1:4110` agreed with `:4100` at finalized epoch `48,031`, root `0x3fbcfcb8f1f9b60b`, and the same 512-member committee endpoints. Both processes are on this host, so that agreement does not make `trusted-committee yes`.
 
+### One-period committee handoff — 0.28.0
+
+`0.28.0` takes the last block before the sync-committee rotation and checks that its aggregate authenticates a beacon state whose `next_sync_committee` equals the committee that signed the current finalized block. A one-shot read on `38.102.126.30` at epoch `48,219`, execution block `1,485,007`, printed `committee-handoff yes`, `handoff-epoch 48126`, `state-root-binding yes`, `beacon-agreed yes`, and `trusted-committee no`. The previous committee is still served by this beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `4abb73ec973adf2d4f2b0d9b37c7fa2cb92bfff551f48ec6359557f17ce74ddf`. `bridge-aac-shadow-prod.service` stays on `0.27.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27

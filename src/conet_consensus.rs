@@ -49,6 +49,12 @@ pub struct ConsensusFacts {
     /// hash tree root of the downloaded beacon state, and that state's sync
     /// committee verifies the aggregate. `None` means the state was not read.
     pub state_root_bound: Option<bool>,
+    /// `Some(true)` when the previous period's signed state commits
+    /// `next_sync_committee` equal to the committee that signed the current
+    /// finalized block. That previous committee is still served by this beacon.
+    pub committee_handoff: Option<bool>,
+    /// Epoch of the block whose aggregate authenticated the handoff. Zero when unread.
+    pub handoff_epoch: u64,
 }
 
 /// Observation only. `beacon_agreed` means geth `finalized` matches the FFG
@@ -92,6 +98,11 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         Some(false) => "no",
         None => "unread",
     };
+    let handoff = match facts.committee_handoff {
+        Some(true) => "yes",
+        Some(false) => "no",
+        None => "unread",
+    };
     let alias_same = facts.alias_number > 0
         && facts.alias_number == facts.execution_number
         && facts.alias_hash == facts.execution_hash;
@@ -121,6 +132,8 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          committee-epoch {committee_epoch}\n\
          committee-state {committee_state}\n\
          state-root-binding {binding}\n\
+         committee-handoff {handoff}\n\
+         handoff-epoch {handoff_epoch}\n\
          checkpoint-source head\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
@@ -153,6 +166,8 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         committee_epoch = facts.committee_epoch,
         committee_state = committee_state,
         binding = binding,
+        handoff = handoff,
+        handoff_epoch = facts.handoff_epoch,
         sig = yes(signature_check),
     );
     ConsensusReport { beacon_agreed, signature_check, text }
@@ -205,7 +220,23 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
             facts.committee_epoch = check.epoch;
         }
     }
-    facts.state_root_bound = bind_signed_header(root, &block);
+    match bind_signed_header(root, &block, None) {
+        StateBind::Unread => facts.state_root_bound = None,
+        StateBind::Rejected => facts.state_root_bound = Some(false),
+        StateBind::Bound { current, .. } => {
+            facts.state_root_bound = Some(true);
+            let slot = block
+                .pointer("/data/message/slot")
+                .and_then(|value| json_u64(value).ok())
+                .unwrap_or(0);
+            if let Some(schedule) = fork_schedule(root, slot.saturating_sub(1)) {
+                if let Some(handoff) = committee_handoff(root, slot, &current, &schedule) {
+                    facts.committee_handoff = Some(handoff.matched);
+                    facts.handoff_epoch = handoff.epoch;
+                }
+            }
+        }
+    }
     Ok(assess_consensus(&facts).text)
 }
 
@@ -261,6 +292,8 @@ pub fn facts_from_reads(
         alias_number: 0,
         alias_hash: [0u8; 32],
         state_root_bound: None,
+        committee_handoff: None,
+        handoff_epoch: 0,
     })
 }
 
@@ -327,7 +360,7 @@ fn http_json_optional(url: &str) -> Result<Option<Value>, Error> {
 fn http_bytes(url: &str) -> Result<Vec<u8>, Error> {
     let response = ureq::get(url)
         .set("Accept", "application/octet-stream")
-        .timeout(Duration::from_secs(60))
+        .timeout(Duration::from_secs(120))
         .call()
         .map_err(|_| Error::Rpc)?;
     let mut bytes = Vec::new();
@@ -348,33 +381,77 @@ fn encode_header(message: &Value) -> Result<[u8; 112], Error> {
     Ok(out)
 }
 
-/// `None` when the beacon state could not be read. `Some(false)` when the
-/// downloaded state does not match the signed header.
-fn bind_signed_header(beacon: &str, block: &Value) -> Option<bool> {
-    let message = block.pointer("/data/message")?;
-    let parent_root = json_hash(message.get("parent_root")?).ok()?;
-    let parent_slot = json_u64(message.get("slot")?).ok()?.saturating_sub(1);
-    let header = http_json(&format!(
-        "{beacon}/eth/v1/beacon/headers/0x{}",
-        hex::encode(parent_root)
-    ))
-    .ok()?;
-    let header_msg = header.pointer("/data/header/message")?;
-    let encoded = encode_header(header_msg).ok()?;
-    if crate::ssz_state::hash_beacon_header(&encoded).ok()? != parent_root {
-        return Some(false);
+const EPOCHS_PER_SYNC_COMMITTEE_PERIOD: u64 = 256;
+const SLOTS_PER_EPOCH: u64 = 32;
+
+enum StateBind {
+    Unread,
+    Rejected,
+    Bound { current: Vec<[u8; 48]>, next: Vec<[u8; 48]> },
+}
+
+struct Handoff {
+    matched: bool,
+    epoch: u64,
+}
+
+/// Last slot before the epoch transition that installs this period's committee.
+fn pre_rotation_slot(finalized_slot: u64) -> Option<u64> {
+    let epoch = finalized_slot / SLOTS_PER_EPOCH;
+    let period_start = (epoch / EPOCHS_PER_SYNC_COMMITTEE_PERIOD) * EPOCHS_PER_SYNC_COMMITTEE_PERIOD;
+    if period_start < 2 {
+        return None;
     }
-    let state_root = json_hash(header_msg.get("state_root")?).ok()?;
-    let state = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/{parent_slot}")).ok()?;
-    if crate::ssz_state::hash_beacon_state(&state).ok()? != state_root {
-        return Some(false);
+    Some((period_start - 1) * SLOTS_PER_EPOCH - 1)
+}
+
+/// The previous period's aggregate must authenticate a state whose
+/// `next_sync_committee` is the committee signing the current finalized block.
+/// `None` means that historical state was not read. A match is still the same beacon.
+fn committee_handoff(
+    beacon: &str,
+    finalized_slot: u64,
+    current: &[[u8; 48]],
+    schedule: &ForkSchedule,
+) -> Option<Handoff> {
+    let mut slot = pre_rotation_slot(finalized_slot)?;
+    for _ in 0..SLOTS_PER_EPOCH {
+        let block = match http_json_optional(&format!("{beacon}/eth/v2/beacon/blocks/{slot}")) {
+            Ok(Some(block)) => block,
+            Ok(None) => {
+                if slot == 0 {
+                    return None;
+                }
+                slot -= 1;
+                continue;
+            }
+            Err(_) => return None,
+        };
+        let epoch = block
+            .pointer("/data/message/slot")
+            .and_then(|value| json_u64(value).ok())
+            .unwrap_or(slot)
+            / SLOTS_PER_EPOCH;
+        return match bind_signed_header(beacon, &block, Some(schedule)) {
+            StateBind::Unread => None,
+            StateBind::Rejected => Some(Handoff { matched: false, epoch }),
+            StateBind::Bound { next, .. } => Some(Handoff {
+                matched: next.as_slice() == current,
+                epoch,
+            }),
+        };
     }
-    let aggregate = message.pointer("/body/sync_aggregate")?;
-    let bits = decode_hex(aggregate.get("sync_committee_bits")?.as_str()?).ok()?;
-    let signature = decode_hex(aggregate.get("sync_committee_signature")?.as_str()?).ok()?;
-    let pubkeys = crate::ssz_state::sync_committee_pubkeys(&state).ok()?;
+    None
+}
+
+struct ForkSchedule {
+    fork: crate::sync_aggregate::ForkVersion,
+    genesis_root: [u8; 32],
+}
+
+fn fork_schedule(beacon: &str, slot: u64) -> Option<ForkSchedule> {
     let genesis = http_json(&format!("{beacon}/eth/v1/beacon/genesis")).ok()?;
-    let fork_body = http_json(&format!("{beacon}/eth/v1/beacon/states/{parent_slot}/fork")).ok()?;
+    let fork_body = http_json(&format!("{beacon}/eth/v1/beacon/states/{slot}/fork")).ok()?;
     let fork_data = fork_body.pointer("/data")?;
     let fork = crate::sync_aggregate::ForkVersion {
         previous: version_bytes(fork_data.get("previous_version")?.as_str()?).ok()?,
@@ -382,11 +459,94 @@ fn bind_signed_header(beacon: &str, block: &Value) -> Option<bool> {
         epoch: json_u64(fork_data.get("epoch")?).ok()?,
     };
     let genesis_root = json_hash(genesis.pointer("/data/genesis_validators_root")?).ok()?;
-    let domain = crate::sync_aggregate::sync_domain(&fork, parent_slot / 32, genesis_root);
+    Some(ForkSchedule { fork, genesis_root })
+}
+
+fn bind_signed_header(beacon: &str, block: &Value, schedule: Option<&ForkSchedule>) -> StateBind {
+    let Some(message) = block.pointer("/data/message") else {
+        return StateBind::Unread;
+    };
+    let (Ok(parent_root), Ok(slot)) = (
+        json_hash(message.get("parent_root").unwrap_or(&Value::Null)),
+        json_u64(message.get("slot").unwrap_or(&Value::Null)),
+    ) else {
+        return StateBind::Unread;
+    };
+    let parent_slot = slot.saturating_sub(1);
+    let Ok(header) = http_json(&format!(
+        "{beacon}/eth/v1/beacon/headers/0x{}",
+        hex::encode(parent_root)
+    )) else {
+        return StateBind::Unread;
+    };
+    let Some(header_msg) = header.pointer("/data/header/message") else {
+        return StateBind::Unread;
+    };
+    let Ok(encoded) = encode_header(header_msg) else {
+        return StateBind::Unread;
+    };
+    let Ok(header_root) = crate::ssz_state::hash_beacon_header(&encoded) else {
+        return StateBind::Unread;
+    };
+    if header_root != parent_root {
+        return StateBind::Rejected;
+    }
+    let Ok(state_root) = json_hash(header_msg.get("state_root").unwrap_or(&Value::Null)) else {
+        return StateBind::Unread;
+    };
+    let Ok(state) = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/{parent_slot}")) else {
+        return StateBind::Unread;
+    };
+    let Ok(state_hash) = crate::ssz_state::hash_beacon_state(&state) else {
+        return StateBind::Rejected;
+    };
+    if state_hash != state_root {
+        return StateBind::Rejected;
+    }
+    let Some(aggregate) = message.pointer("/body/sync_aggregate") else {
+        return StateBind::Unread;
+    };
+    let (Ok(bits), Ok(signature)) = (
+        decode_hex(aggregate.get("sync_committee_bits").and_then(Value::as_str).unwrap_or("")),
+        decode_hex(aggregate.get("sync_committee_signature").and_then(Value::as_str).unwrap_or("")),
+    ) else {
+        return StateBind::Unread;
+    };
+    let (Ok(current), Ok(next)) = (
+        crate::ssz_state::sync_committee_pubkeys(&state),
+        crate::ssz_state::next_sync_committee_pubkeys(&state),
+    ) else {
+        return StateBind::Rejected;
+    };
+    let schedule = match schedule {
+        Some(schedule) => schedule,
+        None => match fork_schedule(beacon, parent_slot) {
+            Some(schedule) => return bind_with_schedule(bits, signature, current, next, parent_root, parent_slot, &schedule),
+            None => return StateBind::Unread,
+        },
+    };
+    bind_with_schedule(bits, signature, current, next, parent_root, parent_slot, schedule)
+}
+
+fn bind_with_schedule(
+    bits: Vec<u8>,
+    signature: Vec<u8>,
+    current: Vec<[u8; 48]>,
+    next: Vec<[u8; 48]>,
+    parent_root: [u8; 32],
+    parent_slot: u64,
+    schedule: &ForkSchedule,
+) -> StateBind {
+    let domain = crate::sync_aggregate::sync_domain(
+        &schedule.fork,
+        parent_slot / SLOTS_PER_EPOCH,
+        schedule.genesis_root,
+    );
     let signing = crate::sync_aggregate::signing_root(parent_root, domain);
-    Some(
-        crate::sync_aggregate::verify_participants(&bits, &pubkeys, &signature, &signing).is_ok(),
-    )
+    if crate::sync_aggregate::verify_participants(&bits, &current, &signature, &signing).is_err() {
+        return StateBind::Rejected;
+    }
+    StateBind::Bound { current, next }
 }
 
 struct AggregateCheck {
@@ -505,6 +665,8 @@ mod tests {
             alias_number: 1_476_207,
         alias_hash: [4u8; 32],
         state_root_bound: None,
+        committee_handoff: None,
+        handoff_epoch: 0,
         }
     }
 
@@ -525,6 +687,7 @@ mod tests {
         assert!(report.text.contains("sync-quorum yes"));
         assert!(report.text.contains("committee-state unread"));
         assert!(report.text.contains("state-root-binding unread"));
+        assert!(report.text.contains("committee-handoff unread"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("sync-committee 512"));
@@ -630,8 +793,31 @@ mod tests {
         facts.state_root_bound = Some(true);
         let report = assess_consensus(&facts);
         assert!(report.text.contains("state-root-binding yes"));
+        assert!(report.text.contains("committee-handoff unread"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("light-client no"));
+    }
+
+    #[test]
+    fn one_period_handoff_is_still_the_same_beacon() {
+        let mut facts = agreed();
+        facts.aggregate_verified = true;
+        facts.committee_bound = true;
+        facts.state_root_bound = Some(true);
+        facts.committee_handoff = Some(true);
+        facts.handoff_epoch = 48_126;
+        let report = assess_consensus(&facts);
+        assert!(report.text.contains("committee-handoff yes"));
+        assert!(report.text.contains("handoff-epoch 48126"));
+        assert!(report.text.contains("trusted-committee no"));
+        assert!(report.text.contains("custody-gate no"));
+        assert!(report.text.contains("custody closed"));
+    }
+
+    #[test]
+    fn the_handoff_slot_is_the_last_slot_before_rotation() {
+        let slot = 48_216 * SLOTS_PER_EPOCH;
+        assert_eq!(pre_rotation_slot(slot), Some(1_540_063));
     }
 }
