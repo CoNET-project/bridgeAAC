@@ -69,7 +69,7 @@ This remediation does not pass any custody gate and does not authorize mint, rel
 
 ### Sync-aggregate observation — 0.22.0
 
-`conet-consensus` in 0.22.0 reads the finalized sync committee and the block's sync aggregate. A complete aggregate prints `signature-material present` and still prints `signature-check no`. The light-client finality route remains absent. This command does not feed `shadow-service`, and `bridge-aac-shadow-prod.service` stays on 0.21.0.
+`conet-consensus` in 0.22.0 reads the finalized sync committee and the block's sync aggregate. A complete aggregate prints `signature-material present` and still prints `signature-check no`. The light-client finality route remains absent. This command does not change the shadow scan path. A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119`. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.22.0`, Linux SHA-256 `141b5a9c1b72b75106752b361a99e836c4604af2dc827ee10da1430e9e84168b`, from tag `bridge-aac-v0.22.0` at `356ad56`. PID `146525` stayed active, the floors did not drop, and the log kept `custody closed`. Miner votes remain live.
 
 ---
 
