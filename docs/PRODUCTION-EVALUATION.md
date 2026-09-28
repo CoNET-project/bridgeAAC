@@ -69,7 +69,11 @@ This remediation does not pass any custody gate and does not authorize mint, rel
 
 ### Sync-aggregate observation — 0.22.0
 
-`conet-consensus` in 0.22.0 reads the finalized sync committee and the block's sync aggregate. A complete aggregate prints `signature-material present` and still prints `signature-check no`. The light-client finality route remains absent. This command does not change the shadow scan path. A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119`. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.22.0`, Linux SHA-256 `141b5a9c1b72b75106752b361a99e836c4604af2dc827ee10da1430e9e84168b`, from tag `bridge-aac-v0.22.0` at `356ad56`. PID `146525` stayed active, the floors did not drop, and the log kept `custody closed`. Miner votes remain live.
+`conet-consensus` in 0.22.0 reads the finalized sync committee and the block's sync aggregate. A complete aggregate prints `signature-material present` and still prints `signature-check no`. The light-client finality route remains absent. This command does not change the shadow scan path. A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119`. `bridge-aac-shadow-prod.service` still runs `/home/peter/bin/bridge-aac-0.22.0`, Linux SHA-256 `141b5a9c1b72b75106752b361a99e836c4604af2dc827ee10da1430e9e84168b`, from tag `bridge-aac-v0.22.0` at `356ad56`. Custody stays closed. Miner votes remain live.
+
+### Sync-aggregate BLS check — 0.23.0
+
+`0.23.0` checks that aggregate with FastAggregateVerify. `aggregate-verify yes` means the beacon-reported committee signed the previous block root. `trusted-committee` stays `no`, so `custody-gate no` remains and custody gate 2 stays closed. A one-shot read on `38.102.126.30` at finalized epoch `47,985`, execution block `1,477,583`, printed `aggregate-verify yes`, `signature-check yes`, `trusted-committee no`, `light-client no`, and `custody closed`. The diagnostic binary stayed in `/tmp` and did not replace the `0.22.0` shadow unit. Linux SHA-256 `c40285d8df033fb9922447dd2e78bfb58c6a2b1277aa02910678bf4269f7a787`.
 
 ---
 

@@ -23,6 +23,7 @@ mod mpt;
 mod receipt;
 mod service;
 mod shadow;
+mod sync_aggregate;
 mod types;
 
 pub use adapter::{
