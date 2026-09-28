@@ -61,7 +61,11 @@ Production settlement therefore remains on `TreasuryBridgeV3.voteBridgeOperation
 - Adversarial tests in `tests/adversarial.rs` drop or replace the source header after reserve. `consume` re-checks that header. A reorg returns `UnknownHeader` or `DigestMismatch`, leaves the AAC `Reserved`, and does not credit or debit. A legacy journal row without a source header cannot be consumed. Already terminal records still return `BadState` on a second consume.
 - `consume_spec` is the in-process UUPS storage specification. It is not deployed. A relayer cannot consume. Re-entry is rejected. A failed effect removes the consumed id and restores the credit counter. An upgrade may append slots and may not reorder `paused`, `admin`, `consumed`, `__gap`.
 
-This remediation does not pass any custody gate and does not authorize mint, release, or a miner-vote cutover. The production unit is not switched to 0.21.0.
+This remediation does not pass any custody gate and does not authorize mint, release, or a miner-vote cutover.
+
+### Shadow service move — 0.21.0
+
+`src/service.rs` and `src/shadow.rs` are unchanged from `bridge-aac-v0.16.0` at `88de882`. The shadow cursor and the seen-key journal are not the gateway journal changed in this release. A `--once` cycle on a copy of the live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119`, printed `custody closed`, and did not write the production cursor. `bridge-aac-shadow-prod.service` then runs `/home/peter/bin/bridge-aac-0.21.0`, Linux SHA-256 `05dcaf5f73b7923c9fa14458fe8434e413f19f62bf3ec2d9400613685ae1e59a`, built from tag `bridge-aac-v0.21.0` at `fa27123`. The switch stays read-only. Miner votes remain live.
 
 ---
 
