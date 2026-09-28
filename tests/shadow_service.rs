@@ -194,6 +194,15 @@ fn stable_window_follows_the_lower_head() {
 }
 
 #[test]
+fn production_reader_sets_require_two_unique_endpoints() {
+    use bridge_aac::valid_reader_set;
+    assert!(!valid_reader_set(&[]));
+    assert!(!valid_reader_set(&["http://same".into()]));
+    assert!(!valid_reader_set(&["http://same".into(), "http://same".into()]));
+    assert!(valid_reader_set(&["http://one".into(), "http://two".into()]));
+}
+
+#[test]
 fn service_unit_restarts_and_logrotate_truncates_in_place() {
     let root = env!("CARGO_MANIFEST_DIR");
     let unit = std::fs::read_to_string(format!("{root}/deploy/bridge-aac-shadow.service")).unwrap();

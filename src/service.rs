@@ -347,6 +347,10 @@ pub fn prepare_cycle_with_targets(
     }
 }
 
+pub fn valid_reader_set(rpcs: &[String]) -> bool {
+    rpcs.len() >= 2 && rpcs.iter().collect::<std::collections::HashSet<_>>().len() == rpcs.len()
+}
+
 pub fn finish_cycle(cursor_path: &Path, prepared: &PreparedCycle, logged: bool) -> Result<(), Error> {
     if !logged {
         return Err(Error::Journal);

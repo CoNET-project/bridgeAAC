@@ -266,6 +266,11 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
     });
     let log = log.ok_or(bridge_aac::Error::BadLength)?;
     let alert = alert.ok_or(bridge_aac::Error::BadLength)?;
+    if (!base_rpcs.is_empty() && !bridge_aac::valid_reader_set(&base_rpcs))
+        || (!conet_rpcs.is_empty() && !bridge_aac::valid_reader_set(&conet_rpcs))
+    {
+        return Err(bridge_aac::Error::BadFixture);
+    }
     loop {
         let prepared = bridge_aac::prepare_cycle_with_targets(
             std::path::Path::new(&journal),
