@@ -127,6 +127,10 @@ pub fn base_quorum_report(
     if rpcs.len() < 2 || blocks == 0 {
         return Err(Error::BadFixture);
     }
+    let unique = rpcs.iter().collect::<std::collections::HashSet<_>>();
+    if unique.len() != rpcs.len() {
+        return Err(Error::BadFixture);
+    }
     let chain_id = bindings::BASE_CHAIN_ID;
     let mut tips = Vec::with_capacity(rpcs.len());
     for rpc in rpcs {
