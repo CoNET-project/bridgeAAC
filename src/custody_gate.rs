@@ -1,0 +1,143 @@
+//! Semantic acceptance for AAC custody gates.
+//!
+//! Bytecode selector searches are observations. They cannot set
+//! `consume-once` or `mint-closed`. A gate passes only when every listed
+//! proof is present. The live observers always supply [`ConsumeEvidence::unproven`]
+//! and [`MintClosureEvidence::unproven`].
+
+/// Proofs required before a destination consumer can be treated as consume-once.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ConsumeEvidence {
+    pub proof_bound: bool,
+    pub consumed_id_stored: bool,
+    pub role_separated: bool,
+    pub atomic_rollback: bool,
+    pub replay_rejected: bool,
+    pub reentrancy_guard: bool,
+    pub upgrade_layout: bool,
+    pub independent_audit: bool,
+}
+
+impl ConsumeEvidence {
+    pub fn unproven() -> Self {
+        Self {
+            proof_bound: false,
+            consumed_id_stored: false,
+            role_separated: false,
+            atomic_rollback: false,
+            replay_rejected: false,
+            reentrancy_guard: false,
+            upgrade_layout: false,
+            independent_audit: false,
+        }
+    }
+
+    /// Test double for the acceptance predicate. Not supplied by an RPC read.
+    pub fn complete_for_test() -> Self {
+        Self {
+            proof_bound: true,
+            consumed_id_stored: true,
+            role_separated: true,
+            atomic_rollback: true,
+            replay_rejected: true,
+            reentrancy_guard: true,
+            upgrade_layout: true,
+            independent_audit: true,
+        }
+    }
+
+    pub fn proven(&self) -> bool {
+        self.proof_bound
+            && self.consumed_id_stored
+            && self.role_separated
+            && self.atomic_rollback
+            && self.replay_rejected
+            && self.reentrancy_guard
+            && self.upgrade_layout
+            && self.independent_audit
+    }
+}
+
+/// Proofs required before paid-GB admin mint can be treated as closed.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MintClosureEvidence {
+    pub selectors_absent: bool,
+    pub upgrade_authority_closed: bool,
+    pub bare_admin_removed: bool,
+    pub independent_audit: bool,
+}
+
+impl MintClosureEvidence {
+    pub fn unproven() -> Self {
+        Self {
+            selectors_absent: false,
+            upgrade_authority_closed: false,
+            bare_admin_removed: false,
+            independent_audit: false,
+        }
+    }
+
+    pub fn complete_for_test() -> Self {
+        Self {
+            selectors_absent: true,
+            upgrade_authority_closed: true,
+            bare_admin_removed: true,
+            independent_audit: true,
+        }
+    }
+
+    pub fn proven(&self) -> bool {
+        self.selectors_absent
+            && self.upgrade_authority_closed
+            && self.bare_admin_removed
+            && self.independent_audit
+    }
+}
+
+/// Selector presence is necessary and not sufficient.
+pub fn consume_gate_passed(push4_selectors_present: bool, evidence: &ConsumeEvidence) -> bool {
+    push4_selectors_present && evidence.proven()
+}
+
+/// Selector absence is necessary and not sufficient.
+pub fn mint_gate_passed(evidence: &MintClosureEvidence) -> bool {
+    evidence.proven()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn selectors_without_semantics_do_not_pass() {
+        assert!(!consume_gate_passed(true, &ConsumeEvidence::unproven()));
+        assert!(!mint_gate_passed(&MintClosureEvidence::unproven()));
+    }
+
+    #[test]
+    fn one_missing_proof_keeps_the_gate_closed() {
+        let mut evidence = ConsumeEvidence::complete_for_test();
+        evidence.replay_rejected = false;
+        assert!(!consume_gate_passed(true, &evidence));
+        evidence.replay_rejected = true;
+        evidence.independent_audit = false;
+        assert!(!consume_gate_passed(true, &evidence));
+
+        let mut mint = MintClosureEvidence::complete_for_test();
+        mint.upgrade_authority_closed = false;
+        assert!(!mint_gate_passed(&mint));
+    }
+
+    #[test]
+    fn the_predicate_passes_only_for_a_complete_test_bundle() {
+        assert!(consume_gate_passed(
+            true,
+            &ConsumeEvidence::complete_for_test()
+        ));
+        assert!(!consume_gate_passed(
+            false,
+            &ConsumeEvidence::complete_for_test()
+        ));
+        assert!(mint_gate_passed(&MintClosureEvidence::complete_for_test()));
+    }
+}

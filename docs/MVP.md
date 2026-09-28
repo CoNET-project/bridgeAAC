@@ -146,12 +146,20 @@ bridge-aac shadow --chain base --rpc https://base-rpc.conet.network --rpc https:
 
 ## Phase 7 — Custody activation gate
 
+`bridge-aac base-l1-output` is a read-only Ethereum L1 observer. It reads the pinned Base OptimismPortal, checks that `isGameClaimValid` agrees with `getAnchorRoot`, and compares one Base block with that anchor sequence. A 2026-09-28 read on `38.102.126.30` reported anchor L2 block 51,678,960 and Base execution block 51,895,863, so the report was `l1-anchor yes`, `covered no`, `execution-ahead yes`. The command always prints `custody closed`, `light-client no`, and `fault-proof-replay no`. It does not replay a fault proof, does not feed `shadow-service`, and does not print `final true`.
+
+`bridge-aac conet-consensus` is a read-only beacon observer. It compares the beacon finalized execution payload with the execution client's `finalized` tag. Matching tags print `beacon-agreed yes`. The command always prints `signature-check no`, because it does not verify Casper FFG or sync-committee BLS signatures. A missing `/eth/v1/beacon/light_client/finality_update` prints `light-client-update absent`. It does not feed `shadow-service` and does not print `final true`.
+
+`bridge-aac destination-consumer` is a read-only selector observation of `aacConsumeMint`, `aacConsumeRelease`, `aacConsumeMintPaid`, and `aacConsumeMintDeveloper`. It counts only Solidity `PUSH4` hits in the Treasury and GB implementations and at the predicted Peer v5 address. A raw 4-byte collision is not a hit. `selector-observation present` means those four PUSH4 selectors were seen. The command still prints `semantic-proof no`, `consume-once no`, `consumer observation-only`, `audit no`, and `custody-gate no`. Selector bytes do not pass the destination gate. The command does not deploy or call a consumer, and it does not feed `shadow-service`.
+
+`bridge-aac gb-mint-authority` is a read-only CoNET observer of GBToken `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8`. Paid-GB `voteBridgeMint`, `mint`, and `mintPaid` live on that token, not on TreasuryBridgeV3. The command reads the EIP-1967 implementation behind that proxy and reports `admin-mint open` when that implementation still dispatches `mint(address,uint256)` or `mintPaid(address,uint256)`, and `vote-mint open` when `voteBridgeMint` is present, the bridge is not paused, and `validatorCount` is nonzero. `selectors-absent yes` means those three selectors were not found. That is not mint closure: the command always prints `upgrade-authority unread`, `mint-closed no`, and `custody-gate no`. The command does not call mint, vote, or execute, and it does not feed `shadow-service`.
+
 Mainnet AAC custody stays closed until all of these exist:
 
-- Base finality is a finalized OP output anchored to Ethereum L1, not only an execution tag plus a receipt proof.
-- CONET finality verifies consensus signatures.
-- A destination contract stores the AAC id and consumes it once.
-- Paid GB can no longer be minted by a bare admin key.
+- Base finality is a finalized OP output anchored to Ethereum L1, not only an execution tag plus a receipt proof. The L1 anchor observer above records the registry anchor; an execution tag ahead of that anchor does not pass this gate.
+- CONET finality verifies consensus signatures. The beacon observer above records tag agreement only; `signature-check no` does not pass this gate.
+- A destination contract stores the AAC id and consumes it once. The observer above records PUSH4 selector presence only; `consume-once no` stays until proof binding, persisted ids, role separation, atomic rollback, replay and reentrancy tests, upgrade layout, and an independent audit all exist.
+- Paid GB can no longer be minted by a bare admin key, and the upgrade authority that could restore that mint is closed. The GB observer above records selector absence only; `mint-closed no` stays while `upgrade-authority unread`.
 - An independent review has accepted the integrated proof and contracts.
 - Miner `voteBridgeOperation` and `voteBridgeMint` remain the live paths until that cutover.
 

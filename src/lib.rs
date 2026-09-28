@@ -6,12 +6,18 @@
 
 mod adapter;
 mod assets;
+mod conet_consensus;
+mod consume_spec;
+mod custody_gate;
+mod destination;
 mod error;
 mod execution;
 mod finality;
 mod gateway;
+mod gb_mint;
 mod hash;
 mod journal;
+mod l1_output;
 mod merkle;
 mod mpt;
 mod receipt;
@@ -30,8 +36,18 @@ pub use execution::{
 };
 pub use finality::{AuthenticatedHeader, FinalityVerifier, HeaderCommitment, MockFinality};
 pub use gateway::{AacRecord, Gateway};
+pub use gb_mint::{assess_gb_mint, observe_gb_mint, GbMintFacts, GbMintReport};
 pub use hash::keccak256;
 pub use journal::{load_into, save_gateway};
+pub use consume_spec::{upgrade_appends_only, ConsumeRole, ConsumeSpec, ProofBinding, CONSUME_LAYOUT_V1};
+pub use custody_gate::{
+    consume_gate_passed, mint_gate_passed, ConsumeEvidence, MintClosureEvidence,
+};
+pub use destination::{assess_destination, observe_destination, DestinationFacts, DestinationReport};
+pub use conet_consensus::{
+    assess_consensus, observe_conet_consensus, ConsensusFacts, ConsensusReport,
+};
+pub use l1_output::{assess_anchor, observe_base_l1_output, AnchorFacts, AnchorReport};
 pub use merkle::{build_tree, prove, verify as verify_merkle, MerkleProof, MerkleTree};
 pub use mpt::{encode_consensus_receipt, prove_receipts, single_leaf_proof, verify_receipt, ConsensusLog};
 pub use service::{

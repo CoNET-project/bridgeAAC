@@ -63,6 +63,46 @@ fn main() -> ExitCode {
                 ExitCode::from(2)
             }
         },
+        Some("destination-consumer") => match destination_consumer(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
+        Some("gb-mint-authority") => match gb_mint_authority(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
+        Some("conet-consensus") => match conet_consensus(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
+        Some("base-l1-output") => match base_l1_output(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
         Some("base-quorum-reader") => match base_quorum_reader(args) {
             Ok(report) => {
                 print!("{report}");
@@ -110,6 +150,10 @@ fn main() -> ExitCode {
                  bridge-aac verify-receipt --chain base|conet --rpc <url> --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
                  bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
+                 bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
+                 bridge-aac conet-consensus --beacon <url> --execution-rpc <url>\n  \
+                 bridge-aac destination-consumer --conet-rpc <url> --base-rpc <url>\n  \
+                 bridge-aac gb-mint-authority --rpc <url>\n  \
                  bridge-aac base-quorum-reader --rpc <url> --rpc <url> [--from <height>] [--blocks <count>]\n  \
                  bridge-aac drill <directory>\n  \
                  bridge-aac version",
@@ -298,6 +342,75 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
 fn drill(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
     let dir = args.next().ok_or(bridge_aac::Error::BadLength)?;
     bridge_aac::drill_report(std::path::Path::new(&dir))
+}
+
+fn destination_consumer(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut conet_rpc = None;
+    let mut base_rpc = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--conet-rpc" => conet_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--base-rpc" => base_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::observe_destination(
+        &conet_rpc.ok_or(bridge_aac::Error::BadLength)?,
+        &base_rpc.ok_or(bridge_aac::Error::BadLength)?,
+    )
+}
+
+fn gb_mint_authority(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut rpc = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--rpc" => rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::observe_gb_mint(&rpc.ok_or(bridge_aac::Error::BadLength)?)
+}
+
+fn conet_consensus(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut beacon = None;
+    let mut execution_rpc = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--beacon" => beacon = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--execution-rpc" => execution_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::observe_conet_consensus(
+        &beacon.ok_or(bridge_aac::Error::BadLength)?,
+        &execution_rpc.ok_or(bridge_aac::Error::BadLength)?,
+    )
+}
+
+fn base_l1_output(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut l1_rpc = None;
+    let mut base_rpc = None;
+    let mut base_block = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--l1-rpc" => l1_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--base-rpc" => base_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--base-block" => {
+                base_block = Some(
+                    args.next()
+                        .ok_or(bridge_aac::Error::BadLength)?
+                        .parse()
+                        .map_err(|_| bridge_aac::Error::BadFixture)?,
+                );
+            }
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::observe_base_l1_output(
+        &l1_rpc.ok_or(bridge_aac::Error::BadLength)?,
+        &base_rpc.ok_or(bridge_aac::Error::BadLength)?,
+        base_block,
+    )
 }
 
 fn base_quorum_reader(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {

@@ -60,6 +60,10 @@ struct Stored {
     deposit_id: String,
     target_domain: String,
     state: String,
+    #[serde(default)]
+    source_header: String,
+    #[serde(default)]
+    source_root: String,
 }
 
 impl Stored {
@@ -77,6 +81,8 @@ impl Stored {
             deposit_id: hex32(&deposit.deposit_id.0),
             target_domain: hex32(&deposit.target_domain),
             state: state_name(record.state).to_string(),
+            source_header: record.source_header.map(|hash| hex32(&hash)).unwrap_or_default(),
+            source_root: record.source_root.map(|hash| hex32(&hash)).unwrap_or_default(),
         }
     }
 
@@ -98,6 +104,8 @@ impl Stored {
             deposit,
             leaf,
             state: parse_state(&self.state)?,
+            source_header: optional32(&self.source_header)?,
+            source_root: optional32(&self.source_root)?,
         })
     }
 }
@@ -154,4 +162,12 @@ fn parse32(text: &str) -> Result<[u8; 32], Error> {
     let mut out = [0u8; 32];
     out[32 - bytes.len()..].copy_from_slice(&bytes);
     Ok(out)
+}
+
+fn optional32(text: &str) -> Result<Option<[u8; 32]>, Error> {
+    if text.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(parse32(text)?))
+    }
 }

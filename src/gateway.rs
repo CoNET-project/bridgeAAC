@@ -11,6 +11,10 @@ pub struct AacRecord {
     pub deposit: Deposit,
     pub leaf: [u8; 32],
     pub state: AacState,
+    /// Source header this record was accepted under. `None` is a legacy journal
+    /// row and cannot be reserved or consumed.
+    pub source_header: Option<[u8; 32]>,
+    pub source_root: Option<[u8; 32]>,
 }
 
 /// Destination-chain AAC registry.
@@ -98,6 +102,8 @@ impl<V: FinalityVerifier> Gateway<V> {
                 deposit,
                 leaf,
                 state: AacState::Verified,
+                source_header: Some(header.header_hash),
+                source_root: Some(header.state_root),
             },
         );
         Ok(id)
@@ -115,32 +121,54 @@ impl<V: FinalityVerifier> Gateway<V> {
         self.ensure_open()
     }
 
+    pub fn verifier_mut(&mut self) -> &mut V {
+        &mut self.verifier
+    }
+
     pub fn reserve(&mut self, id: &AacId) -> Result<(), Error> {
         self.ensure_open()?;
+        let state = self.records.get(id).ok_or(Error::UnknownAac)?.state;
+        if state != AacState::Verified {
+            return Err(Error::BadState);
+        }
+        self.still_final(id)?;
         let record = self.records.get_mut(id).ok_or(Error::UnknownAac)?;
         if record.deposit.leaf() != record.leaf || record.deposit.aac_id() != *id {
             return Err(Error::DigestMismatch);
-        }
-        if record.state != AacState::Verified {
-            return Err(Error::BadState);
         }
         record.state = AacState::Reserved;
         Ok(())
     }
 
-    /// Consume a reserved AAC once. Mint and release are different terminal states.
+    /// Consume a reserved AAC once. The source header must still be final.
+    /// A record that is already terminal fails as `BadState` before finality.
     pub fn consume(&mut self, id: &AacId) -> Result<Settlement, Error> {
         self.ensure_open()?;
-        let record = self.records.get_mut(id).ok_or(Error::UnknownAac)?;
-        if record.state != AacState::Reserved {
+        let state = self.records.get(id).ok_or(Error::UnknownAac)?.state;
+        if state != AacState::Reserved {
             return Err(Error::BadState);
         }
+        self.still_final(id)?;
+        let record = self.records.get_mut(id).ok_or(Error::UnknownAac)?;
         let settlement = record.deposit.intent.settlement();
         record.state = match settlement {
             Settlement::Mint => AacState::Minted,
             Settlement::Release => AacState::Released,
         };
         Ok(settlement)
+    }
+
+    fn still_final(&self, id: &AacId) -> Result<(), Error> {
+        let record = self.records.get(id).ok_or(Error::UnknownAac)?;
+        let header = record.source_header.ok_or(Error::UnknownHeader)?;
+        let root = record.source_root.ok_or(Error::UnknownHeader)?;
+        let authenticated = self
+            .verifier
+            .authenticate(record.deposit.source_chain_id, &header)?;
+        if authenticated.receipts_root != root {
+            return Err(Error::DigestMismatch);
+        }
+        Ok(())
     }
 
     fn ensure_open(&self) -> Result<(), Error> {

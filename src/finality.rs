@@ -49,6 +49,11 @@ impl MockFinality {
     pub fn accept(&mut self, chain_id: u64, header_hash: [u8; 32], receipts_root: [u8; 32]) {
         self.accepted.insert((chain_id, header_hash), receipts_root);
     }
+
+    /// Drop a previously accepted header. This is the test double for a reorg.
+    pub fn revoke(&mut self, chain_id: u64, header_hash: [u8; 32]) {
+        self.accepted.remove(&(chain_id, header_hash));
+    }
 }
 
 impl FinalityVerifier for MockFinality {

@@ -35,6 +35,34 @@ The production Shadow may continuously observe and reconcile legacy bridge recei
 
 Production settlement therefore remains on `TreasuryBridgeV3.voteBridgeOperation` for Treasury routes and `voteBridgeMint` for paid GB. A separate custody review is required after the finality adapters, audited destination contracts, mint-authority closure, end-to-end adversarial tests, and an independent security audit exist.
 
+### Read-only L1 anchor observer — 2026-09-28
+
+`bridge-aac` 0.17.0 adds `base-l1-output`. It is a separate binary command. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. The observer reads Base OptimismPortal `0x49048044D57e1C92A77f79988d21Fa8fAF74E97e` on Ethereum L1, requires `isGameClaimValid` on the anchor game, and refuses to treat a Base execution `finalized` tag as L1 finality when that tag is ahead of the anchor. The side binary `/home/peter/bin/bridge-aac-0.17.0` read anchor L2 block 51,678,960 (game `0xed666ac4e26dc024114ff6ada69d7dd8477a8116`) against Base execution block 51,895,863 and printed `covered no`. That observation does not pass custody gate 1 and does not authorize mint, release, or a miner-vote cutover.
+
+### Read-only CONET beacon observer — 2026-09-28
+
+`bridge-aac` 0.18.0 adds `conet-consensus`. It is a separate command. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. The observer reads the local beacon REST finalized execution payload and compares it with the execution client's `finalized` tag. Agreement prints `beacon-agreed yes` and still prints `signature-check no`. The beacon on `38.102.126.30` does not serve `/eth/v1/beacon/light_client/finality_update`. This observation does not pass custody gate 2 and does not authorize mint, release, or a miner-vote cutover.
+
+### Read-only paid-GB mint observer — 2026-09-28
+
+`bridge-aac` 0.19.0 adds `gb-mint-authority`. It is a separate command. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. The live paid-GB vote and the bare admin mint selectors are on GBToken `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` (`mint`, `mintPaid`, `voteBridgeMint`), not on TreasuryBridgeV3. The observer reads the EIP-1967 implementation, not the 163-byte proxy stub, and the views `validatorCount`, `requiredVotes`, and `bridgePaused`. A 2026-09-28 read through `https://rpc1.conet.network` found implementation `0x8e5AC5aDDe7A66E8604dc1eafd49948723c9D765`, `admin-mint open`, `validator-count 0`, and `vote-mint no-validators`. `mint-closed` stayed `no`. That observation does not pass the mint-closure gate and does not authorize a GB voter change or a miner-vote cutover.
+
+### Read-only destination consumer observer — 2026-09-28
+
+`bridge-aac` 0.20.0 adds `destination-consumer`. It is a separate command. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. The observer searches implementation code for `aacConsumeMint(bytes32)`, `aacConsumeRelease(bytes32)`, `aacConsumeMintPaid(bytes32)`, and `aacConsumeMintDeveloper(bytes32)`. A 2026-09-28 read through `https://rpc1.conet.network` and `https://base-rpc.conet.network` found CoNET Treasury implementation `0xd813b3FB2789d7A404b3888b5f14f7Ce03d76Da1`, Base Treasury implementation `0xf7474cAC9c9833fa35ce10e3b22f442096ed0a06`, Peer v5 `peer-code-bytes 0`, and all three deployed selectors absent. The report was `consume-once no`, `consumer absent`, `audit no`, and `custody closed`. That observation does not deploy a consumer and does not pass the destination-contract gate.
+
+### Observer wording remediation — 0.21.0
+
+`bridge-aac` 0.21.0 corrects two reports that could be read as custody passes. It does not replace `bridge-aac-0.16.0`, and `bridge-aac-shadow-prod.service` stays on the 0.16.0 unit. This build is not installed on the production host.
+
+- `destination-consumer` now accepts only `PUSH4` selector hits. Even when `selector-observation present`, the report is `semantic-proof no`, `consume-once no`, `consumer observation-only`, and `custody-gate no`. A raw 4-byte collision is not a hit. The in-process acceptance predicate passes only when selector presence is combined with proof binding, stored consume ids, role separation, atomic rollback, replay rejection, a reentrancy guard, upgrade-layout safety, and an independent audit. The live command always supplies the unproven evidence set.
+- `gb-mint-authority` prints `selectors-absent yes` when `mint`, `mintPaid`, and `voteBridgeMint` are missing, and still prints `upgrade-authority unread` and `mint-closed no`. Selector absence is not mint closure.
+- The reference ledger checks credit overflow before `consume`. A short Circle balance or an overflowing credit leaves the AAC `Reserved`.
+- Adversarial tests in `tests/adversarial.rs` drop or replace the source header after reserve. `consume` re-checks that header. A reorg returns `UnknownHeader` or `DigestMismatch`, leaves the AAC `Reserved`, and does not credit or debit. A legacy journal row without a source header cannot be consumed. Already terminal records still return `BadState` on a second consume.
+- `consume_spec` is the in-process UUPS storage specification. It is not deployed. A relayer cannot consume. Re-entry is rejected. A failed effect removes the consumed id and restores the credit counter. An upgrade may append slots and may not reorder `paused`, `admin`, `consumed`, `__gap`.
+
+This remediation does not pass any custody gate and does not authorize mint, release, or a miner-vote cutover. The production unit is not switched to 0.21.0.
+
 ---
 
 ## Historical evaluation — 2026-09-27

@@ -45,10 +45,15 @@ impl TestLedger {
         self.balances.get(&(chain_id, asset, holder)).copied().unwrap_or(0)
     }
 
-    fn credit(&mut self, chain_id: u64, asset: Address, holder: Address, amount: u128) -> Result<(), Error> {
-        let entry = self.balances.entry((chain_id, asset, holder)).or_insert(0);
-        *entry = entry.checked_add(amount).ok_or(Error::BadLength)?;
-        Ok(())
+    /// Place an existing balance so tests can force an overflow refusal.
+    pub fn seed_balance(&mut self, chain_id: u64, asset: Address, holder: Address, amount: u128) {
+        self.balances.insert((chain_id, asset, holder), amount);
+    }
+
+    fn preview_credit(&self, chain_id: u64, asset: Address, holder: Address, amount: u128) -> Result<u128, Error> {
+        self.balance(chain_id, asset, holder)
+            .checked_add(amount)
+            .ok_or(Error::BadLength)
     }
 }
 
@@ -155,6 +160,12 @@ pub fn settle_reserved<V: FinalityVerifier>(
     if planned.settlement == Settlement::Release && ledger.circle_on_base_treasury < amount {
         return Err(Error::ShortBalance);
     }
+    let next_credit = ledger.preview_credit(
+        record.deposit.destination_chain_id,
+        record.deposit.destination_asset,
+        record.deposit.recipient,
+        amount,
+    )?;
     let settled = gateway.consume(id)?;
     if settled != planned.settlement {
         return Err(Error::BadState);
@@ -162,12 +173,14 @@ pub fn settle_reserved<V: FinalityVerifier>(
     if planned.settlement == Settlement::Release {
         ledger.circle_on_base_treasury -= amount;
     }
-    ledger.credit(
-        record.deposit.destination_chain_id,
-        record.deposit.destination_asset,
-        record.deposit.recipient,
-        amount,
-    )?;
+    ledger.balances.insert(
+        (
+            record.deposit.destination_chain_id,
+            record.deposit.destination_asset,
+            record.deposit.recipient,
+        ),
+        next_credit,
+    );
     Ok(planned)
 }
 
