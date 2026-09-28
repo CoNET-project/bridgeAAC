@@ -111,6 +111,8 @@ bridge-aac verify-receipt --chain base --rpc https://base-rpc.conet.network \
 ```bash
 bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
   --cursor /var/lib/bridge-aac/cursor.json \
+  --base-rpc http://127.0.0.1:8547 --base-rpc http://38.102.126.58:8547 \
+  --conet-rpc http://127.0.0.1:8889 --conet-rpc http://38.102.126.50:8888 \
   --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --once
 ```
 

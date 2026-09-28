@@ -284,6 +284,15 @@ pub struct PreparedCycle {
 }
 
 pub fn prepare_cycle(journal: &Path, cursor_path: &Path) -> PreparedCycle {
+    prepare_cycle_with_targets(journal, cursor_path, &[], &[])
+}
+
+pub fn prepare_cycle_with_targets(
+    journal: &Path,
+    cursor_path: &Path,
+    base_rpcs: &[String],
+    conet_rpcs: &[String],
+) -> PreparedCycle {
     let mut cursor = match load_cursor(cursor_path) {
         Ok(cursor) => cursor,
         Err(_) => {
@@ -294,7 +303,26 @@ pub fn prepare_cycle(journal: &Path, cursor_path: &Path) -> PreparedCycle {
         }
     };
     let mut report = String::new();
-    for (chain, rpcs) in service_targets() {
+    let defaults = service_targets();
+    let targets = [
+        (
+            "base",
+            if base_rpcs.is_empty() {
+                &defaults[0].1
+            } else {
+                base_rpcs
+            },
+        ),
+        (
+            "conet",
+            if conet_rpcs.is_empty() {
+                &defaults[1].1
+            } else {
+                conet_rpcs
+            },
+        ),
+    ];
+    for (chain, rpcs) in targets {
         let last = match chain {
             "base" => cursor.base,
             "conet" => cursor.conet,

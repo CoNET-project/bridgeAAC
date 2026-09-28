@@ -109,7 +109,7 @@ fn main() -> ExitCode {
                  bridge-aac settle <fixture.json> <log-index> [--allow-header <hex>] [--circle-balance <dec>] [--journal <file>]\n  \
                  bridge-aac verify-receipt --chain base|conet --rpc <url> --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
-                 bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--interval <seconds>] [--once]\n  \
+                 bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
                  bridge-aac base-quorum-reader --rpc <url> --rpc <url> [--from <height>] [--blocks <count>]\n  \
                  bridge-aac drill <directory>\n  \
                  bridge-aac version",
@@ -226,6 +226,8 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
     let mut page = None;
     let mut log = None;
     let mut alert = None;
+    let mut base_rpcs = Vec::new();
+    let mut conet_rpcs = Vec::new();
     let mut interval = 60u64;
     let mut once = false;
     let mut args = args;
@@ -236,6 +238,8 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
             "--page" => page = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--log" => log = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--alert" => alert = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--base-rpc" => base_rpcs.push(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--conet-rpc" => conet_rpcs.push(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--interval" => {
                 interval = args
                     .next()
@@ -263,7 +267,12 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
     let log = log.ok_or(bridge_aac::Error::BadLength)?;
     let alert = alert.ok_or(bridge_aac::Error::BadLength)?;
     loop {
-        let prepared = bridge_aac::prepare_cycle(std::path::Path::new(&journal), std::path::Path::new(&cursor));
+        let prepared = bridge_aac::prepare_cycle_with_targets(
+            std::path::Path::new(&journal),
+            std::path::Path::new(&cursor),
+            &base_rpcs,
+            &conet_rpcs,
+        );
         print!("{}", prepared.report);
         for name in bridge_aac::alerts_for(&prepared.report) {
             println!("BRIDGE_AAC_ALERT {name}");
