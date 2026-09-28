@@ -41,7 +41,8 @@ pub use service::{
     RECONCILE_LAG_BLOCKS, STABLE_BLOCKS,
 };
 pub use shadow::{
-    finalized_height, format_observation, lower_finalized, observe, observe_head, observe_number, same_header, Observation,
+    base_quorum_report, finalized_height, format_observation, lower_finalized, observe, observe_head, observe_number,
+    same_header, Observation,
 };
 pub use receipt::{build_from_fixture, format_report, BuiltProof};
 pub use types::{AacId, AacState, Address, Deposit, DepositId};

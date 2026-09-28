@@ -114,7 +114,18 @@ bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
   --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --once
 ```
 
-`shadow-service` scans from the saved cursor through the lower execution-tagged height. A quiet cycle scans at most 32 blocks. While the cursor is more than 64 blocks behind, it scans 128 blocks and starts the next cycle immediately. Both readers must agree on each block hash and receipts root. A reader gap or cursor gap above 64 blocks prints `reader-lag` or `cursor-lag`, raises `BRIDGE_AAC_ALERT`, and keeps `/var/lib/bridge-aac/page.txt` at `page open` until the gap falls back to the threshold. A chain prints `stable yes` only after 256 blocks with both gaps at or below 64. The first run records that height as the deployment floor and does not scan back to block 0. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
+`shadow-service` scans from the saved cursor through the lower execution-tagged height. A quiet cycle scans at most 32 blocks. While the cursor is more than 64 blocks behind, it scans 128 blocks and starts the next cycle immediately. Both readers must agree on each block hash and receipts root. A reader gap or cursor gap above 64 blocks prints `reader-lag` or `cursor-lag`, raises `BRIDGE_AAC_ALERT`, and keeps `/var/lib/bridge-aac/page.txt` at `page open` until that gap falls back to the threshold. `stable yes` means the cursor stayed within 64 blocks of the lower head for 256 blocks. A wider gap between the two reader tips keeps the page open and does not clear that count. Falling more than 64 blocks behind the lower head prints `stable reset`. The first run records that height as the deployment floor and does not scan back to block 0. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
+
+The production-side Base reader is a separate read-only command. It takes two independently reachable execution RPCs, chooses the lower `finalized` height, and checks every requested height against both readers:
+
+```bash
+bridge-aac base-quorum-reader \
+  --rpc http://127.0.0.1:8547 \
+  --rpc http://<independent-base-reader>:8547 \
+  --from <deployment-floor> --blocks 128
+```
+
+It requires Base chain ID `8453`, rejects height zero or a range above the lower finalized head, and compares the block hash, state root, and receipts root. It never broadcasts or uses Ethereum L1 signing credentials. HTTP and WS endpoints from the same execution process are not an independent quorum.
 
 ## Library map
 

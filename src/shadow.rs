@@ -114,6 +114,51 @@ pub fn lower_finalized(heights: &[u64]) -> Option<u64> {
     heights.iter().copied().min()
 }
 
+/// Produce a machine-readable, read-only Base quorum report.
+///
+/// The reader ceiling is the lower execution-client `finalized` height.
+/// Every checked height must agree on the block hash, state root, and
+/// receipts root. This is deliberately not a consensus or Ethereum-L1 proof.
+pub fn base_quorum_report(
+    rpcs: &[String],
+    from: Option<u64>,
+    blocks: u64,
+) -> Result<String, Error> {
+    if rpcs.len() < 2 || blocks == 0 {
+        return Err(Error::BadFixture);
+    }
+    let chain_id = bindings::BASE_CHAIN_ID;
+    let mut tips = Vec::with_capacity(rpcs.len());
+    for rpc in rpcs {
+        tips.push(finalized_header(rpc, chain_id)?);
+    }
+    let lower = tips.iter().map(|header| header.number).min().ok_or(Error::Rpc)?;
+    let higher = tips.iter().map(|header| header.number).max().ok_or(Error::Rpc)?;
+    let start = from.unwrap_or(lower);
+    let end = start.checked_add(blocks - 1).ok_or(Error::BadFixture)?;
+    if start == 0 || end > lower {
+        return Err(Error::UnknownHeader);
+    }
+    let mut checked = 0u64;
+    for number in start..=end {
+        let mut headers = Vec::with_capacity(rpcs.len());
+        for rpc in rpcs {
+            headers.push(header_by_number(rpc, chain_id, number)?);
+        }
+        same_header(&headers)?;
+        checked += 1;
+    }
+    Ok(format!(
+        "quorum yes\nchain base\nchain-id {chain_id}\nreader-count {}\n\
+         lower-finalized {lower}\nhigher-finalized {higher}\nreader-lag {}\n\
+         checked-from {start}\nchecked-to {end}\nblocks-checked {checked}\n\
+         hash-match yes\nstate-root-match yes\nreceipts-root-match yes\n\
+         execution-tag yes\nlight-client no\ncustody closed\n",
+        rpcs.len(),
+        higher.saturating_sub(lower),
+    ))
+}
+
 fn fetched_for(rpcs: &[String], block: &AuthenticatedHeader) -> Result<Fetched, Error> {
     fetch_receipts(&rpcs[0], &block.header_hash).or_else(|_| fetch_receipts(&rpcs[1], &block.header_hash))
 }

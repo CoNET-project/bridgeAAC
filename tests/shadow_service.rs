@@ -173,13 +173,14 @@ fn reconcile_alerts_only_after_the_lag_window() {
 }
 
 #[test]
-fn stable_window_resets_when_a_reader_lags() {
+fn stable_window_follows_the_lower_head() {
     use bridge_aac::{apply_stable, drill_report, ShadowCursor, STABLE_BLOCKS};
     let mut cursor = ShadowCursor::default();
     assert_eq!(apply_stable(&mut cursor, "base", 1_000, 0, 0), "stable 0\n");
     assert_eq!(cursor.base_stable_at, Some(1_000));
-    assert_eq!(apply_stable(&mut cursor, "base", 1_000 + STABLE_BLOCKS, 0, 0), "stable yes\n");
-    assert_eq!(apply_stable(&mut cursor, "base", 2_000, 200, 0), "stable 0\n");
+    assert_eq!(apply_stable(&mut cursor, "base", 1_000 + STABLE_BLOCKS, 200, 0), "stable yes\n");
+    assert_eq!(cursor.base_stable_at, Some(1_000));
+    assert_eq!(apply_stable(&mut cursor, "base", 2_000, 0, 200), "stable reset\n");
     assert!(cursor.base_stable_at.is_none());
     let stamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
     let dir = std::env::temp_dir().join(format!("bridge-aac-drill-{stamp}"));

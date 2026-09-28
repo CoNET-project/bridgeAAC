@@ -59,3 +59,30 @@ The trial host now runs `bridge-aac 0.12.0`, Linux SHA-256 `ca23a2945b62cbea6d5f
 - Forced logrotate truncated `shadow.log` in place. The service stayed active and the log grew again to 50,323 bytes.
 
 Base cursor moved from `51,880,869` to `51,880,997` on the first 0.12.0 cycle and was still behind, so `base_stable_at` stayed empty. CONET began a clear count at `1,471,375`. This follow-up does not close the release gate: `0.12.0` is still an unpublished worktree.
+
+## Re-evaluation — 2026-09-28 01:32 UTC
+
+**Verdict:** do not approve production Shadow, and do not activate custody.
+
+`main` is now `ff958f4`. The trial service is the same `0.12.0` binary, Linux SHA-256 `ca23a2945b62cbea6d5fd5cf9f47718678bc60b9b18fb308089f83700d57b127`, active since 2026-09-27 23:51:27 UTC with no restarts. Custody lines remain `custody closed`.
+
+| Item | Evidence | Result |
+| --- | --- | --- |
+| Page | `/var/lib/bridge-aac/page.txt` reads `page clear` | No open lag page at the sample |
+| Base readers | Both finalized at `51,884,329`, hash `0xb5e0a94a…318d8342` | Gap 0 |
+| Base cursor | `51,884,329`, floor `51,876,108` | Caught up to that head |
+| Base quiet hold | `base_stable_at 51,884,307`, report `stable 22` | 22 blocks, short of 256 |
+| CONET readers | Both finalized at `1,472,399`, hash `0x6308a073…40bd1b5b` | Gap 0 |
+| CONET cursor | `1,472,367`, floor `1,470,191` | 32 blocks behind, under the 64-block line |
+| CONET quiet hold | `conet_stable_at 1,471,375`, report `stable yes` | 992 blocks |
+| Release tag | `origin` has `bridge-aac-v0.9.0` only | `bridge-aac-v0.12.0` is absent, so preflight still refuses |
+
+Base printed `stable 0` together with `alert reader-lag` or `alert cursor-lag` through 01:29:35 UTC. The quiet count restarted after that. One clear sample does not meet the 256-block hold. CONET has held its count. The host drills from the 0.12.0 follow-up still stand.
+
+Production Shadow stays closed until Base also prints `stable yes` without another reset, and until `bridge-aac-v0.12.0` is an annotated tag on `ff958f4`, published on `origin`, with the host binary rebuilt from that tag. That approval would still leave custody closed.
+
+## MVP change — 0.13.0
+
+Across 194 report lines after 23:51 UTC, reader gaps of 169–217 blocks were common, and gaps of 383–755 also appeared, while the cursor was usually already on the lower head. Requiring both tips to stay within 64 blocks made the 256-block hold unreachable.
+
+`0.13.0` keeps `alert reader-lag` and `page open` for that tip gap. `stable yes` now counts only distance from the lower head. `stable reset` is printed when the cursor falls more than 64 blocks behind that head. The trial binary is Linux SHA-256 `b96919a59cc65d3c0a2a7474c6eb5dc02b27b0e34b5b75fc41e2f03ff2ed7866`. At 01:40:22 UTC, Base reported `reader-lag 189`, `cursor-lag 0`, and `stable 0`, and the page stayed open. Custody remains closed. This build is not yet published.

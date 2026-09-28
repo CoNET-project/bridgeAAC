@@ -95,15 +95,15 @@ pub fn max_metric(report: &str, key: &str) -> u64 {
 }
 
 pub fn apply_stable(cursor: &mut ShadowCursor, chain: &str, height: u64, reader_lag: u64, cursor_lag: u64) -> String {
-    let clear = reader_lag <= LAG_ALERT_BLOCKS && cursor_lag <= LAG_ALERT_BLOCKS;
+    let _ = reader_lag;
     let slot = match chain {
         "base" => &mut cursor.base_stable_at,
         "conet" => &mut cursor.conet_stable_at,
         _ => return String::new(),
     };
-    if !clear || height == 0 {
+    if cursor_lag > LAG_ALERT_BLOCKS || height == 0 {
         *slot = None;
-        return "stable 0\n".to_string();
+        return "stable reset\n".to_string();
     }
     let origin = slot.unwrap_or(height);
     *slot = Some(origin);
