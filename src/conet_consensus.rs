@@ -28,13 +28,19 @@ pub struct ConsensusFacts {
     pub sync_committee_size: u64,
     pub sync_bits_set: u64,
     pub sync_signature_bytes: u64,
+    /// Epoch of the parent slot whose sync committee was used. Zero when that
+    /// state was not read.
+    pub committee_epoch: u64,
+    /// True when the aggregate was checked against the parent-slot committee.
+    pub committee_bound: bool,
     /// True only after FastAggregateVerify succeeds. The committee is still
     /// the one reported by this beacon, so custody stays closed.
     pub aggregate_verified: bool,
 }
 
 /// Observation only. `beacon_agreed` means the two finalized tags name the
-/// same execution block. `signature_check` stays false in this observer.
+/// same execution block. `signature_check` is the aggregate result and does
+/// not mean the committee is independently trusted.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConsensusReport {
     pub beacon_agreed: bool,
@@ -66,6 +72,8 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
     } else {
         "yes"
     };
+    let quorum = sync_quorum(facts.sync_bits_set, facts.sync_committee_size);
+    let committee_state = if facts.committee_bound { "parent-slot" } else { "unread" };
     let text = format!(
         "conet-chain {chain}\n\
          beacon-finalized-epoch {epoch}\n\
@@ -81,6 +89,10 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          sync-signature-bytes {sig_bytes}\n\
          signature-material {material}\n\
          aggregate-verify {aggregate}\n\
+         sync-quorum {quorum}\n\
+         committee-epoch {committee_epoch}\n\
+         committee-state {committee_state}\n\
+         state-root-binding unread\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
          trusted-committee no\n\
@@ -104,6 +116,9 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         bits = facts.sync_bits_set,
         sig_bytes = facts.sync_signature_bytes,
         aggregate = aggregate,
+        quorum = yes(quorum),
+        committee_epoch = facts.committee_epoch,
+        committee_state = committee_state,
         sig = yes(signature_check),
     );
     ConsensusReport { beacon_agreed, signature_check, text }
@@ -117,7 +132,15 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
     let geth = execution.block_by_tag("finalized")?;
     let root = beacon.trim_end_matches('/');
     let checkpoints = http_json(&format!("{root}/eth/v1/beacon/states/finalized/finality_checkpoints"))?;
-    let block = http_json(&format!("{root}/eth/v2/beacon/blocks/finalized"))?;
+    let checkpoint_root = json_hash(
+        checkpoints
+            .pointer("/data/finalized/root")
+            .ok_or(Error::Rpc)?,
+    )?;
+    let block = http_json(&format!(
+        "{root}/eth/v2/beacon/blocks/0x{}",
+        hex::encode(checkpoint_root)
+    ))?;
     let light = http_json_optional(&format!("{root}/eth/v1/beacon/light_client/finality_update"))?;
     let committee = http_json_optional(&format!("{root}/eth/v1/beacon/states/finalized/sync_committees"))?;
     let mut facts = facts_from_reads(
@@ -129,7 +152,14 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
         light.is_some(),
         committee.as_ref(),
     )?;
-    facts.aggregate_verified = verify_block_aggregate(root, &block, committee.as_ref()).unwrap_or(false);
+    if let Ok(check) = verify_block_aggregate(root, &block) {
+        facts.aggregate_verified = check.verified;
+        facts.committee_bound = check.bound;
+        if check.bound {
+            facts.sync_committee_size = check.size;
+            facts.committee_epoch = check.epoch;
+        }
+    }
     Ok(assess_consensus(&facts).text)
 }
 
@@ -179,8 +209,14 @@ pub fn facts_from_reads(
         sync_committee_size,
         sync_bits_set,
         sync_signature_bytes,
+        committee_epoch: 0,
+        committee_bound: false,
         aggregate_verified: false,
     })
+}
+
+fn sync_quorum(bits: u64, committee: u64) -> bool {
+    committee > 0 && bits.saturating_mul(3) >= committee.saturating_mul(2)
 }
 
 fn yes(value: bool) -> &'static str {
@@ -241,15 +277,25 @@ fn http_json_optional(url: &str) -> Result<Option<Value>, Error> {
     }
 }
 
-fn verify_block_aggregate(root: &str, block: &Value, committee: Option<&Value>) -> Result<bool, Error> {
+struct AggregateCheck {
+    verified: bool,
+    bound: bool,
+    size: u64,
+    epoch: u64,
+}
+
+fn verify_block_aggregate(root: &str, block: &Value) -> Result<AggregateCheck, Error> {
     let message = block.pointer("/data/message").ok_or(Error::Rpc)?;
     let slot = json_u64(message.get("slot").ok_or(Error::Rpc)?)?;
-    let parent = json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?;
+    let parent_root = json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?;
+    let previous_slot = slot.saturating_sub(1);
+    let epoch = previous_slot / 32;
     let aggregate = message.pointer("/body/sync_aggregate").ok_or(Error::Rpc)?;
     let bits = decode_hex(aggregate.get("sync_committee_bits").and_then(Value::as_str).unwrap_or("0x"))?;
     let signature = decode_hex(aggregate.get("sync_committee_signature").and_then(Value::as_str).unwrap_or("0x"))?;
+    let committee = http_json(&format!("{root}/eth/v1/beacon/states/{previous_slot}/sync_committees"))?;
     let indexes = committee
-        .and_then(|value| value.pointer("/data/validators"))
+        .pointer("/data/validators")
         .and_then(Value::as_array)
         .ok_or(Error::Rpc)?;
     let indexes = indexes
@@ -257,10 +303,10 @@ fn verify_block_aggregate(root: &str, block: &Value, committee: Option<&Value>) 
         .map(|value| json_u64(value))
         .collect::<Result<Vec<_>, _>>()?;
     if indexes.len() != 512 || bits.len() < 64 || signature.len() != 96 {
-        return Ok(false);
+        return Ok(AggregateCheck { verified: false, bound: true, size: indexes.len() as u64, epoch });
     }
     let genesis = http_json(&format!("{root}/eth/v1/beacon/genesis"))?;
-    let fork_body = http_json(&format!("{root}/eth/v1/beacon/states/finalized/fork"))?;
+    let fork_body = http_json(&format!("{root}/eth/v1/beacon/states/{previous_slot}/fork"))?;
     let fork_data = fork_body.pointer("/data").ok_or(Error::Rpc)?;
     let fork = crate::sync_aggregate::ForkVersion {
         previous: version_bytes(fork_data.get("previous_version").and_then(Value::as_str).unwrap_or("0x"))?,
@@ -272,20 +318,17 @@ fn verify_block_aggregate(root: &str, block: &Value, committee: Option<&Value>) 
             .pointer("/data/genesis_validators_root")
             .ok_or(Error::Rpc)?,
     )?;
-    let previous_slot = slot.saturating_sub(1);
-    let domain = crate::sync_aggregate::sync_domain(&fork, previous_slot / 32, genesis_root);
-    let signing = crate::sync_aggregate::signing_root(parent, domain);
-    let pubkeys = validator_pubkeys(root, &indexes)?;
-    match crate::sync_aggregate::verify_participants(&bits, &pubkeys, &signature, &signing) {
-        Ok(()) => Ok(true),
-        Err(_) => Ok(false),
-    }
+    let domain = crate::sync_aggregate::sync_domain(&fork, epoch, genesis_root);
+    let signing = crate::sync_aggregate::signing_root(parent_root, domain);
+    let pubkeys = validator_pubkeys(root, &previous_slot.to_string(), &indexes)?;
+    let verified = crate::sync_aggregate::verify_participants(&bits, &pubkeys, &signature, &signing).is_ok();
+    Ok(AggregateCheck { verified, bound: true, size: indexes.len() as u64, epoch })
 }
 
-fn validator_pubkeys(root: &str, indexes: &[u64]) -> Result<Vec<[u8; 48]>, Error> {
+fn validator_pubkeys(root: &str, state: &str, indexes: &[u64]) -> Result<Vec<[u8; 48]>, Error> {
     let mut out = Vec::with_capacity(indexes.len());
     for chunk in indexes.chunks(64) {
-        let mut url = format!("{root}/eth/v1/beacon/states/finalized/validators?");
+        let mut url = format!("{root}/eth/v1/beacon/states/{state}/validators?");
         for (i, index) in chunk.iter().enumerate() {
             if i > 0 {
                 url.push('&');
@@ -344,6 +387,8 @@ mod tests {
             sync_committee_size: 512,
             sync_bits_set: 400,
             sync_signature_bytes: 96,
+            committee_epoch: 0,
+            committee_bound: false,
             aggregate_verified: false,
         }
     }
@@ -359,6 +404,9 @@ mod tests {
         assert!(report.text.contains("light-client-update absent"));
         assert!(report.text.contains("signature-material present"));
         assert!(report.text.contains("aggregate-verify failed"));
+        assert!(report.text.contains("sync-quorum yes"));
+        assert!(report.text.contains("committee-state unread"));
+        assert!(report.text.contains("state-root-binding unread"));
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("sync-committee 512"));
@@ -403,6 +451,8 @@ mod tests {
     fn a_verified_aggregate_still_leaves_custody_closed() {
         let mut facts = agreed();
         facts.aggregate_verified = true;
+        facts.committee_bound = true;
+        facts.committee_epoch = 47_941;
         let report = assess_consensus(&facts);
         assert!(report.signature_check);
         assert!(report.text.contains("signature-check yes"));
@@ -410,6 +460,22 @@ mod tests {
         assert!(report.text.contains("trusted-committee no"));
         assert!(report.text.contains("custody-gate no"));
         assert!(report.text.contains("light-client no"));
+        assert!(report.text.contains("committee-epoch 47941"));
+        assert!(report.text.contains("committee-state parent-slot"));
+        assert!(report.text.contains("state-root-binding unread"));
         assert!(!report.text.contains("final true"));
+    }
+
+    #[test]
+    fn a_minority_aggregate_has_no_sync_quorum() {
+        let mut facts = agreed();
+        facts.sync_bits_set = 341;
+        facts.aggregate_verified = true;
+        facts.committee_bound = true;
+        let report = assess_consensus(&facts);
+        assert!(report.signature_check);
+        assert!(report.text.contains("sync-quorum no"));
+        assert!(report.text.contains("trusted-committee no"));
+        assert!(report.text.contains("custody-gate no"));
     }
 }

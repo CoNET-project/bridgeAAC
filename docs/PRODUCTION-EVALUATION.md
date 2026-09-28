@@ -75,6 +75,10 @@ This remediation does not pass any custody gate and does not authorize mint, rel
 
 `0.23.0` checks that aggregate with FastAggregateVerify. `aggregate-verify yes` means the beacon-reported committee signed the previous block root. `trusted-committee` stays `no`, so `custody-gate no` remains and custody gate 2 stays closed. A one-shot read on `38.102.126.30` at finalized epoch `47,985`, execution block `1,477,583`, printed `aggregate-verify yes`, `signature-check yes`, `trusted-committee no`, `light-client no`, and `custody closed`. The diagnostic binary stayed in `/tmp` and did not replace the `0.22.0` shadow unit. Linux SHA-256 `c40285d8df033fb9922447dd2e78bfb58c6a2b1277aa02910678bf4269f7a787`.
 
+### Parent-slot committee — 0.24.0
+
+`0.24.0` loads the beacon block by the finalized checkpoint root, then verifies that block's sync aggregate against the committee at its parent slot and that slot's fork. `committee-state parent-slot` is that binding. `sync-quorum yes` means at least two thirds of the 512 bits participated. A one-shot read on `38.102.126.30` used checkpoint epoch `47,990`, root `0xba448ea2dd59dfa43db805fea99de937a8c96e70691ac186ebd09e3c58c7c3d0`, parent committee epoch `47,989`, and printed `aggregate-verify yes`, `sync-quorum yes`, `signature-check yes`. The checkpoint execution block was `1,477,679` while geth `finalized` was `1,477,743`, so the report printed `beacon-agreed no`. The beacon still does not serve a light-client update or the full beacon state, so `state-root-binding` stays `unread` and `trusted-committee` stays `no`. The diagnostic binary stayed in `/tmp` and did not replace the `0.22.0` shadow unit. Linux SHA-256 `85e53d8969ed820ab3dc4951088619038029576fb88af418f74f1021d534f3f9`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27
