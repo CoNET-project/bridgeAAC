@@ -36,11 +36,15 @@ pub struct ConsensusFacts {
     /// True only after FastAggregateVerify succeeds. The committee is still
     /// the one reported by this beacon, so custody stays closed.
     pub aggregate_verified: bool,
+    /// Execution payload of Prysm `blocks/finalized`. This alias can move
+    /// ahead of the FFG checkpoint root, so it is not `beacon-agreed`.
+    pub alias_number: u64,
+    pub alias_hash: [u8; 32],
 }
 
-/// Observation only. `beacon_agreed` means the two finalized tags name the
-/// same execution block. `signature_check` is the aggregate result and does
-/// not mean the committee is independently trusted.
+/// Observation only. `beacon_agreed` means geth `finalized` matches the FFG
+/// checkpoint execution payload. A matching `blocks/finalized` alias does not
+/// count. `signature_check` does not mean the committee is independently trusted.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConsensusReport {
     pub beacon_agreed: bool,
@@ -74,6 +78,12 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
     };
     let quorum = sync_quorum(facts.sync_bits_set, facts.sync_committee_size);
     let committee_state = if facts.committee_bound { "parent-slot" } else { "unread" };
+    let alias_same = facts.alias_number > 0
+        && facts.alias_number == facts.execution_number
+        && facts.alias_hash == facts.execution_hash;
+    let alias_geth = facts.alias_number > 0
+        && facts.alias_number == facts.geth_number
+        && facts.alias_hash == facts.geth_hash;
     let text = format!(
         "conet-chain {chain}\n\
          beacon-finalized-epoch {epoch}\n\
@@ -82,6 +92,10 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          execution-hash 0x{exec_h}\n\
          geth-finalized {geth_n}\n\
          geth-hash 0x{geth_h}\n\
+         finalized-alias-block {alias_n}\n\
+         finalized-alias-hash 0x{alias_h}\n\
+         checkpoint-alias-same {alias_same}\n\
+         alias-matches-geth {alias_geth}\n\
          beacon-agreed {agreed}\n\
          included-attestations {atts}\n\
          sync-committee {committee}\n\
@@ -110,6 +124,10 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         exec_h = hex::encode(facts.execution_hash),
         geth_n = facts.geth_number,
         geth_h = hex::encode(facts.geth_hash),
+        alias_n = facts.alias_number,
+        alias_h = hex::encode(facts.alias_hash),
+        alias_same = yes(alias_same),
+        alias_geth = yes(alias_geth),
         agreed = yes(beacon_agreed),
         atts = facts.included_attestations,
         committee = facts.sync_committee_size,
@@ -141,6 +159,7 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
         "{root}/eth/v2/beacon/blocks/0x{}",
         hex::encode(checkpoint_root)
     ))?;
+    let alias = http_json_optional(&format!("{root}/eth/v2/beacon/blocks/finalized"))?;
     let light = http_json_optional(&format!("{root}/eth/v1/beacon/light_client/finality_update"))?;
     let committee = http_json_optional(&format!("{root}/eth/v1/beacon/states/finalized/sync_committees"))?;
     let mut facts = facts_from_reads(
@@ -152,6 +171,14 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
         light.is_some(),
         committee.as_ref(),
     )?;
+    if let Some(payload) = alias.as_ref().and_then(|value| value.pointer("/data/message/body/execution_payload")) {
+        if let (Some(number), Some(hash)) = (payload.get("block_number"), payload.get("block_hash")) {
+            if let (Ok(number), Ok(hash)) = (json_u64(number), json_hash(hash)) {
+                facts.alias_number = number;
+                facts.alias_hash = hash;
+            }
+        }
+    }
     if let Ok(check) = verify_block_aggregate(root, &block) {
         facts.aggregate_verified = check.verified;
         facts.committee_bound = check.bound;
@@ -212,6 +239,8 @@ pub fn facts_from_reads(
         committee_epoch: 0,
         committee_bound: false,
         aggregate_verified: false,
+        alias_number: 0,
+        alias_hash: [0u8; 32],
     })
 }
 
@@ -390,6 +419,8 @@ mod tests {
             committee_epoch: 0,
             committee_bound: false,
             aggregate_verified: false,
+            alias_number: 1_476_207,
+            alias_hash: [4u8; 32],
         }
     }
 
@@ -404,6 +435,8 @@ mod tests {
         assert!(report.text.contains("light-client-update absent"));
         assert!(report.text.contains("signature-material present"));
         assert!(report.text.contains("aggregate-verify failed"));
+        assert!(report.text.contains("checkpoint-alias-same yes"));
+        assert!(report.text.contains("alias-matches-geth yes"));
         assert!(report.text.contains("sync-quorum yes"));
         assert!(report.text.contains("committee-state unread"));
         assert!(report.text.contains("state-root-binding unread"));
@@ -476,6 +509,23 @@ mod tests {
         assert!(report.signature_check);
         assert!(report.text.contains("sync-quorum no"));
         assert!(report.text.contains("trusted-committee no"));
+        assert!(report.text.contains("custody-gate no"));
+    }
+
+    #[test]
+    fn an_alias_that_matches_geth_is_not_checkpoint_agreement() {
+        let mut facts = agreed();
+        facts.execution_number = 1_477_711;
+        facts.execution_hash = [7u8; 32];
+        facts.geth_number = 1_477_775;
+        facts.geth_hash = [8u8; 32];
+        facts.alias_number = 1_477_775;
+        facts.alias_hash = [8u8; 32];
+        let report = assess_consensus(&facts);
+        assert!(!report.beacon_agreed);
+        assert!(report.text.contains("beacon-agreed no"));
+        assert!(report.text.contains("checkpoint-alias-same no"));
+        assert!(report.text.contains("alias-matches-geth yes"));
         assert!(report.text.contains("custody-gate no"));
     }
 }

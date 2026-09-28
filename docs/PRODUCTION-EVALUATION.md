@@ -83,6 +83,10 @@ A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,47
 
 On the same host, Prysm `blocks/finalized` matched geth `finalized` at execution block `1,477,775`. The FFG checkpoint root's execution payload was block `1,477,711` and did not. `beacon-agreed` compares geth with the checkpoint payload, so it stays `no`. The alias is not the FFG checkpoint. Shadow still follows execution tags only.
 
+### Finalized alias is not the checkpoint — 0.25.0
+
+`0.25.0` also reads Prysm `blocks/finalized`. `beacon-agreed` stays a comparison of geth `finalized` with the FFG checkpoint execution payload. `alias-matches-geth yes` does not change that comparison. A one-shot read on `38.102.126.30` showed checkpoint execution block `1,477,775` and geth / alias block `1,477,839`, so `checkpoint-alias-same no`, `alias-matches-geth yes`, and `beacon-agreed no`. The aggregate still verified. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `4746e28b76702cc423cd115fd2531b6eceaff9b447bd28c2382eebfc843d7a70`. `bridge-aac-shadow-prod.service` stays on `0.24.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27
