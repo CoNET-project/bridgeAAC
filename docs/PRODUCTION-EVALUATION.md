@@ -89,7 +89,9 @@ On the same host, Prysm `blocks/finalized` matched geth `finalized` at execution
 
 ### Head-state checkpoint — 0.26.0
 
-`states/finalized` stores the previous finalized checkpoint, about two epochs older than fork choice. `0.26.0` reads `states/head` finality checkpoints instead, then compares that block with geth `finalized`. `checkpoint-source head` names that choice. A one-shot read on `38.102.126.30` showed epoch `47,997`, execution block `1,477,903`, with the checkpoint, the `blocks/finalized` alias, and geth `finalized` on the same hash, so `beacon-agreed yes`, `checkpoint-alias-same yes`, and `alias-matches-geth yes`. The aggregate still verified. `trusted-committee` stays `no`. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `b6116d9463e677f6845216fb2b4bccdc0c6493ab252622bcb8fef7fcdd639c32`. `beacon-agreed yes` does not feed `shadow-service`. The production unit stays on `0.24.0`.
+`states/finalized` stores the previous finalized checkpoint, about two epochs older than fork choice. `0.26.0` reads `states/head` finality checkpoints instead, then compares that block with geth `finalized`. `checkpoint-source head` names that choice. A one-shot read on `38.102.126.30` showed epoch `47,997`, execution block `1,477,903`, with the checkpoint, the `blocks/finalized` alias, and geth `finalized` on the same hash, so `beacon-agreed yes`, `checkpoint-alias-same yes`, and `alias-matches-geth yes`. The aggregate still verified. `trusted-committee` stays `no`. The diagnostic binary stayed in `/tmp` until the switch below. Linux SHA-256 `b6116d9463e677f6845216fb2b4bccdc0c6493ab252622bcb8fef7fcdd639c32`. `beacon-agreed yes` does not feed `shadow-service`.
+
+A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,475,119` and printed `custody closed`. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.26.0`, PID `184730`, `NRestarts=0`, from tag `bridge-aac-v0.26.0` at `769c126`. The production floors did not drop. The first cycle kept `custody closed`. Base still prints reader lag with `cursor-lag 0`. Miner votes remain live.
 
 ---
 
