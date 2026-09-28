@@ -95,7 +95,11 @@ A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,47
 
 ### State-root binding — 0.27.0
 
-`0.27.0` downloads the parent slot's Deneb beacon state and checks that its hash tree root equals the signed header's `state_root`, and that the sync committee inside that state verifies the aggregate. A one-shot read on `38.102.126.30` at epoch `48,028`, execution block `1,478,895`, printed `state-root-binding yes`, `beacon-agreed yes`, `aggregate-verify yes`, and `trusted-committee no`. The state still comes from the same beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `f2374c26858b47546244d7e6c25be8b785b118dffeba8889dcbbf7d4e46b5f6d`. `bridge-aac-shadow-prod.service` stays on `0.26.0`. This command does not feed `shadow-service`.
+`0.27.0` downloads the parent slot's Deneb beacon state and checks that its hash tree root equals the signed header's `state_root`, and that the sync committee inside that state verifies the aggregate. A one-shot read on `38.102.126.30` at epoch `48,028`, execution block `1,478,895`, printed `state-root-binding yes`, `beacon-agreed yes`, `aggregate-verify yes`, and `trusted-committee no`. The state still comes from the same beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp` until the switch below. Linux SHA-256 `f2374c26858b47546244d7e6c25be8b785b118dffeba8889dcbbf7d4e46b5f6d`. `bridge-aac-shadow-prod.service` stays on `0.26.0`. This command does not feed `shadow-service`.
+
+A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,475,119` and printed `custody closed`. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.27.0`, PID `270134`, `NRestarts=0`, from tag `bridge-aac-v0.27.0` at `19ab5aa`. The production floors did not drop. The first cycle kept `custody closed`, `broadcast no`, and `settled no`. Base still printed `reader-lag 208` with `cursor-lag 0`. Miner votes remain live.
+
+A second local beacon on `127.0.0.1:4110` agreed with `:4100` at finalized epoch `48,031`, root `0x3fbcfcb8f1f9b60b`, and the same 512-member committee endpoints. Both processes are on this host, so that agreement does not make `trusted-committee yes`.
 
 ---
 
