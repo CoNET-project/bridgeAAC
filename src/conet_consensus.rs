@@ -24,6 +24,9 @@ pub struct ConsensusFacts {
     pub geth_hash: [u8; 32],
     pub included_attestations: u64,
     pub light_client_update: bool,
+    pub sync_committee_size: u64,
+    pub sync_bits_set: u64,
+    pub sync_signature_bytes: u64,
 }
 
 /// Observation only. `beacon_agreed` means the two finalized tags name the
@@ -44,6 +47,16 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
     let beacon_agreed = facts.chain_id == bindings::CONET_CHAIN_ID && same_block;
     let signature_check = false;
     let update = if facts.light_client_update { "present" } else { "absent" };
+    let material = if facts.sync_committee_size > 0
+        && facts.sync_bits_set > 0
+        && facts.sync_signature_bytes == 96
+    {
+        "present"
+    } else if facts.sync_committee_size > 0 || facts.sync_signature_bytes > 0 {
+        "partial"
+    } else {
+        "absent"
+    };
     let text = format!(
         "conet-chain {chain}\n\
          beacon-finalized-epoch {epoch}\n\
@@ -54,6 +67,10 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          geth-hash 0x{geth_h}\n\
          beacon-agreed {agreed}\n\
          included-attestations {atts}\n\
+         sync-committee {committee}\n\
+         sync-bits-set {bits}\n\
+         sync-signature-bytes {sig_bytes}\n\
+         signature-material {material}\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
          header-check beacon-tag\n\
@@ -71,6 +88,9 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         geth_h = hex::encode(facts.geth_hash),
         agreed = yes(beacon_agreed),
         atts = facts.included_attestations,
+        committee = facts.sync_committee_size,
+        bits = facts.sync_bits_set,
+        sig_bytes = facts.sync_signature_bytes,
         sig = yes(signature_check),
     );
     ConsensusReport { beacon_agreed, signature_check, text }
@@ -86,7 +106,16 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
     let checkpoints = http_json(&format!("{root}/eth/v1/beacon/states/finalized/finality_checkpoints"))?;
     let block = http_json(&format!("{root}/eth/v2/beacon/blocks/finalized"))?;
     let light = http_json_optional(&format!("{root}/eth/v1/beacon/light_client/finality_update"))?;
-    let facts = facts_from_reads(chain_id, &checkpoints, &block, geth.number, geth.hash, light.is_some())?;
+    let committee = http_json_optional(&format!("{root}/eth/v1/beacon/states/finalized/sync_committees"))?;
+    let facts = facts_from_reads(
+        chain_id,
+        &checkpoints,
+        &block,
+        geth.number,
+        geth.hash,
+        light.is_some(),
+        committee.as_ref(),
+    )?;
     Ok(assess_consensus(&facts).text)
 }
 
@@ -97,6 +126,7 @@ pub fn facts_from_reads(
     geth_number: u64,
     geth_hash: [u8; 32],
     light_client_update: bool,
+    committee: Option<&Value>,
 ) -> Result<ConsensusFacts, Error> {
     let finalized = checkpoints
         .pointer("/data/finalized")
@@ -109,6 +139,19 @@ pub fn facts_from_reads(
         .and_then(Value::as_array)
         .map(Vec::len)
         .unwrap_or(0) as u64;
+    let aggregate = block.pointer("/data/message/body/sync_aggregate");
+    let (sync_bits_set, sync_signature_bytes) = match aggregate {
+        Some(value) => (
+            count_hex_bits(value.get("sync_committee_bits").and_then(Value::as_str).unwrap_or("0x"))?,
+            hex_byte_len(value.get("sync_committee_signature").and_then(Value::as_str).unwrap_or("0x"))?,
+        ),
+        None => (0, 0),
+    };
+    let sync_committee_size = committee
+        .and_then(|value| value.pointer("/data/validators"))
+        .and_then(Value::as_array)
+        .map(|items| items.len() as u64)
+        .unwrap_or(0);
     Ok(ConsensusFacts {
         chain_id,
         finalized_epoch: json_u64(finalized.get("epoch").ok_or(Error::Rpc)?)?,
@@ -119,6 +162,9 @@ pub fn facts_from_reads(
         geth_hash,
         included_attestations: attestations,
         light_client_update,
+        sync_committee_size,
+        sync_bits_set,
+        sync_signature_bytes,
     })
 }
 
@@ -142,6 +188,23 @@ fn json_hash(value: &Value) -> Result<[u8; 32], Error> {
     let bare = text.strip_prefix("0x").unwrap_or(text);
     let bytes = hex::decode(bare).map_err(|_| Error::BadHex)?;
     bytes.try_into().map_err(|_| Error::BadLength)
+}
+
+fn hex_byte_len(text: &str) -> Result<u64, Error> {
+    let bare = text.strip_prefix("0x").unwrap_or(text);
+    if bare.len() % 2 != 0 {
+        return Err(Error::BadHex);
+    }
+    Ok((bare.len() / 2) as u64)
+}
+
+fn count_hex_bits(text: &str) -> Result<u64, Error> {
+    let bare = text.strip_prefix("0x").unwrap_or(text);
+    if bare.len() % 2 != 0 {
+        return Err(Error::BadHex);
+    }
+    let bytes = hex::decode(bare).map_err(|_| Error::BadHex)?;
+    Ok(bytes.iter().map(|byte| byte.count_ones() as u64).sum())
 }
 
 fn http_json(url: &str) -> Result<Value, Error> {
@@ -178,6 +241,9 @@ mod tests {
             geth_hash: [4u8; 32],
             included_attestations: 1,
             light_client_update: false,
+            sync_committee_size: 512,
+            sync_bits_set: 400,
+            sync_signature_bytes: 96,
         }
     }
 
@@ -190,6 +256,8 @@ mod tests {
         assert!(report.text.contains("light-client no"));
         assert!(report.text.contains("custody closed"));
         assert!(report.text.contains("light-client-update absent"));
+        assert!(report.text.contains("signature-material present"));
+        assert!(report.text.contains("sync-committee 512"));
         assert!(!report.text.contains("final true"));
         assert!(!report.text.contains("light-client yes"));
         assert!(!report.text.contains("signature-check yes"));
@@ -215,5 +283,15 @@ mod tests {
         assert!(report.text.contains("light-client-update present"));
         assert!(report.text.contains("signature-check no"));
         assert!(!report.text.contains("light-client yes"));
+    }
+
+    #[test]
+    fn signature_bytes_without_a_committee_stay_unchecked() {
+        let mut facts = agreed();
+        facts.sync_committee_size = 0;
+        let report = assess_consensus(&facts);
+        assert!(!report.signature_check);
+        assert!(report.text.contains("signature-material partial"));
+        assert!(report.text.contains("signature-check no"));
     }
 }

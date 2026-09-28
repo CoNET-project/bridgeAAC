@@ -67,6 +67,10 @@ This remediation does not pass any custody gate and does not authorize mint, rel
 
 `src/service.rs` and `src/shadow.rs` are unchanged from `bridge-aac-v0.16.0` at `88de882`. The shadow cursor and the seen-key journal are not the gateway journal changed in this release. A `--once` cycle on a copy of the live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119`, printed `custody closed`, and did not write the production cursor. `bridge-aac-shadow-prod.service` then runs `/home/peter/bin/bridge-aac-0.21.0`, Linux SHA-256 `05dcaf5f73b7923c9fa14458fe8434e413f19f62bf3ec2d9400613685ae1e59a`, built from tag `bridge-aac-v0.21.0` at `fa27123`. The switch stays read-only. Miner votes remain live.
 
+### Sync-aggregate observation — 0.22.0
+
+`conet-consensus` in 0.22.0 reads the finalized sync committee and the block's sync aggregate. A complete aggregate prints `signature-material present` and still prints `signature-check no`. The light-client finality route remains absent. This command does not feed `shadow-service`, and `bridge-aac-shadow-prod.service` stays on 0.21.0.
+
 ---
 
 ## Historical evaluation — 2026-09-27
