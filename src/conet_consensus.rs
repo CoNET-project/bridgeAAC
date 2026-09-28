@@ -1,10 +1,10 @@
 //! Read-only CONET beacon observation.
 //!
-//! The command compares the beacon's finalized execution payload with the
-//! execution client's `finalized` tag and checks the sync-committee aggregate
-//! with FastAggregateVerify. A matching signature uses pubkeys from that same
-//! beacon, so `trusted-committee` stays no and the header is not accepted
-//! into shadow.
+//! The command reads the fork-choice finalized checkpoint from the head
+//! state. The checkpoint stored inside the already-finalized state lags that
+//! view by about two epochs, so it is not the comparison target. A matching
+//! signature uses pubkeys from that same beacon, so `trusted-committee` stays
+//! no and the header is not accepted into shadow.
 
 use crate::assets::bindings;
 use crate::error::Error;
@@ -12,6 +12,10 @@ use crate::execution::JsonRpcExecution;
 use crate::ExecutionView;
 use serde_json::Value;
 use std::time::Duration;
+
+/// Fork-choice state whose `finalized_checkpoint` matches `blocks/finalized`.
+/// The state id `finalized` stores the previous checkpoint, about two epochs older.
+const FINALITY_CHECKPOINT_STATE: &str = "head";
 
 /// Facts copied from a beacon REST and one execution client.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -107,6 +111,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          committee-epoch {committee_epoch}\n\
          committee-state {committee_state}\n\
          state-root-binding unread\n\
+         checkpoint-source head\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
          trusted-committee no\n\
@@ -147,9 +152,10 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
 pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<String, Error> {
     let execution = JsonRpcExecution::new(execution_rpc);
     let chain_id = execution.chain_id()?;
-    let geth = execution.block_by_tag("finalized")?;
     let root = beacon.trim_end_matches('/');
-    let checkpoints = http_json(&format!("{root}/eth/v1/beacon/states/finalized/finality_checkpoints"))?;
+    let checkpoints = http_json(&format!(
+        "{root}/eth/v1/beacon/states/{FINALITY_CHECKPOINT_STATE}/finality_checkpoints"
+    ))?;
     let checkpoint_root = json_hash(
         checkpoints
             .pointer("/data/finalized/root")
@@ -160,6 +166,7 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
         hex::encode(checkpoint_root)
     ))?;
     let alias = http_json_optional(&format!("{root}/eth/v2/beacon/blocks/finalized"))?;
+    let geth = execution.block_by_tag("finalized")?;
     let light = http_json_optional(&format!("{root}/eth/v1/beacon/light_client/finality_update"))?;
     let committee = http_json_optional(&format!("{root}/eth/v1/beacon/states/finalized/sync_committees"))?;
     let mut facts = facts_from_reads(
@@ -437,6 +444,7 @@ mod tests {
         assert!(report.text.contains("aggregate-verify failed"));
         assert!(report.text.contains("checkpoint-alias-same yes"));
         assert!(report.text.contains("alias-matches-geth yes"));
+        assert!(report.text.contains("checkpoint-source head"));
         assert!(report.text.contains("sync-quorum yes"));
         assert!(report.text.contains("committee-state unread"));
         assert!(report.text.contains("state-root-binding unread"));
@@ -527,5 +535,13 @@ mod tests {
         assert!(report.text.contains("checkpoint-alias-same no"));
         assert!(report.text.contains("alias-matches-geth yes"));
         assert!(report.text.contains("custody-gate no"));
+    }
+
+    #[test]
+    fn the_finalized_state_is_not_the_checkpoint_source() {
+        assert_eq!(FINALITY_CHECKPOINT_STATE, "head");
+        let url = format!("/eth/v1/beacon/states/{FINALITY_CHECKPOINT_STATE}/finality_checkpoints");
+        assert!(url.contains("/states/head/"));
+        assert!(!url.contains("/states/finalized/"));
     }
 }

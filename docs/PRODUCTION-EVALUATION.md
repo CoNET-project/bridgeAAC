@@ -87,6 +87,10 @@ On the same host, Prysm `blocks/finalized` matched geth `finalized` at execution
 
 `0.25.0` also reads Prysm `blocks/finalized`. `beacon-agreed` stays a comparison of geth `finalized` with the FFG checkpoint execution payload. `alias-matches-geth yes` does not change that comparison. A one-shot read on `38.102.126.30` showed checkpoint execution block `1,477,775` and geth / alias block `1,477,839`, so `checkpoint-alias-same no`, `alias-matches-geth yes`, and `beacon-agreed no`. The aggregate still verified. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `4746e28b76702cc423cd115fd2531b6eceaff9b447bd28c2382eebfc843d7a70`. `bridge-aac-shadow-prod.service` stays on `0.24.0`. This command does not feed `shadow-service`.
 
+### Head-state checkpoint — 0.26.0
+
+`states/finalized` stores the previous finalized checkpoint, about two epochs older than fork choice. `0.26.0` reads `states/head` finality checkpoints instead, then compares that block with geth `finalized`. `checkpoint-source head` names that choice. A one-shot read on `38.102.126.30` showed epoch `47,997`, execution block `1,477,903`, with the checkpoint, the `blocks/finalized` alias, and geth `finalized` on the same hash, so `beacon-agreed yes`, `checkpoint-alias-same yes`, and `alias-matches-geth yes`. The aggregate still verified. `trusted-committee` stays `no`. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `b6116d9463e677f6845216fb2b4bccdc0c6493ab252622bcb8fef7fcdd639c32`. `beacon-agreed yes` does not feed `shadow-service`. The production unit stays on `0.24.0`.
+
 ---
 
 ## Historical evaluation — 2026-09-27
