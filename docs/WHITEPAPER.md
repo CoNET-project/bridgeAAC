@@ -1,7 +1,7 @@
 # bridgeAAC Whitepaper
 
-**Version:** 0.1.0-draft  
-**Status:** Design draft plus a phase-5 read-only shadow observer. Custody is closed. Not a light client.
+**Version:** 0.16.0  
+**Status:** The read-only production Shadow observer is approved and running. AAC custody is closed. Not a light client.
 
 ## Abstract
 
@@ -10,6 +10,8 @@ bridgeAAC is the cross-chain settlement record for three Beamio assets: canonica
 The destination record is an Atomic Asset Container (AAC). `isReserved` means that container is held for one source deposit, one amount, and one recipient. A second mint or release of the same deposit reverts.
 
 Miner votes are how the live bridge attests a remote deposit today. This paper specifies the state machine that replaces that per-deposit vote. It does not claim the replacement is already running on CONET or Base.
+
+The production Shadow validates the observer and reconciliation path without controlling assets. It scans from a deployment floor, requires two readers per chain, persists its cursor, pages on reader divergence, and emits no settlement transaction. Production mint and release remain on the existing miner-vote contracts.
 
 ## 1. Problem
 
@@ -141,7 +143,20 @@ Phase 2 adds `BaseFinality` and `ConetFinality`. They accept a header only when 
 
 Phase 3 plans the destination consume for each bridgeable asset and applies it on an in-process test ledger. The command is `bridge-aac settle`. It does not open an RPC connection. A short Base Circle balance leaves the AAC `Reserved`. `executeBridgeMint` runs only for a reserved paid-GB AAC. Miner vote names are rejected. Peer v5 token addresses match across chains only when both sides `createERC20` at the same nonce. The consume selectors are not deployed contracts.
 
-Phase 5 is a shadow observer. Two execution clients must agree on the header. The observer then proves one real receipt under that header's receipts root and reports any legacy bridge log as `decision observe`. It does not mint, release, or broadcast. `custody closed` stays in the report. Miner votes remain the live settlement path.
+Phase 5 is the production read-only Shadow observer. Two reader paths per chain must agree at each scanned height on block hash, state root, and receipts root. The scanner chooses the lower finalized reader height, so one faster reader cannot advance the decision boundary by itself. It proves a real receipt under the agreed receipts root and reports legacy bridge logs as `decision observe`. It does not mint, release, or broadcast. `custody closed` stays in every report. Miner votes remain the live settlement path.
+
+### 4.1 Production Shadow deployment
+
+Release `bridge-aac-v0.16.0` is deployed on `38.102.126.30` as `bridge-aac-shadow-prod.service`.
+
+- Base readers are the independent Base nodes on `.30:8547` and `.58:8547`.
+- CONET readers are the local `.30:8889` archive and the `publicrpc.conet.network` archive cluster.
+- An existing cursor never falls below its deployment floor.
+- Cursor safety is measured against the lower reader head. Production approval required both chains to complete a 256-block stable hold with lower-head cursor lag at or below 64.
+- Reader divergence remains separately visible. It opens the page even when scanning the lower agreed chain remains safe.
+- Cursor and page state persist across restarts; log-write, corrupt-cursor, restart, and logrotate drills passed.
+
+At the final 2026-09-28 evaluation, Base and CONET both reported `stable yes` and lower-head cursor lag `0`. Base still showed periodic reader lag, including 177 blocks in the final sample, and correctly kept `alert reader-lag` open. This approval is evidence for continuous read-only observation only.
 
 A later `FinalityVerifier` may check OP output roots or a CONET consensus proof. The AAC state machine does not change when that verifier is replaced. Production custody stays closed until that verifier, the destination contracts, and an independent review exist.
 

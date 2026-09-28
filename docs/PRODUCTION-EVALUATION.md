@@ -1,4 +1,43 @@
-# Production evaluation — 2026-09-27
+# Production evaluation
+
+## Final production Shadow evaluation — 2026-09-28
+
+**Verdict:** approve the production **read-only Shadow observer**. Do not activate AAC custody, mint, release, settlement broadcasting, or a miner-vote cutover.
+
+This approval applies only to `bridge-aac-v0.16.0` at commit `88de882` and the production unit described below. The observer has no write-chain path: each report continues to state `shadow yes`, `broadcast no`, `settled no`, `custody closed`, `light-client no`, `registry paused`, and `consume denied`.
+
+### Approved production configuration
+
+| Item | Evidence | Result |
+| --- | --- | --- |
+| Release | annotated tag `bridge-aac-v0.16.0`, commit `88de882` | Published release |
+| Linux binary | `/home/peter/bin/bridge-aac-0.16.0`, SHA-256 `70402f5abcb5597d7122b74bc41a55a711d6f490e78b10d33a2133c4ac3d4f00` | Pinned artifact |
+| Service | `bridge-aac-shadow-prod.service` on `38.102.126.30`; active since 2026-09-28 06:07:20 UTC; PID `4139886`; `NRestarts=0` at 06:44:57 UTC | Pass |
+| Base readers | local `.30:8547` plus independent `.58:8547` | Two unique execution clients |
+| CONET readers | local `.30:8889` plus `https://publicrpc.conet.network` archive cluster | Two unique reader paths |
+| Base cursor | floor `51,892,389`; cursor `51,893,551`; lower-head lag `0`; `stable yes` | Pass |
+| CONET cursor | floor `1,475,119`; cursor `1,475,503`; lower-head lag `0`; `stable yes` | Pass |
+| Persistence | cursor and page state under `/var/lib/bridge-aac-prod`; logs under `/var/log/bridge-aac`; forced logrotate retained service and cursor progress | Pass |
+| Host drills | restart, failed log write, corrupt cursor, page state, and logrotate | Pass |
+
+The Base readers still differ periodically; the 06:44 UTC report showed `reader-lag 177`. The service correctly keeps `page open` and `alert reader-lag`. This is not hidden or treated as agreement. Safety scanning uses the lower finalized height and requires both readers to agree at every scanned block on block hash, state root, and receipts root. The cursor reached that lower head and completed the 256-block stable hold.
+
+### Exact approval boundary
+
+The production Shadow may continuously observe and reconcile legacy bridge receipts. It must remain read-only. This evaluation does **not** approve:
+
+- Base finality based on an Ethereum L1 output or fault-proof result;
+- CONET finality based on verified consensus signatures;
+- any AAC destination consumer or on-chain consume-once contract;
+- paid-GB admin-mint closure or a GB mint migration;
+- treasury custody, AAC mint/release, transaction broadcasting, or disabling miner votes;
+- describing this execution-client quorum as a light client.
+
+Production settlement therefore remains on `TreasuryBridgeV3.voteBridgeOperation` for Treasury routes and `voteBridgeMint` for paid GB. A separate custody review is required after the finality adapters, audited destination contracts, mint-authority closure, end-to-end adversarial tests, and an independent security audit exist.
+
+---
+
+## Historical evaluation — 2026-09-27
 
 **Verdict:** do not approve production Shadow, and do not activate custody.
 
