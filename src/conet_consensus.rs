@@ -11,6 +11,7 @@ use crate::error::Error;
 use crate::execution::JsonRpcExecution;
 use crate::ExecutionView;
 use serde_json::Value;
+use std::io::Read;
 use std::time::Duration;
 
 /// Fork-choice state whose `finalized_checkpoint` matches `blocks/finalized`.
@@ -44,6 +45,10 @@ pub struct ConsensusFacts {
     /// ahead of the FFG checkpoint root, so it is not `beacon-agreed`.
     pub alias_number: u64,
     pub alias_hash: [u8; 32],
+    /// `Some(true)` only when the signed parent header's `state_root` is the
+    /// hash tree root of the downloaded beacon state, and that state's sync
+    /// committee verifies the aggregate. `None` means the state was not read.
+    pub state_root_bound: Option<bool>,
 }
 
 /// Observation only. `beacon_agreed` means geth `finalized` matches the FFG
@@ -82,6 +87,11 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
     };
     let quorum = sync_quorum(facts.sync_bits_set, facts.sync_committee_size);
     let committee_state = if facts.committee_bound { "parent-slot" } else { "unread" };
+    let binding = match facts.state_root_bound {
+        Some(true) => "yes",
+        Some(false) => "no",
+        None => "unread",
+    };
     let alias_same = facts.alias_number > 0
         && facts.alias_number == facts.execution_number
         && facts.alias_hash == facts.execution_hash;
@@ -110,7 +120,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          sync-quorum {quorum}\n\
          committee-epoch {committee_epoch}\n\
          committee-state {committee_state}\n\
-         state-root-binding unread\n\
+         state-root-binding {binding}\n\
          checkpoint-source head\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
@@ -142,6 +152,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         quorum = yes(quorum),
         committee_epoch = facts.committee_epoch,
         committee_state = committee_state,
+        binding = binding,
         sig = yes(signature_check),
     );
     ConsensusReport { beacon_agreed, signature_check, text }
@@ -194,6 +205,7 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
             facts.committee_epoch = check.epoch;
         }
     }
+    facts.state_root_bound = bind_signed_header(root, &block);
     Ok(assess_consensus(&facts).text)
 }
 
@@ -248,6 +260,7 @@ pub fn facts_from_reads(
         aggregate_verified: false,
         alias_number: 0,
         alias_hash: [0u8; 32],
+        state_root_bound: None,
     })
 }
 
@@ -302,15 +315,78 @@ fn http_json(url: &str) -> Result<Value, Error> {
 }
 
 fn http_json_optional(url: &str) -> Result<Option<Value>, Error> {
-    let response = ureq::get(url)
-        .timeout(Duration::from_secs(20))
-        .call();
+    let response = ureq::get(url).timeout(Duration::from_secs(20)).call();
     match response {
         Ok(body) => body.into_json().map(Some).map_err(|_| Error::Rpc),
         Err(ureq::Error::Status(404, _)) => Ok(None),
         Err(ureq::Error::Status(_, _)) => Err(Error::Rpc),
         Err(_) => Err(Error::Rpc),
     }
+}
+
+fn http_bytes(url: &str) -> Result<Vec<u8>, Error> {
+    let response = ureq::get(url)
+        .set("Accept", "application/octet-stream")
+        .timeout(Duration::from_secs(60))
+        .call()
+        .map_err(|_| Error::Rpc)?;
+    let mut bytes = Vec::new();
+    response.into_reader().read_to_end(&mut bytes).map_err(|_| Error::Rpc)?;
+    if bytes.is_empty() {
+        return Err(Error::Rpc);
+    }
+    Ok(bytes)
+}
+
+fn encode_header(message: &Value) -> Result<[u8; 112], Error> {
+    let mut out = [0u8; 112];
+    out[..8].copy_from_slice(&json_u64(message.get("slot").ok_or(Error::Rpc)?)?.to_le_bytes());
+    out[8..16].copy_from_slice(&json_u64(message.get("proposer_index").ok_or(Error::Rpc)?)?.to_le_bytes());
+    out[16..48].copy_from_slice(&json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?);
+    out[48..80].copy_from_slice(&json_hash(message.get("state_root").ok_or(Error::Rpc)?)?);
+    out[80..112].copy_from_slice(&json_hash(message.get("body_root").ok_or(Error::Rpc)?)?);
+    Ok(out)
+}
+
+/// `None` when the beacon state could not be read. `Some(false)` when the
+/// downloaded state does not match the signed header.
+fn bind_signed_header(beacon: &str, block: &Value) -> Option<bool> {
+    let message = block.pointer("/data/message")?;
+    let parent_root = json_hash(message.get("parent_root")?).ok()?;
+    let parent_slot = json_u64(message.get("slot")?).ok()?.saturating_sub(1);
+    let header = http_json(&format!(
+        "{beacon}/eth/v1/beacon/headers/0x{}",
+        hex::encode(parent_root)
+    ))
+    .ok()?;
+    let header_msg = header.pointer("/data/header/message")?;
+    let encoded = encode_header(header_msg).ok()?;
+    if crate::ssz_state::hash_beacon_header(&encoded).ok()? != parent_root {
+        return Some(false);
+    }
+    let state_root = json_hash(header_msg.get("state_root")?).ok()?;
+    let state = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/{parent_slot}")).ok()?;
+    if crate::ssz_state::hash_beacon_state(&state).ok()? != state_root {
+        return Some(false);
+    }
+    let aggregate = message.pointer("/body/sync_aggregate")?;
+    let bits = decode_hex(aggregate.get("sync_committee_bits")?.as_str()?).ok()?;
+    let signature = decode_hex(aggregate.get("sync_committee_signature")?.as_str()?).ok()?;
+    let pubkeys = crate::ssz_state::sync_committee_pubkeys(&state).ok()?;
+    let genesis = http_json(&format!("{beacon}/eth/v1/beacon/genesis")).ok()?;
+    let fork_body = http_json(&format!("{beacon}/eth/v1/beacon/states/{parent_slot}/fork")).ok()?;
+    let fork_data = fork_body.pointer("/data")?;
+    let fork = crate::sync_aggregate::ForkVersion {
+        previous: version_bytes(fork_data.get("previous_version")?.as_str()?).ok()?,
+        current: version_bytes(fork_data.get("current_version")?.as_str()?).ok()?,
+        epoch: json_u64(fork_data.get("epoch")?).ok()?,
+    };
+    let genesis_root = json_hash(genesis.pointer("/data/genesis_validators_root")?).ok()?;
+    let domain = crate::sync_aggregate::sync_domain(&fork, parent_slot / 32, genesis_root);
+    let signing = crate::sync_aggregate::signing_root(parent_root, domain);
+    Some(
+        crate::sync_aggregate::verify_participants(&bits, &pubkeys, &signature, &signing).is_ok(),
+    )
 }
 
 struct AggregateCheck {
@@ -427,7 +503,8 @@ mod tests {
             committee_bound: false,
             aggregate_verified: false,
             alias_number: 1_476_207,
-            alias_hash: [4u8; 32],
+        alias_hash: [4u8; 32],
+        state_root_bound: None,
         }
     }
 
@@ -543,5 +620,18 @@ mod tests {
         let url = format!("/eth/v1/beacon/states/{FINALITY_CHECKPOINT_STATE}/finality_checkpoints");
         assert!(url.contains("/states/head/"));
         assert!(!url.contains("/states/finalized/"));
+    }
+
+    #[test]
+    fn a_bound_state_root_still_leaves_custody_closed() {
+        let mut facts = agreed();
+        facts.aggregate_verified = true;
+        facts.committee_bound = true;
+        facts.state_root_bound = Some(true);
+        let report = assess_consensus(&facts);
+        assert!(report.text.contains("state-root-binding yes"));
+        assert!(report.text.contains("trusted-committee no"));
+        assert!(report.text.contains("custody-gate no"));
+        assert!(report.text.contains("light-client no"));
     }
 }

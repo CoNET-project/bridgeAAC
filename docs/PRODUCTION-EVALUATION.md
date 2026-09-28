@@ -93,6 +93,10 @@ On the same host, Prysm `blocks/finalized` matched geth `finalized` at execution
 
 A copied live cursor then kept `base_floor` `51,892,389` and `conet_floor` `1,475,119` and printed `custody closed`. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.26.0`, PID `184730`, `NRestarts=0`, from tag `bridge-aac-v0.26.0` at `769c126`. The production floors did not drop. The first cycle kept `custody closed`. Base still prints reader lag with `cursor-lag 0`. Miner votes remain live.
 
+### State-root binding — 0.27.0
+
+`0.27.0` downloads the parent slot's Deneb beacon state and checks that its hash tree root equals the signed header's `state_root`, and that the sync committee inside that state verifies the aggregate. A one-shot read on `38.102.126.30` at epoch `48,028`, execution block `1,478,895`, printed `state-root-binding yes`, `beacon-agreed yes`, `aggregate-verify yes`, and `trusted-committee no`. The state still comes from the same beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `f2374c26858b47546244d7e6c25be8b785b118dffeba8889dcbbf7d4e46b5f6d`. `bridge-aac-shadow-prod.service` stays on `0.26.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27

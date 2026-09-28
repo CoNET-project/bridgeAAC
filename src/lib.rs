@@ -23,6 +23,7 @@ mod mpt;
 mod receipt;
 mod service;
 mod shadow;
+mod ssz_state;
 mod sync_aggregate;
 mod types;
 
