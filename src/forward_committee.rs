@@ -1,9 +1,11 @@
 //! Forward sync-committee updates rooted at the published CoNET genesis state.
 //!
 //! Each step uses the committee already trusted for period `P` to authenticate
-//! the committee for period `P+1`. A stored checkpoint may move only forward.
-//! `trusted-committee` stays `no` until that chain reaches the beacon head.
-//! This command does not feed the production shadow decision.
+//! the committee for period `P+1`. A two-thirds aggregate is the normal update.
+//! If that period never reaches two thirds, the best valid signature still
+//! advances the committee after the period timeout, and `forced-updates` counts
+//! that step. A stored checkpoint may move only forward. `trusted-committee`
+//! stays `no`. This command does not feed the production shadow decision.
 
 use crate::error::Error;
 use crate::ssz_state::{self, hash_beacon_header, hash_beacon_state};
@@ -26,6 +28,7 @@ pub struct CommitteeStore {
     pub finalized_epoch: u64,
     pub finalized_root: [u8; 32],
     pub updates: u64,
+    pub forced_updates: u64,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -62,6 +65,8 @@ struct CheckpointFile {
     finalized_epoch: u64,
     finalized_root: String,
     updates: u64,
+    #[serde(default)]
+    forced_updates: u64,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -74,10 +79,19 @@ struct ForwardReport {
     witness: &'static str,
     head_period: Option<u64>,
     execution: &'static str,
+    forced_updates: u64,
     trusted: bool,
 }
 
 pub fn apply_forward_update(store: &CommitteeStore, update: &ForwardUpdate) -> Result<CommitteeStore, StepFault> {
+    apply_forward_update_with(store, update, true)
+}
+
+fn apply_forward_update_with(
+    store: &CommitteeStore,
+    update: &ForwardUpdate,
+    require_supermajority: bool,
+) -> Result<CommitteeStore, StepFault> {
     if update.attested_period < store.current_period {
         return Err(StepFault::OutOfOrder);
     }
@@ -87,7 +101,7 @@ pub fn apply_forward_update(store: &CommitteeStore, update: &ForwardUpdate) -> R
     if update.signature_period != update.attested_period {
         return Err(StepFault::SignaturePeriod);
     }
-    if !update.quorum {
+    if require_supermajority && !update.quorum {
         return Err(StepFault::Quorum);
     }
     if !update.signature_ok {
@@ -108,6 +122,7 @@ pub fn apply_forward_update(store: &CommitteeStore, update: &ForwardUpdate) -> R
         finalized_epoch: update.finalized_epoch,
         finalized_root: update.finalized_root,
         updates: store.updates + 1,
+        forced_updates: store.forced_updates,
     })
 }
 
@@ -125,6 +140,9 @@ pub fn commit_allowed(previous: &CommitteeStore, next: &CommitteeStore) -> bool 
         return false;
     }
     if next.current_period > previous.current_period && next.updates <= previous.updates {
+        return false;
+    }
+    if next.forced_updates < previous.forced_updates {
         return false;
     }
     true
@@ -149,6 +167,7 @@ pub fn observe_forward_committee(
                 witness: witness_label(witness, None),
                 head_period: None,
                 execution: "unread",
+                forced_updates: 0,
                 trusted: false,
             }));
         }
@@ -163,6 +182,7 @@ pub fn observe_forward_committee(
             witness: "omitted",
             head_period: None,
             execution: "unread",
+            forced_updates: 0,
             trusted: false,
         }));
     }
@@ -174,6 +194,7 @@ pub fn observe_forward_committee(
             finalized_epoch: 0,
             finalized_root: genesis.header_root,
             updates: 0,
+            forced_updates: 0,
         },
     };
     let head_period = head_period(beacon);
@@ -195,7 +216,10 @@ pub fn observe_forward_committee(
                 fault = reason;
                 break;
             }
-            Advance::Advanced { store: next, witness: witnessed } => {
+            Advance::Advanced { store: mut next, witness: witnessed, supermajority } => {
+                if !supermajority {
+                    next.forced_updates = store.forced_updates + 1;
+                }
                 if !commit_allowed(&store, &next) {
                     step = "rejected";
                     fault = "stale-finalized";
@@ -205,7 +229,10 @@ pub fn observe_forward_committee(
                 step = "advanced";
                 witness_ok = witnessed;
                 save_checkpoint(checkpoint, &genesis, &store)?;
-                eprintln!("forward-progress period {} updates {}", store.current_period, store.updates);
+                eprintln!(
+                    "forward-progress period {} updates {} forced {}",
+                    store.current_period, store.updates, store.forced_updates
+                );
             }
         }
     }
@@ -233,6 +260,7 @@ pub fn observe_forward_committee(
         witness: witness_label(witness, witness_ok),
         head_period,
         execution,
+        forced_updates: store.forced_updates,
         trusted: false,
     }))
 }
@@ -240,7 +268,7 @@ pub fn observe_forward_committee(
 enum Advance {
     Unread,
     Rejected(&'static str),
-    Advanced { store: CommitteeStore, witness: Option<bool> },
+    Advanced { store: CommitteeStore, witness: Option<bool>, supermajority: bool },
 }
 
 struct GenesisAnchor {
@@ -251,8 +279,8 @@ struct GenesisAnchor {
 
 fn advance_one(beacon: &str, witness: Option<&str>, store: &CommitteeStore) -> Advance {
     let mut slot = period_end_slot(store.current_period);
+    let mut best: Vec<(u64, u64)> = Vec::new();
     let mut saw_signature_fault = false;
-    let mut state_attempts = 0u32;
     while period_of_slot(slot) == store.current_period {
         let block = match http_json_optional(&format!("{beacon}/eth/v2/beacon/blocks/{slot}")) {
             Ok(Some(block)) => block,
@@ -265,31 +293,32 @@ fn advance_one(beacon: &str, witness: Option<&str>, store: &CommitteeStore) -> A
             }
             Err(_) => return Advance::Unread,
         };
-        if block_quorum(&block) != Some(true) {
-            if slot == 0 {
-                break;
+        let bits = block_bits(&block).unwrap_or(0);
+        if sync_quorum(bits, COMMITTEE_SIZE as u64) {
+            match bind_period_update(beacon, witness, store, &block, true) {
+                Advance::Unread => {}
+                Advance::Rejected("signature") => saw_signature_fault = true,
+                other => return other,
             }
-            slot -= 1;
-            continue;
+        } else if bits >= 1 {
+            best.push((bits, slot));
+            best.sort_by(|left, right| right.0.cmp(&left.0));
+            best.truncate(8);
         }
-        state_attempts += 1;
-        if state_attempts > 8 {
+        if slot == 0 {
             break;
         }
-        match bind_period_update(beacon, witness, store, &block) {
-            Advance::Unread => {
-                if slot == 0 {
-                    break;
-                }
-                slot -= 1;
-            }
-            Advance::Rejected("quorum") | Advance::Rejected("signature") => {
-                saw_signature_fault = true;
-                if slot == 0 {
-                    break;
-                }
-                slot -= 1;
-            }
+        slot -= 1;
+    }
+    for (_, candidate) in best {
+        let block = match http_json_optional(&format!("{beacon}/eth/v2/beacon/blocks/{candidate}")) {
+            Ok(Some(block)) => block,
+            Ok(None) => continue,
+            Err(_) => return Advance::Unread,
+        };
+        match bind_period_update(beacon, witness, store, &block, false) {
+            Advance::Unread => continue,
+            Advance::Rejected("signature") => saw_signature_fault = true,
             other => return other,
         }
     }
@@ -300,17 +329,23 @@ fn advance_one(beacon: &str, witness: Option<&str>, store: &CommitteeStore) -> A
     }
 }
 
-fn block_quorum(block: &Value) -> Option<bool> {
+fn block_bits(block: &Value) -> Option<u64> {
     let bits = decode_hex(
         block
             .pointer("/data/message/body/sync_aggregate/sync_committee_bits")
             .and_then(Value::as_str)?,
     )
     .ok()?;
-    Some(sync_quorum(bits_set(&bits, COMMITTEE_SIZE), COMMITTEE_SIZE as u64))
+    Some(bits_set(&bits, COMMITTEE_SIZE))
 }
 
-fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStore, block: &Value) -> Advance {
+fn bind_period_update(
+    beacon: &str,
+    witness: Option<&str>,
+    store: &CommitteeStore,
+    block: &Value,
+    require_supermajority: bool,
+) -> Advance {
     let Some(message) = block.pointer("/data/message") else {
         return Advance::Unread;
     };
@@ -389,7 +424,7 @@ fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStor
         finalized_epoch,
         finalized_root,
     };
-    let next_store = match apply_forward_update(store, &update) {
+    let next_store = match apply_forward_update_with(store, &update, require_supermajority) {
         Ok(store) => store,
         Err(fault) => {
             eprintln!("forward-detail {} slot {slot}", fault_name(fault));
@@ -407,7 +442,7 @@ fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStor
             Witness::Unread => Some(false),
         },
     };
-    Advance::Advanced { store: next_store, witness: witnessed }
+    Advance::Advanced { store: next_store, witness: witnessed, supermajority: update.quorum }
 }
 
 enum Witness {
@@ -482,6 +517,7 @@ fn load_checkpoint(path: &Path, genesis: &GenesisAnchor) -> Result<Option<Commit
         finalized_epoch: file.finalized_epoch,
         finalized_root: decode_root(&file.finalized_root)?,
         updates: file.updates,
+        forced_updates: file.forced_updates,
     }))
 }
 
@@ -500,6 +536,7 @@ fn save_checkpoint(path: &Path, genesis: &GenesisAnchor, store: &CommitteeStore)
         finalized_epoch: store.finalized_epoch,
         finalized_root: hex::encode(store.finalized_root),
         updates: store.updates,
+        forced_updates: store.forced_updates,
     };
     let bytes = serde_json::to_vec_pretty(&file).map_err(|_| Error::Journal)?;
     let tmp = path.with_extension("json.tmp");
@@ -534,6 +571,7 @@ fn format_report(report: &ForwardReport) -> String {
          head-period {head}\n\
          periods-remaining {remaining}\n\
          execution-check {execution}\n\
+         forced-updates {forced}\n\
          trusted-committee {trusted}\n\
          custody-gate no\n\
          custody closed\n\
@@ -544,6 +582,7 @@ fn format_report(report: &ForwardReport) -> String {
         fault = report.fault,
         witness = report.witness,
         execution = report.execution,
+        forced = report.forced_updates,
         trusted = if report.trusted { "yes" } else { "no" },
     )
 }
@@ -733,6 +772,7 @@ mod tests {
             finalized_epoch: 0,
             finalized_root: [9u8; 32],
             updates: 0,
+            forced_updates: 0,
         }
     }
 
@@ -756,6 +796,19 @@ mod tests {
         assert_eq!(next.current_committee, vec![[3u8; 48], [4u8; 48]]);
         assert_eq!(next.finalized_epoch, 4);
         assert_eq!(next.updates, 1);
+    }
+
+    #[test]
+    fn a_valid_signature_without_two_thirds_still_advances() {
+        let mut update = update();
+        update.quorum = false;
+        let next = apply_forward_update_with(&store(), &update, false).unwrap();
+        assert_eq!(next.current_period, 1);
+        assert_eq!(next.forced_updates, 0);
+        let mut counted = next.clone();
+        counted.forced_updates = 1;
+        assert!(commit_allowed(&next, &counted));
+        assert!(!commit_allowed(&counted, &next));
     }
 
     #[test]
@@ -825,6 +878,7 @@ mod tests {
             witness: "yes",
             head_period: Some(188),
             execution: "unread",
+            forced_updates: 0,
             trusted: false,
         });
         assert!(text.contains("step advanced"));
