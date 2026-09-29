@@ -143,6 +143,10 @@ On-chain results, all mined on the fully verified proxy:
 
 Independent audit is still absent, and this contract is not the production destination. `consume-once` and custody gate 3 stay closed. The production shadow unit is unchanged.
 
+### Next milestone — genesis-rooted forward committee
+
+Custody remains `0/4`. The four-period handoff and genesis pin are diagnostic evidence. The next implementation verifies sync-committee updates forward from the pinned genesis state: signature, finalized header, execution payload, committee branch, and period continuity. A missing period, a reordered update, a conflicting committee, or an older finalized header is rejected. The last trusted checkpoint is persisted and restored. `trusted-committee` stays `no` until that forward chain is proven, and this milestone does not switch the production shadow unit or stop miner votes.
+
 ---
 
 ## Historical evaluation — 2026-09-27
