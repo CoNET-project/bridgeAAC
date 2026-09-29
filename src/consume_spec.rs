@@ -1,14 +1,17 @@
-//! In-process specification of a future UUPS consume-once consumer.
+//! In-process specification of the UUPS consume-once consumer.
 //!
-//! This module is not deployed and cannot mint or release. It fixes the storage
-//! order, the caller role, the reentrancy guard, and the rollback rule that a
-//! later contract must keep. Selector presence is not an input.
+//! The deployed contract is `contracts/AacConsumeOnceV1.sol`. It records a
+//! consume id and does not mint or release. Storage order is the list below.
+//! The reentrancy lock is transient, so it is not a layout slot. An upgrade
+//! may only append after `__gap`. Selector presence is not an input.
 
 use crate::error::Error;
 use std::collections::HashMap;
 
 /// Slot order for the first implementation. An upgrade may only append.
-pub const CONSUME_LAYOUT_V1: &[&str] = &["paused", "admin", "consumed", "__gap"];
+pub const CONSUME_LAYOUT_V1: &[&str] = &[
+    "paused", "admin", "gateway", "consumed", "credits", "__gap",
+];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConsumeRole {

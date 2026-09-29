@@ -121,6 +121,26 @@ A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119
 
 A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119` and printed `custody closed`, `broadcast no`, and `settled no`. The live cursor file was not the `--once` target. `bridge-aac-shadow-prod.service` now runs `/home/peter/bin/bridge-aac-0.31.0`, PID `869679`, `NRestarts=0`, from tag `bridge-aac-v0.31.0` at `205ec67`. After the restart the floors were unchanged. The cursor stayed at Base `51,926,769` and CONET `1,486,575`. Base printed `reader-lag 193`, `cursor-lag 0`, and `stable 0`, and the page stayed open on `alert reader-lag`. CONET printed `stable yes`. Miner votes remain live.
 
+### Consume-once specification contract — mainnet
+
+`AacConsumeOnceV1` is the in-process consume specification as a UUPS proxy. Storage order is `paused`, `admin`, `gateway`, `consumed`, `credits`, then a 50-slot gap. The reentrancy lock is transient and is not a layout slot. The contract records an id and a credit counter. It does not mint or release.
+
+CoNET proxy `0x02C98ACc2CFDE505013B8518Bd73283cB2C8eCD5`. V1 implementation `0x1beF3C7882bF20Bf73f2cb9E3dccB22Eb3ad5E8D`. V2 implementation `0x2518fc7256D6Bf4C27ac97Eac5F31fcBfac97429`, with `rescueAdmin` at slot 55. Local `solc 0.8.35` deployed bytecode matched `eth_getCode` for the proxy, both implementations, the rejected reorder implementation, the gateway, and the revert effect. Blockscout reports `is_verified` or `is_partially_verified` for each of those addresses.
+
+On-chain results, all mined:
+
+| Check | Transaction | Result |
+|---|---|---|
+| Admin cannot consume | `0xf93d03824f4f437ba340512679373e47b01548942065fbd045ce0b0bd7b44f9b` | reverted |
+| Reentrant consume credits once | `0x16bf06e39e15e5bbb8b4a517af4e0ecb920bd5787902420d56db69a3d6305c96` | success, credits `1` |
+| Second consume of the same id | `0x94ec2494bfc3192c8392a5052a874224503210566d3d3ba1cb2511b7f3463af4` | reverted, credits stayed `1` |
+| Failed effect | `0x952a49b87d425eab83acff8a006ebd539ce8b4030d2de304779ae516636bb2f5` | reverted, id not consumed |
+| Reordered upgrade | `0xad44ab35b984f14567aa5d6f4659eb0652a624ccae520f57da634529f1c44661` | reverted, implementation stayed V1 |
+| Append-only upgrade | `0x661560e95725806d8a2886a109f5ebe31fecab8abf6c611239c0b1942fbe5c61` | success, consumed id and credits kept |
+| Consume after upgrade | `0x888818cbec36ba7ad7f3f3f91d363c6cc5d47e1f56d0cc0fff30ecfa910808a2` | success, credits `2` |
+
+Independent audit is still absent, and this contract is not the production destination. `consume-once` and custody gate 3 stay closed. The production shadow unit is unchanged.
+
 ---
 
 ## Historical evaluation — 2026-09-27
