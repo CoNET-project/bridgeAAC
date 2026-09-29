@@ -57,6 +57,10 @@ pub struct ConsensusFacts {
     pub handoff_epoch: u64,
     /// How many sync-committee periods were linked. Zero when unread.
     pub handoff_periods: u64,
+    /// `Some(true)` when the genesis beacon state hashes to the genesis header
+    /// and its `genesis_validators_root` is the published CoNET pin. That pin
+    /// does not by itself trust the current sync committee.
+    pub genesis_pin: Option<bool>,
 }
 
 /// Observation only. `beacon_agreed` means geth `finalized` matches the FFG
@@ -105,6 +109,11 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         Some(false) => "no",
         None => "unread",
     };
+    let genesis_pin = match facts.genesis_pin {
+        Some(true) => "yes",
+        Some(false) => "no",
+        None => "unread",
+    };
     let alias_same = facts.alias_number > 0
         && facts.alias_number == facts.execution_number
         && facts.alias_hash == facts.execution_hash;
@@ -137,6 +146,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
          committee-handoff {handoff}\n\
          handoff-periods {handoff_periods}\n\
          handoff-epoch {handoff_epoch}\n\
+         genesis-pin {genesis_pin}\n\
          checkpoint-source head\n\
          light-client-update {update}\n\
          signature-check {sig}\n\
@@ -172,6 +182,7 @@ pub fn assess_consensus(facts: &ConsensusFacts) -> ConsensusReport {
         handoff = handoff,
         handoff_periods = facts.handoff_periods,
         handoff_epoch = facts.handoff_epoch,
+        genesis_pin = genesis_pin,
         sig = yes(signature_check),
     );
     ConsensusReport { beacon_agreed, signature_check, text }
@@ -242,6 +253,7 @@ pub fn observe_conet_consensus(beacon: &str, execution_rpc: &str) -> Result<Stri
             }
         }
     }
+    facts.genesis_pin = pin_genesis(root);
     Ok(assess_consensus(&facts).text)
 }
 
@@ -300,6 +312,7 @@ pub fn facts_from_reads(
         committee_handoff: None,
         handoff_epoch: 0,
         handoff_periods: 0,
+        genesis_pin: None,
     })
 }
 
@@ -387,6 +400,14 @@ fn encode_header(message: &Value) -> Result<[u8; 112], Error> {
     Ok(out)
 }
 
+/// Published CoNET genesis validators root. The observer compares this pin
+/// with the bytes inside the hashed genesis state. It is not taken from the
+/// beacon `/genesis` JSON in the same call.
+const PUBLISHED_GENESIS_VALIDATORS_ROOT: [u8; 32] = [
+    0xac, 0xac, 0x75, 0x66, 0xfd, 0xf3, 0x84, 0xa1, 0xad, 0xa4, 0x5c, 0x01, 0xdc, 0xf9, 0x03, 0x0d,
+    0x7e, 0xb0, 0xe1, 0xe5, 0xf5, 0x30, 0x26, 0x59, 0x10, 0x1d, 0x0b, 0x2a, 0x5b, 0xb5, 0x90, 0x92,
+];
+
 const EPOCHS_PER_SYNC_COMMITTEE_PERIOD: u64 = 256;
 const SLOTS_PER_EPOCH: u64 = 32;
 
@@ -403,6 +424,25 @@ struct Handoff {
 }
 
 const HANDOFF_PERIODS: u64 = 4;
+
+/// `None` when the genesis header or state was not read. `Some(false)` when
+/// the state hash or the validators root disagrees with the published pin.
+fn pin_genesis(beacon: &str) -> Option<bool> {
+    let header = http_json(&format!("{beacon}/eth/v1/beacon/headers/genesis")).ok()?;
+    let header_root = json_hash(header.pointer("/data/root")?).ok()?;
+    let message = header.pointer("/data/header/message")?;
+    let encoded = encode_header(message).ok()?;
+    if crate::ssz_state::hash_beacon_header(&encoded).ok()? != header_root {
+        return Some(false);
+    }
+    let state_root = json_hash(message.get("state_root")?).ok()?;
+    let state = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/genesis")).ok()?;
+    if crate::ssz_state::hash_beacon_state(&state).ok()? != state_root {
+        return Some(false);
+    }
+    let found = crate::ssz_state::genesis_validators_root(&state).ok()?;
+    Some(found == PUBLISHED_GENESIS_VALIDATORS_ROOT)
+}
 
 /// Last slot before the epoch transition that installs this period's committee.
 fn pre_rotation_slot(finalized_slot: u64) -> Option<u64> {
@@ -705,6 +745,7 @@ mod tests {
         committee_handoff: None,
         handoff_epoch: 0,
         handoff_periods: 0,
+        genesis_pin: None,
         }
     }
 
@@ -848,7 +889,9 @@ mod tests {
         facts.committee_handoff = Some(true);
         facts.handoff_epoch = 48_126;
         facts.handoff_periods = 1;
+        facts.genesis_pin = Some(true);
         let report = assess_consensus(&facts);
+        assert!(report.text.contains("genesis-pin yes"));
         assert!(report.text.contains("committee-handoff yes"));
         assert!(report.text.contains("handoff-periods 1"));
         assert!(report.text.contains("handoff-epoch 48126"));
@@ -863,5 +906,9 @@ mod tests {
         assert_eq!(pre_rotation_slot(slot), Some(1_540_063));
         assert_eq!(pre_rotation_slot(48_126 * SLOTS_PER_EPOCH), Some(1_531_871));
         assert_eq!(HANDOFF_PERIODS, 4);
+        assert_eq!(
+            hex::encode(PUBLISHED_GENESIS_VALIDATORS_ROOT),
+            "acac7566fdf384a1ada45c01dcf9030d7eb0e1e5f5302659101d0b2a5bb59092"
+        );
     }
 }

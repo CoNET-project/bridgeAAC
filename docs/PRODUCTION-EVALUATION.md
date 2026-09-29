@@ -115,6 +115,10 @@ A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119
 
 `0.30.0` follows the same signed `next_sync_committee` link for four periods, and stops early if an older state is not read. A one-shot on `38.102.126.30` at epoch `48,263`, execution block `1,486,415`, printed `committee-handoff yes`, `handoff-periods 4`, and `handoff-epoch 47358`, with `state-root-binding yes`, `beacon-agreed yes`, and `trusted-committee no`. The four committees still come from this beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `80b763c406193884299915913be2f34d23e9a743c6dde105e765d10745281eae`. `bridge-aac-shadow-prod.service` stays on `0.28.0`. This command does not feed `shadow-service`.
 
+### Genesis pin — 0.31.0
+
+`0.31.0` hashes the genesis beacon state and checks two facts: the hash equals the genesis header `state_root`, and the state's `genesis_validators_root` equals the published pin `0xacac7566fdf384a1ada45c01dcf9030d7eb0e1e5f5302659101d0b2a5bb59092`. A one-shot on `38.102.126.30` at epoch `48,266`, execution block `1,486,511`, printed `genesis-pin yes`, `handoff-periods 4`, `handoff-epoch 47358`, and `trusted-committee no`. The beacon on `38.102.126.50:4100` returned the same validators root. The four-period handoff does not reach that genesis committee, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `62fefb6916c50d0e56a327f92c5fbddcbb516ca82400e7eb6cd30aa41995ff4e`. `bridge-aac-shadow-prod.service` stays on `0.28.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27

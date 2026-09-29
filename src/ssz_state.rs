@@ -213,6 +213,17 @@ fn htr_sync_committee(bytes: &[u8]) -> Result<[u8; 32], Error> {
     ]))
 }
 
+pub fn genesis_validators_root(state: &[u8]) -> Result<[u8; 32], Error> {
+    let fields = state_fields(state)?;
+    let raw = fields.get(1).ok_or(Error::BadLength)?;
+    if raw.len() != 32 {
+        return Err(Error::BadLength);
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(raw);
+    Ok(out)
+}
+
 pub fn sync_committee_pubkeys(state: &[u8]) -> Result<Vec<[u8; 48]>, Error> {
     committee_pubkeys(state, 22)
 }
