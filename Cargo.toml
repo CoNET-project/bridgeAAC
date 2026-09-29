@@ -1,6 +1,6 @@
 [package]
 name = "bridge-aac"
-version = "0.29.0"
+version = "0.30.0"
 edition = "2021"
 description = "Beamio Atomic Asset Container reference gateway for Linux"
 license = "MIT"

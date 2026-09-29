@@ -366,7 +366,7 @@ fn http_json_optional(url: &str) -> Result<Option<Value>, Error> {
 fn http_bytes(url: &str) -> Result<Vec<u8>, Error> {
     let response = ureq::get(url)
         .set("Accept", "application/octet-stream")
-        .timeout(Duration::from_secs(120))
+        .timeout(Duration::from_secs(180))
         .call()
         .map_err(|_| Error::Rpc)?;
     let mut bytes = Vec::new();
@@ -402,7 +402,7 @@ struct Handoff {
     periods: u64,
 }
 
-const HANDOFF_PERIODS: u64 = 2;
+const HANDOFF_PERIODS: u64 = 4;
 
 /// Last slot before the epoch transition that installs this period's committee.
 fn pre_rotation_slot(finalized_slot: u64) -> Option<u64> {
@@ -862,5 +862,6 @@ mod tests {
         let slot = 48_216 * SLOTS_PER_EPOCH;
         assert_eq!(pre_rotation_slot(slot), Some(1_540_063));
         assert_eq!(pre_rotation_slot(48_126 * SLOTS_PER_EPOCH), Some(1_531_871));
+        assert_eq!(HANDOFF_PERIODS, 4);
     }
 }

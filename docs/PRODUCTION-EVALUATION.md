@@ -111,6 +111,10 @@ A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119
 
 `0.29.0` repeats the handoff for one older sync-committee period and prints how many periods linked. A cold one-shot stopped at `handoff-periods 1` because the older beacon state was not returned within the read limit. After that state was available, a second one-shot at epoch `48,223`, execution block `1,485,135`, printed `committee-handoff yes`, `handoff-periods 2`, and `handoff-epoch 47870`, with `trusted-committee no`. Both committees still come from this beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `26de70b0edfa91cee9ea2380cf29cdd092f298ced758ffc6b28ba0ed3a124dc0`. `bridge-aac-shadow-prod.service` stays on `0.28.0`. This command does not feed `shadow-service`.
 
+### Four-period committee handoff — 0.30.0
+
+`0.30.0` follows the same signed `next_sync_committee` link for four periods, and stops early if an older state is not read. A one-shot on `38.102.126.30` at epoch `48,263`, execution block `1,486,415`, printed `committee-handoff yes`, `handoff-periods 4`, and `handoff-epoch 47358`, with `state-root-binding yes`, `beacon-agreed yes`, and `trusted-committee no`. The four committees still come from this beacon, so custody gate 2 stays closed. The diagnostic binary stayed in `/tmp`. Linux SHA-256 `80b763c406193884299915913be2f34d23e9a743c6dde105e765d10745281eae`. `bridge-aac-shadow-prod.service` stays on `0.28.0`. This command does not feed `shadow-service`.
+
 ---
 
 ## Historical evaluation — 2026-09-27
