@@ -43,7 +43,7 @@ function compile() {
       optimizer: { enabled: true, runs: 200 },
       evmVersion: "cancun",
       viaIR: false,
-      metadata: { bytecodeHash: "none" },
+      metadata: { bytecodeHash: "ipfs" },
       outputSelection: {
         "*": {
           "": ["ast"],
@@ -197,6 +197,8 @@ const deployment = {
   },
   txs,
   custodyGate: "no",
+  compiler: "v0.8.35+commit.47b9dedd",
+  metadataBytecodeHash: "ipfs",
   note: "Specification consumer only. It does not mint or release. Independent audit is still absent, so the custody consume-once gate stays closed.",
 };
 const outDir = path.join(root, "deployments");

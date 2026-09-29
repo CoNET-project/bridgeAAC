@@ -125,19 +125,21 @@ A copied live cursor kept `base_floor` `51,892,389` and `conet_floor` `1,475,119
 
 `AacConsumeOnceV1` is the in-process consume specification as a UUPS proxy. Storage order is `paused`, `admin`, `gateway`, `consumed`, `credits`, then a 50-slot gap. The reentrancy lock is transient and is not a layout slot. The contract records an id and a credit counter. It does not mint or release.
 
-CoNET proxy `0x02C98ACc2CFDE505013B8518Bd73283cB2C8eCD5`. V1 implementation `0x1beF3C7882bF20Bf73f2cb9E3dccB22Eb3ad5E8D`. V2 implementation `0x2518fc7256D6Bf4C27ac97Eac5F31fcBfac97429`, with `rescueAdmin` at slot 55. Local `solc 0.8.35` deployed bytecode matched `eth_getCode` for the proxy, both implementations, the rejected reorder implementation, the gateway, and the revert effect. Blockscout reports `is_verified` or `is_partially_verified` for each of those addresses.
+The first deployment used `metadata.bytecodeHash: none`. Local bytecode matched `eth_getCode`, and Blockscout set `is_verified` and `is_partially_verified` while `is_fully_verified` stayed false. That metadata has no IPFS digest, so this explorer scores the match as partial. Those addresses are superseded. The record is `deployments/conet-AacConsumeOnce-bytecodehash-none.json`, proxy `0x02C98ACc2CFDE505013B8518Bd73283cB2C8eCD5`.
 
-On-chain results, all mined:
+The replacement uses `metadata.bytecodeHash: ipfs` and the same `solc 0.8.35+commit.47b9dedd` settings otherwise. CoNET proxy `0xA13843C75f68F726e1DC4dbA75d07597EE18d999`. V1 implementation `0xfD5093DAFf45A402943Bf13E777a5A97AD15d703`. V2 implementation `0x52E778276c4beD01dA5284DD7430267E9C0d3BBc`, with `rescueAdmin` at slot 55. Local deployed bytecode matched `eth_getCode` for the proxy, both implementations, the rejected reorder implementation `0x9133921CA4c6c963622e85D659B979ba282b244f`, the gateway `0x3CFC09eadBd59b8884647cbb8332D1CaD7924E8A`, and the revert effect `0x804a08a05bABfa944DC70B9c68038Fe105FC7669`. Blockscout reports `is_fully_verified` true for each of those six addresses.
+
+On-chain results, all mined on the fully verified proxy:
 
 | Check | Transaction | Result |
 |---|---|---|
-| Admin cannot consume | `0xf93d03824f4f437ba340512679373e47b01548942065fbd045ce0b0bd7b44f9b` | reverted |
-| Reentrant consume credits once | `0x16bf06e39e15e5bbb8b4a517af4e0ecb920bd5787902420d56db69a3d6305c96` | success, credits `1` |
-| Second consume of the same id | `0x94ec2494bfc3192c8392a5052a874224503210566d3d3ba1cb2511b7f3463af4` | reverted, credits stayed `1` |
-| Failed effect | `0x952a49b87d425eab83acff8a006ebd539ce8b4030d2de304779ae516636bb2f5` | reverted, id not consumed |
-| Reordered upgrade | `0xad44ab35b984f14567aa5d6f4659eb0652a624ccae520f57da634529f1c44661` | reverted, implementation stayed V1 |
-| Append-only upgrade | `0x661560e95725806d8a2886a109f5ebe31fecab8abf6c611239c0b1942fbe5c61` | success, consumed id and credits kept |
-| Consume after upgrade | `0x888818cbec36ba7ad7f3f3f91d363c6cc5d47e1f56d0cc0fff30ecfa910808a2` | success, credits `2` |
+| Admin cannot consume | `0x3ce26a8f3f08a8e18ec06f95c16ab3c16c4beb3de8af24a3dade3234741e5f13` | reverted |
+| Reentrant consume credits once | `0x7b55d1948620c65cc16dd330df0a521f76d76bf86227ee13b2856d4725452858` | success, credits `1` |
+| Second consume of the same id | `0x731175f64e29e6395aee3583af2e62070e1c3481cf47440536d79de47e167bc1` | reverted, credits stayed `1` |
+| Failed effect | `0xc0767e4192ecf2299ff4eb0fce3f3b37c8bc98fc130a8ab4d38576ebeabac8e7` | reverted, id not consumed |
+| Reordered upgrade | `0x4880988028602ae171af6f2066cecc55c088b29b3f0013a5a67b9a8280c8ec65` | reverted, implementation stayed V1 |
+| Append-only upgrade | `0x3957c6ea16383623e3b8a0ecfdbc8fc44bc2723ecb706d599e9b5857931508e2` | success, consumed id and credits kept |
+| Consume after upgrade | `0x8241d18e635b36a61f4ba6a5b133d787ad086f6008e36c776964dd02e547fdba` | success, credits `2` |
 
 Independent audit is still absent, and this contract is not the production destination. `consume-once` and custody gate 3 stay closed. The production shadow unit is unchanged.
 
