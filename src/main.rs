@@ -162,7 +162,7 @@ fn main() -> ExitCode {
                  bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
                  bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
                  bridge-aac conet-consensus --beacon <url> --execution-rpc <url>\n  \
-                 bridge-aac forward-committee --beacon <url> --checkpoint <file> [--witness-beacon <url>] [--periods <n>]\n  \
+                 bridge-aac forward-committee --beacon <url> --checkpoint <file> [--witness-beacon <url>] [--execution-rpc <url>] [--periods <n>]\n  \
                  bridge-aac destination-consumer --conet-rpc <url> --base-rpc <url>\n  \
                  bridge-aac gb-mint-authority --rpc <url>\n  \
                  bridge-aac base-quorum-reader --rpc <url> --rpc <url> [--from <height>] [--blocks <count>]\n  \
@@ -387,11 +387,13 @@ fn forward_committee(mut args: impl Iterator<Item = String>) -> Result<String, b
     let mut checkpoint = None;
     let mut witness = None;
     let mut periods = 1u64;
+    let mut execution_rpc = None;
     while let Some(flag) = args.next() {
         match flag.as_str() {
             "--beacon" => beacon = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--checkpoint" => checkpoint = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--witness-beacon" => witness = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--execution-rpc" => execution_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--periods" => {
                 periods = args
                     .next()
@@ -402,7 +404,7 @@ fn forward_committee(mut args: impl Iterator<Item = String>) -> Result<String, b
             _ => return Err(bridge_aac::Error::BadFixture),
         }
     }
-    if periods == 0 || periods > 8 {
+    if periods == 0 || periods > 256 {
         return Err(bridge_aac::Error::BadFixture);
     }
     bridge_aac::observe_forward_committee(
@@ -410,6 +412,7 @@ fn forward_committee(mut args: impl Iterator<Item = String>) -> Result<String, b
         std::path::Path::new(&checkpoint.ok_or(bridge_aac::Error::BadLength)?),
         witness.as_deref(),
         periods,
+        execution_rpc.as_deref(),
     )
 }
 

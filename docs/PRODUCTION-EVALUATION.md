@@ -149,7 +149,7 @@ Independent audit is still absent, and this contract is not the production desti
 
 A one-period run on `38.102.126.30` against `127.0.0.1:4100`, with witness beacon `38.102.126.50:4100`, printed `genesis-pin yes`, `step advanced`, `period 1`, `updates 1`, `witness yes`, `head-period 188`, `periods-remaining 187`, `execution-check unread`, and `trusted-committee no`. The stored finalized checkpoint is epoch `253`, root `0x496c4e1326090f8bc9077530693de311ede5abe860032eb07891202bf97edd20`. Early period-0 blocks often have fewer than two-thirds participation, so the command keeps searching that period until it finds a supermajority. Linux SHA-256 `f5846a8896a1a36eb156899677dfc1c7b045357d77702102cc239ebbed3485b4`. The binary stayed in `/tmp`. `bridge-aac-shadow-prod.service` stayed on `0.31.0`, PID `869679`, `NRestarts=0`. Custody remains `0/4`.
 
-The next runs continue from the checkpoint, one period at a time, until period 188. Only then can execution-payload agreement be considered. Miner votes stay live.
+A continued run saved each period. It reached period 10, then stopped with `fault quorum`. Period 10's aggregates top out at 203 of 512 participants, below the two-thirds bar of 342. Periods 11 through 17 stay under that bar at the period boundary. Period 18 has full participation, but the forward rule cannot skip the missing supermajority link. `execution-check` stays unread because the chain is not at the beacon head. `trusted-committee` stays `no`. The checkpoint remains period 10 on `38.102.126.30` at `/home/peter/aac-forward-committee.json`. `bridge-aac-shadow-prod.service` was not switched. Miner votes stay live.
 
 ---
 

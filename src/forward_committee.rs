@@ -73,6 +73,7 @@ struct ForwardReport {
     fault: &'static str,
     witness: &'static str,
     head_period: Option<u64>,
+    execution: &'static str,
     trusted: bool,
 }
 
@@ -134,6 +135,7 @@ pub fn observe_forward_committee(
     checkpoint: &Path,
     witness: Option<&str>,
     periods: u64,
+    execution_rpc: Option<&str>,
 ) -> Result<String, Error> {
     let genesis = match load_genesis(beacon) {
         Some(genesis) => genesis,
@@ -146,6 +148,7 @@ pub fn observe_forward_committee(
                 fault: "none",
                 witness: witness_label(witness, None),
                 head_period: None,
+                execution: "unread",
                 trusted: false,
             }));
         }
@@ -159,6 +162,7 @@ pub fn observe_forward_committee(
             fault: "conflicting-committee",
             witness: "omitted",
             head_period: None,
+            execution: "unread",
             trusted: false,
         }));
     }
@@ -199,15 +203,27 @@ pub fn observe_forward_committee(
                 }
                 store = next;
                 step = "advanced";
-                witness_ok = witnessed.or(witness_ok);
+                witness_ok = witnessed;
+                save_checkpoint(checkpoint, &genesis, &store)?;
+                eprintln!("forward-progress period {} updates {}", store.current_period, store.updates);
             }
         }
     }
-    if step == "advanced" {
-        save_checkpoint(checkpoint, &genesis, &store)?;
-    } else if !checkpoint.exists() && store.updates == 0 && store.current_period == 0 {
+    if step != "advanced" && !checkpoint.exists() && store.updates == 0 && store.current_period == 0 {
         save_checkpoint(checkpoint, &genesis, &store)?;
     }
+    let caught_up = head_period.is_some_and(|head| store.current_period >= head && store.updates > 0);
+    let execution = if !caught_up {
+        "unread"
+    } else if let Some(rpc) = execution_rpc {
+        match check_execution(beacon, rpc, &store) {
+            Ok(true) => "yes",
+            Ok(false) => "no",
+            Err(_) => "unread",
+        }
+    } else {
+        "unread"
+    };
     Ok(format_report(&ForwardReport {
         genesis_pin: Some(true),
         period: store.current_period,
@@ -216,6 +232,7 @@ pub fn observe_forward_committee(
         fault,
         witness: witness_label(witness, witness_ok),
         head_period,
+        execution,
         trusted: false,
     }))
 }
@@ -323,7 +340,8 @@ fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStor
         return Advance::Unread;
     };
     if header_root != parent_root {
-        return Advance::Rejected("conflicting-committee");
+        eprintln!("forward-detail header-root slot {slot}");
+        return Advance::Unread;
     }
     let Ok(state_root) = json_hash(header_msg.get("state_root").unwrap_or(&Value::Null)) else {
         return Advance::Unread;
@@ -335,14 +353,16 @@ fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStor
         return Advance::Rejected("conflicting-committee");
     };
     if state_hash != state_root {
-        return Advance::Rejected("conflicting-committee");
+        eprintln!("forward-detail state-hash slot {parent_slot}");
+        return Advance::Unread;
     }
     let (Ok(current), Ok(next), Ok((finalized_epoch, finalized_root))) = (
         ssz_state::sync_committee_pubkeys(&state),
         ssz_state::next_sync_committee_pubkeys(&state),
         ssz_state::finalized_checkpoint(&state),
     ) else {
-        return Advance::Rejected("conflicting-committee");
+        eprintln!("forward-detail committee-parse slot {parent_slot}");
+        return Advance::Unread;
     };
     let Some(aggregate) = message.pointer("/body/sync_aggregate") else {
         return Advance::Unread;
@@ -371,13 +391,19 @@ fn bind_period_update(beacon: &str, witness: Option<&str>, store: &CommitteeStor
     };
     let next_store = match apply_forward_update(store, &update) {
         Ok(store) => store,
-        Err(fault) => return Advance::Rejected(fault_name(fault)),
+        Err(fault) => {
+            eprintln!("forward-detail {} slot {slot}", fault_name(fault));
+            return Advance::Rejected(fault_name(fault));
+        }
     };
     let witnessed = match witness {
         None => None,
         Some(url) => match witness_next(url, parent_slot, &state_root, &next) {
             Witness::Match => Some(true),
-            Witness::Conflict => return Advance::Rejected("conflicting-committee"),
+            Witness::Conflict => {
+                eprintln!("forward-detail witness-conflict slot {parent_slot}");
+                return Advance::Rejected("witness-conflict");
+            }
             Witness::Unread => Some(false),
         },
     };
@@ -507,7 +533,7 @@ fn format_report(report: &ForwardReport) -> String {
          witness {witness}\n\
          head-period {head}\n\
          periods-remaining {remaining}\n\
-         execution-check unread\n\
+         execution-check {execution}\n\
          trusted-committee {trusted}\n\
          custody-gate no\n\
          custody closed\n\
@@ -517,8 +543,39 @@ fn format_report(report: &ForwardReport) -> String {
         step = report.step,
         fault = report.fault,
         witness = report.witness,
+        execution = report.execution,
         trusted = if report.trusted { "yes" } else { "no" },
     )
+}
+
+fn check_execution(beacon: &str, rpc: &str, store: &CommitteeStore) -> Result<bool, Error> {
+    use crate::execution::{ExecutionView, JsonRpcExecution};
+    let geth = JsonRpcExecution::new(rpc).block_by_tag("finalized")?;
+    let checkpoints = http_json(&format!("{beacon}/eth/v1/beacon/states/head/finality_checkpoints"))?;
+    let root = json_hash(checkpoints.pointer("/data/finalized/root").ok_or(Error::Rpc)?)?;
+    let block = http_json(&format!("{beacon}/eth/v2/beacon/blocks/0x{}", hex::encode(root)))?;
+    let message = block.pointer("/data/message").ok_or(Error::Rpc)?;
+    let slot = json_u64(message.get("slot").ok_or(Error::Rpc)?)?;
+    if period_of_slot(slot) != store.current_period {
+        return Ok(false);
+    }
+    let parent_root = json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?;
+    let aggregate = message.pointer("/body/sync_aggregate").ok_or(Error::Rpc)?;
+    let bits = decode_hex(aggregate.get("sync_committee_bits").and_then(Value::as_str).unwrap_or(""))?;
+    let signature = decode_hex(aggregate.get("sync_committee_signature").and_then(Value::as_str).unwrap_or(""))?;
+    if !sync_quorum(bits_set(&bits, store.current_committee.len()), store.current_committee.len() as u64) {
+        return Ok(false);
+    }
+    let parent_slot = slot.saturating_sub(1);
+    let schedule = fork_schedule(beacon, parent_slot)?;
+    let domain = sync_aggregate::sync_domain(&schedule.fork, parent_slot / SLOTS_PER_EPOCH, schedule.genesis_root);
+    let signing = sync_aggregate::signing_root(parent_root, domain);
+    if sync_aggregate::verify_participants(&bits, &store.current_committee, &signature, &signing).is_err() {
+        return Ok(false);
+    }
+    let payload = message.pointer("/body/execution_payload").ok_or(Error::Rpc)?;
+    let execution_hash = json_hash(payload.get("block_hash").ok_or(Error::Rpc)?)?;
+    Ok(execution_hash == geth.hash)
 }
 
 fn witness_label(configured: Option<&str>, witnessed: Option<bool>) -> &'static str {
@@ -767,6 +824,7 @@ mod tests {
             fault: "none",
             witness: "yes",
             head_period: Some(188),
+            execution: "unread",
             trusted: false,
         });
         assert!(text.contains("step advanced"));
