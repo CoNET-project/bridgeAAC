@@ -213,6 +213,19 @@ fn htr_sync_committee(bytes: &[u8]) -> Result<[u8; 32], Error> {
     ]))
 }
 
+pub fn finalized_checkpoint(state: &[u8]) -> Result<(u64, [u8; 32]), Error> {
+    let fields = state_fields(state)?;
+    let raw = fields.get(20).ok_or(Error::BadLength)?;
+    if raw.len() != 40 {
+        return Err(Error::BadLength);
+    }
+    let mut epoch_bytes = [0u8; 8];
+    epoch_bytes.copy_from_slice(&raw[..8]);
+    let mut root = [0u8; 32];
+    root.copy_from_slice(&raw[8..40]);
+    Ok((u64::from_le_bytes(epoch_bytes), root))
+}
+
 pub fn genesis_validators_root(state: &[u8]) -> Result<[u8; 32], Error> {
     let fields = state_fields(state)?;
     let raw = fields.get(1).ok_or(Error::BadLength)?;

@@ -143,9 +143,13 @@ On-chain results, all mined on the fully verified proxy:
 
 Independent audit is still absent, and this contract is not the production destination. `consume-once` and custody gate 3 stay closed. The production shadow unit is unchanged.
 
-### Next milestone — genesis-rooted forward committee
+### Forward sync committee — 0.32.0
 
-Custody remains `0/4`. The four-period handoff and genesis pin are diagnostic evidence. The next implementation verifies sync-committee updates forward from the pinned genesis state: signature, finalized header, execution payload, committee branch, and period continuity. A missing period, a reordered update, a conflicting committee, or an older finalized header is rejected. The last trusted checkpoint is persisted and restored. `trusted-committee` stays `no` until that forward chain is proven, and this milestone does not switch the production shadow unit or stop miner votes.
+`0.32.0` adds `forward-committee`. It trusts the published genesis state, then accepts one later period only when the already trusted committee signs a header in its own period, the header's state hash matches, two thirds of that committee participate, and the state's finalized checkpoint does not move backward. A skipped period, an older period, a different signing committee, or a conflicting finalized root is rejected. The checkpoint file can be replaced only by a later period. `trusted-committee` stays `no` until the chain reaches the beacon head; execution-payload comparison is still unread. This command does not feed `shadow-service`.
+
+A one-period run on `38.102.126.30` against `127.0.0.1:4100`, with witness beacon `38.102.126.50:4100`, printed `genesis-pin yes`, `step advanced`, `period 1`, `updates 1`, `witness yes`, `head-period 188`, `periods-remaining 187`, `execution-check unread`, and `trusted-committee no`. The stored finalized checkpoint is epoch `253`, root `0x496c4e1326090f8bc9077530693de311ede5abe860032eb07891202bf97edd20`. Early period-0 blocks often have fewer than two-thirds participation, so the command keeps searching that period until it finds a supermajority. Linux SHA-256 `f5846a8896a1a36eb156899677dfc1c7b045357d77702102cc239ebbed3485b4`. The binary stayed in `/tmp`. `bridge-aac-shadow-prod.service` stayed on `0.31.0`, PID `869679`, `NRestarts=0`. Custody remains `0/4`.
+
+The next runs continue from the checkpoint, one period at a time, until period 188. Only then can execution-payload agreement be considered. Miner votes stay live.
 
 ---
 
