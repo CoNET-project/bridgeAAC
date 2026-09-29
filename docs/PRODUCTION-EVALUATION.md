@@ -151,7 +151,7 @@ A one-period run on `38.102.126.30` against `127.0.0.1:4100`, with witness beaco
 
 The first continued run stopped at period 10 with `fault quorum`. Period 10 never reaches two thirds (the best aggregate has 203 of 512 participants). That is not a skipped period. The Altair light client keeps the best valid signature and, once the period timeout has passed, applies it so the committee can advance. `forced-updates` counts each such step. A two-thirds aggregate is still preferred when one exists. `trusted-committee` stays `no` while any step was forced.
 
-After that correction, the same checkpoint advanced to period 11 with `forced-updates 1`, `witness yes`, and `step advanced`. The catch-up toward the beacon head continues from `/home/peter/aac-forward-committee.json`. `execution-check` stays unread until that head is reached. `bridge-aac-shadow-prod.service` was not switched. Miner votes stay live.
+The catch-up then finished. The checkpoint on `38.102.126.30` at `/home/peter/aac-forward-committee.json` is period `189`, equal to the beacon head, with `updates 189`, `forced-updates 8`, and finalized epoch `48381`. Periods 10 through 17 are the eight forced steps. From period 18 onward the updates are two-thirds aggregates. The final report printed `witness yes`, `periods-remaining 0`, and `execution-check yes`: the stored head-period committee signed the beacon finalized block, and that block's execution hash matched geth `finalized`. `trusted-committee` stays `no` because those eight periods did not have a supermajority. `custody-gate no` and `custody closed` remain. The forward process has exited. `bridge-aac-shadow-prod.service` is still `0.31.0`, PID `869679`, `NRestarts=0`. Miner votes stay live.
 
 ---
 
