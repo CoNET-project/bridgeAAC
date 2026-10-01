@@ -431,9 +431,9 @@ fn state_fields(bytes: &[u8]) -> Result<Vec<&[u8]>, Error> {
     split(bytes, &parts)
 }
 
-pub fn hash_beacon_state(bytes: &[u8]) -> Result<[u8; 32], Error> {
+pub fn beacon_state_field_roots(bytes: &[u8]) -> Result<Vec<[u8; 32]>, Error> {
     let fields = state_fields(bytes)?;
-    let roots = [
+    Ok(vec![
         chunk_bytes(fields[0]),
         htr_bytes(fields[1]),
         chunk_bytes(fields[2]),
@@ -462,8 +462,122 @@ pub fn hash_beacon_state(bytes: &[u8]) -> Result<[u8; 32], Error> {
         chunk_bytes(fields[25]),
         chunk_bytes(fields[26]),
         htr_historical_summaries(fields[27])?,
+    ])
+    .and_then(|roots| {
+        if roots.len() == BEACON_STATE_FIELD_COUNT {
+            Ok(roots)
+        } else {
+            Err(Error::BadLength)
+        }
+    })
+}
+
+pub fn hash_beacon_state(bytes: &[u8]) -> Result<[u8; 32], Error> {
+    Ok(htr_container(&beacon_state_field_roots(bytes)?))
+}
+
+/// Deneb `BeaconState` has 28 fields, padded to 32. Field `i` sits at generalized index `32 + i`.
+pub const BEACON_STATE_FIELD_COUNT: usize = 28;
+pub const NEXT_SYNC_COMMITTEE_GINDEX: u64 = 32 + 23;
+pub const FINALIZED_ROOT_GINDEX: u64 = (32 + 20) * 2 + 1;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SszProof {
+    pub leaf: [u8; 32],
+    pub branch: Vec<[u8; 32]>,
+    pub gindex: u64,
+}
+
+pub fn verify_ssz_proof(proof: &SszProof, root: [u8; 32]) -> bool {
+    let mut index = proof.gindex;
+    let mut value = proof.leaf;
+    for sibling in &proof.branch {
+        value = if index % 2 == 0 {
+            sha_pair(&value, sibling)
+        } else {
+            sha_pair(sibling, &value)
+        };
+        index /= 2;
+    }
+    index == 1 && value == root
+}
+
+pub fn next_sync_committee_proof(state: &[u8]) -> Result<SszProof, Error> {
+    let roots = beacon_state_field_roots(state)?;
+    let (branch, root) = prove_fields(&roots, 23);
+    if root != hash_beacon_state(state)? {
+        return Err(Error::MerkleMismatch);
+    }
+    Ok(SszProof { leaf: roots[23], branch, gindex: NEXT_SYNC_COMMITTEE_GINDEX })
+}
+
+pub fn finalized_root_proof(state: &[u8]) -> Result<SszProof, Error> {
+    let fields = state_fields(state)?;
+    let raw = fields.get(20).ok_or(Error::BadLength)?;
+    if raw.len() != 40 {
+        return Err(Error::BadLength);
+    }
+    let epoch = chunk_bytes(&raw[..8]);
+    let root_leaf = htr_bytes(&raw[8..40]);
+    let roots = beacon_state_field_roots(state)?;
+    let (state_branch, state_root) = prove_fields(&roots, 20);
+    if state_root != hash_beacon_state(state)? {
+        return Err(Error::MerkleMismatch);
+    }
+    let mut branch = Vec::with_capacity(1 + state_branch.len());
+    branch.push(epoch);
+    branch.extend(state_branch);
+    Ok(SszProof { leaf: root_leaf, branch, gindex: FINALIZED_ROOT_GINDEX })
+}
+
+pub fn execution_block_hash(state: &[u8]) -> Result<[u8; 32], Error> {
+    let fields = state_fields(state)?;
+    let header = fields.get(24).ok_or(Error::BadLength)?;
+    let parts = [
+        Part::Fixed(32),
+        Part::Fixed(20),
+        Part::Fixed(32),
+        Part::Fixed(32),
+        Part::Fixed(256),
+        Part::Fixed(32),
+        Part::Fixed(8),
+        Part::Fixed(8),
+        Part::Fixed(8),
+        Part::Fixed(8),
+        Part::Offset,
+        Part::Fixed(32),
+        Part::Fixed(32),
+        Part::Fixed(32),
+        Part::Fixed(32),
+        Part::Fixed(8),
+        Part::Fixed(8),
     ];
-    Ok(htr_container(&roots))
+    let split_fields = split(header, &parts)?;
+    let hash = split_fields.get(12).ok_or(Error::BadLength)?;
+    if hash.len() != 32 {
+        return Err(Error::BadLength);
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(hash);
+    Ok(out)
+}
+
+fn prove_fields(roots: &[[u8; 32]], index: usize) -> (Vec<[u8; 32]>, [u8; 32]) {
+    let width = roots.len().next_power_of_two().max(1);
+    let mut layer = roots.to_vec();
+    layer.resize(width, zero_hash(0));
+    let mut idx = index;
+    let mut branch = Vec::new();
+    while layer.len() > 1 {
+        branch.push(layer[idx ^ 1]);
+        let mut next = Vec::with_capacity(layer.len() / 2);
+        for pair in layer.chunks(2) {
+            next.push(sha_pair(&pair[0], &pair[1]));
+        }
+        layer = next;
+        idx /= 2;
+    }
+    (branch, layer[0])
 }
 
 #[cfg(test)]
@@ -494,5 +608,16 @@ mod tests {
         let expect = expect.lines().next().unwrap().trim().trim_start_matches("0x");
         let root = hash_beacon_state(&bytes).unwrap();
         assert_eq!(hex::encode(root), expect);
+    }
+
+    #[test]
+    fn a_field_proof_reconstructs_the_padded_container_root() {
+        let roots = vec![[1u8; 32], [2u8; 32], [3u8; 32], [4u8; 32]];
+        let (branch, root) = prove_fields(&roots, 2);
+        let proof = SszProof { leaf: roots[2], branch, gindex: 4 + 2 };
+        assert!(verify_ssz_proof(&proof, root));
+        let mut wrong = proof.clone();
+        wrong.leaf[0] ^= 1;
+        assert!(!verify_ssz_proof(&wrong, root));
     }
 }

@@ -153,6 +153,31 @@ The first continued run stopped at period 10 with `fault quorum`. Period 10 neve
 
 The catch-up then finished. The checkpoint on `38.102.126.30` at `/home/peter/aac-forward-committee.json` is period `189`, equal to the beacon head, with `updates 189`, `forced-updates 8`, and finalized epoch `48381`. Periods 10 through 17 are the eight forced steps. From period 18 onward the updates are two-thirds aggregates. The final report printed `witness yes`, `periods-remaining 0`, and `execution-check yes`: the stored head-period committee signed the beacon finalized block, and that block's execution hash matched geth `finalized`. `trusted-committee` stays `no` because those eight periods did not have a supermajority. `custody-gate no` and `custody closed` remain. The forward process has exited. `bridge-aac-shadow-prod.service` is still `0.31.0`, PID `869679`, `NRestarts=0`. Miner votes stay live.
 
+### Weak-subjectivity candidate — 0.33.0
+
+`0.33.0` adds `weak-subjectivity`. It does not fill in supermajority signatures for periods 10 through 17, and a forced genesis-track step cannot become `safety supermajority-finalized`. The new store accepts a finalized advance only from a two-thirds update whose next-committee branch and finality branch both verify. A later period cannot skip the current one. Three distinct confirmations of the same header root are required before `safety` can leave `observed`. This command still prints `trusted-committee no` and does not feed `shadow-service`.
+
+A capture on `38.102.126.30` against `127.0.0.1:4100`, with witness beacon `38.102.126.50:4100`, wrote `/home/peter/aac-weak-subjectivity-period18.json`. The candidate is period `18`, slot `155646`, header `0x442a5f8c…91336`, state root `0x70001a2f…1410`, finalized epoch `4861`, root `0x65203b0f…7848`. The next-sync-committee branch has 5 siblings and the finalized-root branch has 6; both reconstruct the state root, so `proofs yes`. The witness beacon returned the same state root (`witness yes`). That second beacon is operated by the same organization, so it is an availability check, not one of the three confirmations. Three other full nodes then ran `confirm-checkpoint` against their own `127.0.0.1:4100` beacon and reproduced the same slot, header, and state root: `216.225.202.22` peer `16Uiu2HAmCtPRBmi…HgDtA`, `216.225.197.3` peer `16Uiu2HAmQgiLAC8…3t7g`, and `216.225.202.82` peer `16Uiu2HAmDJCHuVk…ohPfd`. `accept-confirmations` recorded `confirmations 3`, `rejected 0`, and `safety weak-subjectivity-trusted`. `trusted-committee` stays `no`. These three nodes use the same Prysm client and the same operator, so the custody gate stays closed. Linux SHA-256 of the confirmer binary is `f0095c2e4ce7bf5ddebd7a07ad4015d2feb583f4e2927c9f7d230e760183d349`. Each copy stayed in `/tmp/bridge-aac-0.33.0`. `bridge-aac-shadow-prod.service` is still `0.31.0`, PID `869679`, `NRestarts=0`. Miner votes stay live. Custody remains `0/4`.
+
+### Non-Prysm client trial — Lighthouse
+
+Lighthouse `v8.2.2` and `v5.3.0` are installed on `167.104.98.104` and `104.168.122.21` at `~/conet-lighthouse/`. Genesis `ae0a63e7…d7fb46` and the published config checksums match. The local config uses the mainnet preset constants plus CoNET's fork versions, 6-second slots, deposit contract `0x4242…4242`, and `EPOCHS_PER_ETH1_VOTING_PERIOD: 4`. Neither host was attached to a production execution engine, and no beacon or geth process was restarted.
+
+Both versions download the checkpoint at slot `1556736`, block root `0x3ed05f5b…8467d`, then stop. Lighthouse computes the state's latest block root as `0xff67b93b…6bdfab`, which is not the block root. The same wrong root appears before and after setting the eth1 voting period in YAML, because stock Lighthouse bakes `EpochsPerEth1VotingPeriod = 64` into `MainnetEthSpec`. Stock Lighthouse does not reproduce the CoNET state hash. No Lighthouse process was left running on those two hosts. They also have no room for a local geth: `167.104.98.104` has 1.9 GiB of memory and 5.7 GiB free, and `104.168.122.21` has 956 MiB of memory.
+
+### Non-Prysm confirmation — 70.35.205.77
+
+`70.35.205.77` runs an independent geth `1.17.5` and a Lighthouse `v5.3.0-d6ba8c3` build. The execution client uses the published genesis (`bc8e7799…fde60` / `ae0a63e7…d7fb46`), local JWT Engine API `127.0.0.1:8551`, and P2P `:8400`. The consensus client uses only that local Engine API. No production geth, beacon, or validator was restarted, and this node was not attached to a production authrpc.
+
+`MainnetEthSpec` on that build sets `EpochsPerEth1VotingPeriod = 4` and `SlotsPerEth1VotingPeriod = 128`. Checkpoint sync from `216.225.202.22:4100` accepted the head state (no state-block-root mismatch). `lcli` from the same tree hashed the period-18 SSZ downloaded from that hub:
+
+| Object | Slot | Root |
+|---|---|---|
+| Beacon block | `155646` | `0x442a5f8c64592b4e45820e0e27398f0532b15a2e22456bc02f8c74df8b591336` |
+| Beacon state | `155646` | `0x70001a2f373450a6057e506c89bb7a3b502c58bb7ae6ed97cfeea45f590a1410` |
+
+Both roots match the period-18 candidate. The beacon node is still backfilling and had not stored slot `155646` in its own database at the time of the hash. Geth was importing from genesis and the beacon head was still optimistic. The SSZ bytes came from a Prysm hub; the hash is Lighthouse's. The operator is still the same, and periods 18 through 189 are not replayed into the weak-subjectivity store, so `trusted-committee` stays `no`. Custody remains `0/4`. Shadow stays `0.31.0`, PID `869679`, `NRestarts=0`.
+
 ---
 
 ## Historical evaluation — 2026-09-27

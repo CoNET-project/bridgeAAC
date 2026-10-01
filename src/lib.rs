@@ -19,6 +19,7 @@ mod gb_mint;
 mod hash;
 mod journal;
 mod l1_output;
+mod light_client;
 mod merkle;
 mod mpt;
 mod receipt;
@@ -51,6 +52,7 @@ pub use conet_consensus::{
     assess_consensus, observe_conet_consensus, ConsensusFacts, ConsensusReport,
 };
 pub use forward_committee::observe_forward_committee;
+pub use light_client::{accept_confirmations, confirm_checkpoint, observe_weak_subjectivity};
 pub use l1_output::{assess_anchor, observe_base_l1_output, AnchorFacts, AnchorReport};
 pub use merkle::{build_tree, prove, verify as verify_merkle, MerkleProof, MerkleTree};
 pub use mpt::{encode_consensus_receipt, prove_receipts, single_leaf_proof, verify_receipt, ConsensusLog};

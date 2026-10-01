@@ -83,6 +83,36 @@ fn main() -> ExitCode {
                 ExitCode::from(2)
             }
         },
+        Some("confirm-checkpoint") => match confirm_checkpoint_cmd(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
+        Some("accept-confirmations") => match accept_confirmations_cmd(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
+        Some("weak-subjectivity") => match weak_subjectivity(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
         Some("forward-committee") => match forward_committee(args) {
             Ok(report) => {
                 print!("{report}");
@@ -163,6 +193,9 @@ fn main() -> ExitCode {
                  bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
                  bridge-aac conet-consensus --beacon <url> --execution-rpc <url>\n  \
                  bridge-aac forward-committee --beacon <url> --checkpoint <file> [--witness-beacon <url>] [--execution-rpc <url>] [--periods <n>]\n  \
+                 bridge-aac weak-subjectivity --beacon <url> --period <n> --out <file> [--witness-beacon <url>]\n  \
+                 bridge-aac confirm-checkpoint --beacon <url> --period <n> --out <file>\n  \
+                 bridge-aac accept-confirmations --checkpoint <file> --confirmation <file> [--confirmation <file>...]\n  \
                  bridge-aac destination-consumer --conet-rpc <url> --base-rpc <url>\n  \
                  bridge-aac gb-mint-authority --rpc <url>\n  \
                  bridge-aac base-quorum-reader --rpc <url> --rpc <url> [--from <height>] [--blocks <count>]\n  \
@@ -380,6 +413,80 @@ fn gb_mint_authority(mut args: impl Iterator<Item = String>) -> Result<String, b
         }
     }
     bridge_aac::observe_gb_mint(&rpc.ok_or(bridge_aac::Error::BadLength)?)
+}
+
+fn confirm_checkpoint_cmd(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut beacon = None;
+    let mut period = None;
+    let mut out = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--beacon" => beacon = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--period" => {
+                period = Some(
+                    args.next()
+                        .ok_or(bridge_aac::Error::BadLength)?
+                        .parse()
+                        .map_err(|_| bridge_aac::Error::BadFixture)?,
+                );
+            }
+            "--out" => out = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::confirm_checkpoint(
+        &beacon.ok_or(bridge_aac::Error::BadLength)?,
+        period.ok_or(bridge_aac::Error::BadLength)?,
+        std::path::Path::new(&out.ok_or(bridge_aac::Error::BadLength)?),
+    )
+}
+
+fn accept_confirmations_cmd(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut checkpoint = None;
+    let mut confirmations = Vec::new();
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--checkpoint" => checkpoint = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--confirmation" => confirmations.push(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    if confirmations.is_empty() {
+        return Err(bridge_aac::Error::BadLength);
+    }
+    bridge_aac::accept_confirmations(
+        std::path::Path::new(&checkpoint.ok_or(bridge_aac::Error::BadLength)?),
+        &confirmations.iter().map(std::path::PathBuf::from).collect::<Vec<_>>(),
+    )
+}
+
+fn weak_subjectivity(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut beacon = None;
+    let mut period = None;
+    let mut out = None;
+    let mut witness = None;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--beacon" => beacon = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--period" => {
+                period = Some(
+                    args.next()
+                        .ok_or(bridge_aac::Error::BadLength)?
+                        .parse()
+                        .map_err(|_| bridge_aac::Error::BadFixture)?,
+                );
+            }
+            "--out" => out = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--witness-beacon" => witness = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    bridge_aac::observe_weak_subjectivity(
+        &beacon.ok_or(bridge_aac::Error::BadLength)?,
+        witness.as_deref(),
+        period.ok_or(bridge_aac::Error::BadLength)?,
+        std::path::Path::new(&out.ok_or(bridge_aac::Error::BadLength)?),
+    )
 }
 
 fn forward_committee(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {

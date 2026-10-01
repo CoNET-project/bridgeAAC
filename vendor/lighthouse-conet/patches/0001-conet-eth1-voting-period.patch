@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Beamio
+Date: Wed, 30 Sep 2026 00:00:00 +0000
+Subject: [PATCH] CoNET: use four-epoch ETH1 voting period
+
+CoNET's genesis configuration sets EPOCHS_PER_ETH1_VOTING_PERIOD to 4.
+Keep the derived slot constant consistent with the epoch constant.
+---
+ consensus/types/src/eth_spec.rs | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/consensus/types/src/eth_spec.rs b/consensus/types/src/eth_spec.rs
+index 15084cb..b165357 100644
+--- a/consensus/types/src/eth_spec.rs
++++ b/consensus/types/src/eth_spec.rs
+@@ -396,7 +396,7 @@ impl EthSpec for MainnetEthSpec {
+     type MaxValidatorsPerSlot = U131072;
+     type GenesisEpoch = U0;
+     type SlotsPerEpoch = U32;
+-    type EpochsPerEth1VotingPeriod = U64;
++    type EpochsPerEth1VotingPeriod = U4;
+     type SlotsPerHistoricalRoot = U8192;
+     type EpochsPerHistoricalVector = U65536;
+     type EpochsPerSlashingsVector = U8192;
+@@ -427,7 +427,7 @@ impl EthSpec for MainnetEthSpec {
+     type KzgCommitmentsInclusionProofDepth = U4; // inclusion of the whole list of commitments
+     type SyncSubcommitteeSize = U128; // 512 committee size / 4 sync committee subnet count
+     type MaxPendingAttestations = U4096; // 128 max attestations * 32 slots per epoch
+-    type SlotsPerEth1VotingPeriod = U2048; // 64 epochs * 32 slots per epoch
++    type SlotsPerEth1VotingPeriod = U128; // 4 epochs * 32 slots per epoch
+     type MaxBlsToExecutionChanges = U16;
+     type MaxWithdrawalsPerPayload = U16;
+     type PendingBalanceDepositsLimit = U134217728;
+--
+2.39.3
