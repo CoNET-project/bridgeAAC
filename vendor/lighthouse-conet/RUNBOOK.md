@@ -87,7 +87,8 @@ Never edit the script on the host. The repository copy is the source of truth.
    `216.225.202.23:4201/4202` and `216.225.202.22:4210`. It is harmless while
    peers stay at 8 or more. Do not chase it from Lighthouse. The fix is a
    hub-side whitelist entry, which needs a production Prysm restart and
-   explicit authorisation.
+   explicit authorisation. The Prysm on this same host is covered in
+   section 5a.
 5. **Read the debug log, not the journal.** The journal is info level. Peer
    drop reasons (`Peer sent Goodbye`, `RPC Error ... rate limited`,
    `Peer Manager disconnecting peer`) are only in
@@ -131,6 +132,32 @@ grep -ac "reason: rate limited" $LOG
 curl -s http://127.0.0.1:5100/eth/v1/node/peer_count | jq .data
 curl -s http://127.0.0.1:5100/lighthouse/database/info | jq .anchor
 ```
+
+## 5a. The Prysm on the same host (`conet-beacon.service`)
+
+It shares the IP with Lighthouse, so it applied the same colocation rule and
+answered Lighthouse with `Goodbye(Fault/Banned)`.
+
+Change made on 2026-10-01 (explicitly authorised, only `conet-beacon.service`
+restarted; no validator runs on this host):
+
+- `/home/peter/conet-l1/start-beacon.sh` got one more flag,
+  `--p2p-colocation-whitelist=38.49.214.149/32`.
+- Backup: `/home/peter/conet-l1/start-beacon.sh.bak.whitelist.20261001T050621Z`.
+- After the restart Prysm was `active`, `sync_distance=0`, 8 peers, and it
+  accepted Lighthouse. Check the flag is live with
+  `tr '\0' ' ' < /proc/$(pgrep -f prysm.sh | head -1)/cmdline | grep -o 'p2p-colocation-whitelist=[0-9./]*'`.
+  (`pgrep -af beacon-chain` does not show the flag; the process is `prysm.sh`.)
+
+Expected, not a fault: Lighthouse bans this local Prysm during backfill.
+It was checkpoint-synced, so it has no blocks before its checkpoint and
+answers backfill requests with `Resource unavailable`; Lighthouse scores that
+-100 and bans the peer. Lighthouse keeps its other peers, so ignore it. Do not
+lower Lighthouse's scoring or pin this peer to "fix" it.
+
+If you add more nodes to this host, add the same whitelist flag to every Prysm
+instance on it, and expect the same colocation refusal from any hub instance
+that does not list this IP.
 
 ## 6. Incident record: 2026-10-01, peers stuck at 0
 
