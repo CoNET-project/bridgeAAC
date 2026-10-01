@@ -61,5 +61,31 @@ The rules in one place:
 ## Runtime boundary
 
 This build is a consensus client only. The production node uses it in
-parallel with Prysm and the existing geth execution client. Do not replace
-the active Prysm service or restart chain infrastructure as part of a build.
+parallel with Prysm, but Lighthouse must connect to its own execution client.
+The required separation is:
+
+```text
+Prysm      -> Prysm Geth       -> 127.0.0.1:8551
+Lighthouse -> Lighthouse Geth -> 127.0.0.1:8552
+```
+
+The two execution clients must have separate datadirs, chain databases,
+Engine API ports, JWT files, and execution P2P/discovery ports. The
+Lighthouse launcher defaults to:
+
+```bash
+LIGHTHOUSE_EXECUTION_ENDPOINT=http://127.0.0.1:8552
+LIGHTHOUSE_EXECUTION_JWT=/home/peter/lighthouse-conet/jwtsecret
+PRYSM_EXECUTION_ENDPOINT=http://127.0.0.1:8551
+PRYSM_EXECUTION_JWT=/home/peter/conet-l1/jwtsecret
+```
+
+The launcher refuses identical Lighthouse/Prysm Engine API endpoints or JWT
+paths. Do not change only the Lighthouse endpoint: without the matching
+Lighthouse Geth, `el_offline=true` is expected and the migration is
+incomplete. On `38.49.214.149`, this separation remains pending until the
+second execution client is deployed and its systemd/JWT/port wiring is
+verified.
+
+Do not replace the active Prysm service or restart chain infrastructure as
+part of a build.

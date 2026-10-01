@@ -15,25 +15,68 @@ Files in this directory:
 
 ## 1. What this node is
 
-- A consensus client only. It uses the local geth Engine API
-  (`127.0.0.1:8551`) and a checkpoint from a Prysm hub.
-- It sits next to Prysm and geth on the same IP. That matters (section 4).
+- A consensus client only. It uses a dedicated Lighthouse execution client
+  and a checkpoint from a Prysm hub.
+- It sits next to Prysm on the same IP. That matters for P2P colocation
+  (section 4), but the two consensus clients must not share execution state.
 - It is not a validator. Never attach it to another host's Engine API and
   never copy another operator's chain data, JWT, or beacon database.
 
 ## 2. Before you start
 
-1. geth is running and its Engine API answers on `127.0.0.1:8551` with the
-   JWT at `/home/peter/lighthouse-conet/jwtsecret`.
-2. UFW allows `5200/tcp`, `5300/udp`, `5301/udp` (and `5100/tcp` only if you
+1. Prysm's execution client remains isolated at its own endpoint (normally
+   `http://127.0.0.1:8551`).
+2. Lighthouse's companion execution client is running and its Engine API
+   answers at `LIGHTHOUSE_EXECUTION_ENDPOINT` (default
+   `http://127.0.0.1:8552`) with `LIGHTHOUSE_EXECUTION_JWT` (default
+   `/home/peter/lighthouse-conet/jwtsecret`).
+3. Prysm and Lighthouse use different execution datadirs, Engine API ports,
+   JWT files, and execution P2P/discovery ports. Do not point Lighthouse at
+   Prysm's `8551`, JWT, or datadir.
+4. UFW allows `5200/tcp`, `5300/udp`, `5301/udp` (and `5100/tcp` only if you
    need the API off-box; it binds to `127.0.0.1`).
-3. The clock is synchronised (`timedatectl show -p NTPSynchronized`).
-4. You know why you are starting it. A restart is not a diagnostic tool
+5. The clock is synchronised (`timedatectl show -p NTPSynchronized`).
+6. You know why you are starting it. A restart is not a diagnostic tool
    (section 3, rule 2).
-5. Any flag you plan to change was checked against the installed binary:
+7. Any flag you plan to change was checked against the installed binary:
    `bin/lighthouse-v5.3.0-conet bn --help | grep -- <flag>`. v5.3.0 has no
    `--disable-discovery`, and quota names must be protocol names such as
    `beacon_blocks_by_range`.
+
+### 2a. Execution client / Engine API isolation
+
+The required topology is:
+
+```text
+Prysm      -> Prysm Geth       -> 127.0.0.1:8551
+Lighthouse -> Lighthouse Geth -> 127.0.0.1:8552
+```
+
+Each Geth instance must have its own:
+
+- execution datadir and chain database;
+- Engine API port and JWT file;
+- execution P2P/discovery port (for example `8400` and `8401`).
+
+The Lighthouse start script enforces this boundary. Its defaults are:
+
+```bash
+LIGHTHOUSE_EXECUTION_ENDPOINT=http://127.0.0.1:8552
+LIGHTHOUSE_EXECUTION_JWT=/home/peter/lighthouse-conet/jwtsecret
+PRYSM_EXECUTION_ENDPOINT=http://127.0.0.1:8551
+PRYSM_EXECUTION_JWT=/home/peter/conet-l1/jwtsecret
+```
+
+It refuses to start when the Lighthouse and Prysm endpoint or JWT path are
+identical. Changing only the Lighthouse URL without first starting the
+matching Lighthouse Geth leaves `el_offline=true`; that is an incomplete
+deployment, not a successful isolation.
+
+The current `38.49.214.149` host is a recorded migration state: its running
+Prysm and Lighthouse still both use `127.0.0.1:8551`. Treat Engine API
+isolation as **pending** until the second Geth, its datadir, port, JWT and
+systemd wiring have been deployed and verified. Do not claim this host is
+isolated based on the Lighthouse process alone.
 
 ## 3. Start and change procedure
 

@@ -27,7 +27,38 @@ done
 
 echo "== $(date -u +%FT%TZ) $(hostname)"
 
-# 1. service state. "activating (auto-restart)" means a crash loop, usually a
+# 1. execution boundary. Read the live process command lines; do not infer
+# isolation from the Lighthouse service being healthy.
+arg_value() {
+  awk -v key="$2" '{
+    for (i = 1; i <= NF; i++) {
+      if ($i == key && i < NF) { print $(i + 1); exit }
+      if (index($i, key "=") == 1) {
+        value = $i
+        sub("^" key "=", "", value)
+        print value
+        exit
+      }
+    }
+  }' <<< "$1"
+}
+
+lighthouse_cmdline=$(ps -eo args= | awk '/lighthouse-v5\.3\.0-conet.* bn/ { print; exit }')
+prysm_cmdline=$(ps -eo args= | awk '/beacon-chain/ && !/awk/ { print; exit }')
+lighthouse_endpoint=$(arg_value "$lighthouse_cmdline" "--execution-endpoint")
+prysm_endpoint=$(arg_value "$prysm_cmdline" "--execution-endpoint")
+
+if [ -n "$lighthouse_endpoint" ] && [ -n "$prysm_endpoint" ]; then
+  if [ "$lighthouse_endpoint" = "$prysm_endpoint" ]; then
+    fail "Engine API is shared: Lighthouse and Prysm both use $lighthouse_endpoint"
+  else
+    ok "Engine APIs differ: Lighthouse=$lighthouse_endpoint Prysm=$prysm_endpoint"
+  fi
+else
+  warn "could not read both live --execution-endpoint values (Lighthouse='$lighthouse_endpoint' Prysm='$prysm_endpoint')"
+fi
+
+# 2. service state. "activating (auto-restart)" means a crash loop, usually a
 #    flag the binary rejected. Read the journal for the real error.
 state=$(systemctl is-active "$SERVICE" 2>/dev/null || true)
 if [ "$state" = "active" ]; then
@@ -36,7 +67,7 @@ else
   fail "service $SERVICE is '$state' (crash loop? run: journalctl -u $SERVICE -n 30 --no-pager -o cat)"
 fi
 
-# 2. peers and sync
+# 3. peers and sync
 peers=$(curl -s --max-time 5 "$API/eth/v1/node/peer_count" | jq -r '.data.connected // empty')
 sync=$(curl -s --max-time 5 "$API/eth/v1/node/syncing" | jq -c '.data // empty')
 if [ -z "$peers" ] || [ -z "$sync" ]; then
@@ -55,14 +86,14 @@ else
   fi
 fi
 
-# 3. backfill progress. oldest_block_slot must fall over time.
+# 4. backfill progress. oldest_block_slot must fall over time.
 oldest=$(curl -s --max-time 5 "$API/lighthouse/database/info" | jq -r '.anchor.oldest_block_slot // empty')
 if [ -n "$oldest" ]; then
   if [ "$oldest" = "0" ]; then ok "backfill complete (oldest_block_slot=0)"
   else ok "backfill in progress, oldest_block_slot=$oldest (compare with an earlier run; it must fall)"; fi
 fi
 
-# 4. debug log since the last start. The journal only has info level; the
+# 5. debug log since the last start. The journal only has info level; the
 #    reasons for a peer being dropped are only in this file.
 if [ -r "$LOG" ]; then
   start=$(grep -an "Lighthouse started" "$LOG" | tail -1 | cut -d: -f1)
@@ -80,11 +111,11 @@ else
   warn "cannot read $LOG"
 fi
 
-# 5. recent restarts / key rotations. Repeated restarts caused the 2026-10-01 incident.
+# 6. recent restarts / key rotations. Repeated restarts caused the 2026-10-01 incident.
 backups=$(ls -d "$BASE"/data-conet-v5/beacon/network-bak-* 2>/dev/null | wc -l)
 [ "$backups" -gt 2 ] && warn "$backups network key backups exist: the peer key has been rotated $backups times. Do not rotate again without a measured reason."
 
-# 6. optional sampling
+# 7. optional sampling
 if [ "$WATCH_MIN" -gt 0 ]; then
   echo "== sampling peers every 6 s for $WATCH_MIN min"
   end=$(( $(date +%s) + WATCH_MIN * 60 ))
