@@ -6,36 +6,51 @@
 # Deployed to 38.49.214.149 as /home/peter/lighthouse-conet/start-lighthouse.sh
 # (service: conet-lighthouse.service). Keep this file as the source of truth.
 #
-# Peer-limit notes (2026-10-01 incident):
-# - Starting with the default ~100 target peers and --genesis-backfill makes
-#   Lighthouse fire blocks_by_range at every Prysm hub in the first second.
-#   Prysm answers "rate limited", counts the strikes against our peer id, and
-#   then replies Goodbye(Fault/Banned) to every later connection.
-# - Backfill after checkpoint sync still runs without --genesis-backfill (the
-#   anchor was at oldest_block_slot 1560352 and kept going on every start), and
-#   rotating the peer key alone did not help: the new id was flagged within a
-#   minute. The real fix is the outbound --self-limiter-protocols cap below.
-# - Keep the peer count small. Set LIGHTHOUSE_GENESIS_BACKFILL=1 to also pull
-#   history all the way to genesis.
-# - The peer id lives in data-conet-v5/beacon/network/key. Restarting does not
-#   change it; delete it only as an explicit, one-time recovery step.
+# Why this node only dials a fixed set of Prysm peers (2026-10-01 incident):
+#
+# 1. Prysm hubs reject peers that share an IP unless that IP is listed in their
+#    --p2p-colocation-whitelist. 38.49.214.149 is whitelisted only on the
+#    instances below. Every other hub instance (all of 38.102.126.58,
+#    38.102.126.50:4203/4204/4210, 216.225.202.23:4201/4202,
+#    216.225.202.22:4210) answers Goodbye(Fault) the moment we connect. With
+#    discv5 seeded with hub ENRs, Lighthouse keeps redialling them and sits at
+#    peers: 0. Fix: give discv5 no --boot-nodes (v5.3 has no
+#    --disable-discovery flag and the testnet dir has no boot_enr.yaml), and
+#    pass an explicit whitelisted peer list via --libp2p-addresses, kept alive
+#    through --trusted-peers.
+#    When a hub adds or removes the whitelist entry, update WHITELISTED_PEERS.
+#
+# 2. Backfill after checkpoint sync runs even without --genesis-backfill and
+#    Prysm answers "rate limited" to a burst of blocks_by_range, counting
+#    strikes against our peer id. Cap our own outbound rate per peer.
+#
+# 3. The peer id lives in data-conet-v5/beacon/network/key and survives
+#    restarts. Rotate it only as an explicit recovery step, after the fixes
+#    above are in place.
 set -euo pipefail
 BASE="${LIGHTHOUSE_BASE:-/home/peter/lighthouse-conet}"
 cd "$BASE"
 
-TARGET_PEERS="${LIGHTHOUSE_TARGET_PEERS:-3}"
-# Outbound limit per peer. Prysm (BlockBatchLimit=64 blocks/s, burst 128) answers
-# "rate limited" and counts a strike against us when backfill asks faster.
-# Backfill after checkpoint sync is not optional, so cap our own request rate.
-SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:48/1}"
-
-# Hub ENRs are best effort; a hub being down must not stop the node.
-ENRS="enr:-Mq4QJ9iokTaQWac4KmyRLWCCW5aTqhZEOekgnk8krEZvnwQcSjPI5BD9GXr9dXltQF6wMUF5vNNxGreRjt-vU0j1gWGAaCc6Czeh2F0dG5ldHOIAwAAAAAAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhAwNuofZfI-D_EPXyfXWaaPS3WfJ8HGa8DDHqqvU-l90_iHN5bmNuZXRzD4N0Y3CCEGiDdWRwghDM"
-for HUB in 216.225.202.82 38.102.126.30 38.102.126.50; do
-  ENR=$(curl -fsS --max-time 15 "http://$HUB:4100/eth/v1/node/identity" 2>/dev/null \
-    | python3 -c 'import sys,json; print(json.load(sys.stdin)["data"]["enr"])' 2>/dev/null || true)
-  if [ -n "$ENR" ]; then ENRS="$ENRS,$ENR"; fi
+# ip:tcp-port:peer-id of Prysm instances that whitelist 38.49.214.149.
+WHITELISTED_PEERS=(
+  "216.225.202.22:4200:16Uiu2HAmKUmANGevFSxVmb2F6M8fATvE1JVDPoYyQ5hQQgnTXo5q"
+  "216.225.202.23:4200:16Uiu2HAkzreGGDBfRDZ4YNpBaxXcA7eA6hGtLcfTG4W9ZGESQQxk"
+  "38.102.126.50:4200:16Uiu2HAmEsYyTVeFeDjjgFnWK3coziBG7WkzVouhLWzR7UcCajKP"
+  "38.102.126.30:4200:16Uiu2HAkunrHj1TR7Wt3xuYiftKACntAxRaZdbY7BY8ey65Cz9oy"
+  "216.225.202.82:4200:16Uiu2HAmDJCHuVkXtkPrrL8YykQ9gFZnQkR9Q6WjZZUrmueohPfd"
+  "216.225.197.3:4200:16Uiu2HAkvNRH2otsVTrZ6bq8AAKau3WYFGRc62JS5PTUjhGqLdJQ"
+)
+LIBP2P_ADDRS=""
+TRUSTED_IDS=""
+for ENTRY in "${WHITELISTED_PEERS[@]}"; do
+  IP="${ENTRY%%:*}"; REST="${ENTRY#*:}"; PORT="${REST%%:*}"; PID="${REST#*:}"
+  LIBP2P_ADDRS="${LIBP2P_ADDRS:+$LIBP2P_ADDRS,}/ip4/$IP/tcp/$PORT/p2p/$PID"
+  TRUSTED_IDS="${TRUSTED_IDS:+$TRUSTED_IDS,}$PID"
 done
+
+TARGET_PEERS="${LIGHTHOUSE_TARGET_PEERS:-6}"
+# Outbound limit per peer: 64 blocks per 8 s (8 blocks/s, burst 2 batches).
+SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:64/8}"
 
 EXTRA_ARGS=()
 if [ "${LIGHTHOUSE_GENESIS_BACKFILL:-0}" = "1" ]; then
@@ -48,7 +63,8 @@ exec "$BASE/bin/lighthouse-v5.3.0-conet" bn \
   --execution-endpoint http://127.0.0.1:8551 \
   --execution-jwt "$BASE/jwtsecret" \
   --checkpoint-sync-url http://216.225.202.22:4100 \
-  --boot-nodes "$ENRS" \
+  --libp2p-addresses "$LIBP2P_ADDRS" \
+  --trusted-peers "$TRUSTED_IDS" \
   --target-peers "$TARGET_PEERS" \
   --self-limiter-protocols "$SELF_LIMIT" \
   --http --http-address 127.0.0.1 --http-port 5100 \

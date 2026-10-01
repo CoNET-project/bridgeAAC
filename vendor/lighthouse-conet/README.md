@@ -39,28 +39,31 @@ SHA-256 against the value above.
 `start-lighthouse.sh` is the source of truth for
 `/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`.
 
-On 2026-10-01 the node sat at `peers: 0`. At startup Lighthouse sent
-`blocks_by_range` to about 20 Prysm hubs at once (head sync plus
-`--genesis-backfill`). Prysm answered `rate limited` 46 times, counted the
-strikes against our peer id, and then replied `Goodbye(Fault/Banned)` within
-milliseconds of every new connection. Ports, firewall, fork digest and clock
-were all correct.
+On 2026-10-01 the node sat at `peers: 0`. Ports, firewall, fork digest and
+clock were all correct. Two separate causes were found in Lighthouse's debug
+log (`data-conet-v5/beacon/logs/beacon.log`) and the Prysm hub flags:
+
+1. **Colocation whitelist gaps.** Prysm hubs refuse peers that share an IP
+   unless it is in `--p2p-colocation-whitelist`. `38.49.214.149` is whitelisted
+   only on `:4200` of each hub, plus `:4210` on `.23/.30/.82/197.3`. Every
+   instance on `38.102.126.58`, `38.102.126.50:4203/4204/4210`,
+   `216.225.202.23:4201/4202` and `216.225.202.22:4210` answers
+   `Goodbye(Fault)` as soon as we connect. discv5 kept redialling them.
+   The script now dials only the whitelisted `:4200` instances
+   (`--libp2p-addresses`, `--trusted-peers`) and gives discv5 no boot nodes.
+   If a hub whitelists the IP later, add it to `WHITELISTED_PEERS`.
+2. **Backfill burst.** Backfill after checkpoint sync runs even without
+   `--genesis-backfill` and fired `blocks_by_range` at every hub at once.
+   Prysm answered `rate limited`, counted strikes against our peer id and then
+   replied `Goodbye` on every later connection. Lighthouse also scored each
+   error -10 and dropped the peer. `--self-limiter-protocols
+   beacon_blocks_by_range:64/8` caps each peer at 8 blocks/s
+   (override with `LIGHTHOUSE_SELF_LIMIT`).
 
 The peer id is stored in `data-conet-v5/beacon/network/key` and survives
-restarts, so a plain restart does not clear Prysm's record. Rotating the key
-alone was not enough: backfill after checkpoint sync still runs without
-`--genesis-backfill`, and the fresh id was flagged again within a minute.
-Prysm's per-peer limit is 64 blocks/s with a 128-block burst; Lighthouse's
-default outbound quota is far above that. The fix has three parts:
-
-- `--self-limiter-protocols beacon_blocks_by_range:48/1` caps each peer at 48 blocks/s
-  (override with `LIGHTHOUSE_SELF_LIMIT`)
-- `--target-peers 3` (override with `LIGHTHOUSE_TARGET_PEERS`)
-- no `--genesis-backfill` by default
-  (`LIGHTHOUSE_GENESIS_BACKFILL=1` turns it back on)
-
-Rotate `data-conet-v5/beacon/network/key` once, after the limiter is in place,
-so the new id never collects a strike. Back up the old key first.
+restarts, so a plain restart never clears a hub's record. Rotate it once after
+the fixes are in place and back up the old key first. Genesis backfill stays
+off unless `LIGHTHOUSE_GENESIS_BACKFILL=1`.
 
 ## Runtime boundary
 
