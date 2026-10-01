@@ -5,6 +5,7 @@
 #
 # Deployed to 38.49.214.149 as /home/peter/lighthouse-conet/start-lighthouse.sh
 # (service: conet-lighthouse.service). Keep this file as the source of truth.
+# Read RUNBOOK.md in this directory before you change a flag or restart.
 #
 # Discovery and peer count match the healthy reference node 70.35.205.77
 # (16 Prysm peers, no Goodbye(Fault) in hours): a single boot ENR, default

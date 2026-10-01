@@ -34,48 +34,29 @@ The resulting binary is intentionally not committed to this repository.
 Copy it only through the approved deployment process, then verify its
 SHA-256 against the value above.
 
-## Start script and peer limits
+## Start, operate, troubleshoot
 
-`start-lighthouse.sh` is the source of truth for
-`/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`.
+Read `RUNBOOK.md` before you start, restart or change this node. It holds the
+start procedure, the health criteria, the hard rules and the 2026-10-01
+incident record.
 
-On 2026-10-01 this node sat at `peers: 0` while the reference node
-`70.35.205.77` (same binary, same hubs) held 16 Prysm peers. Measured
-differences:
+| File | Purpose |
+|---|---|
+| `start-lighthouse.sh` | Source of truth for `/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`. Edit here, push, then deploy. |
+| `check-lighthouse.sh` | Read-only health check, run on the node. `WATCH_MIN=15` samples peers for 15 minutes. |
+| `RUNBOOK.md` | Start guide, hard rules, decision tree, incident record. |
 
-| | `70.35.205.77` | `38.49.214.149` (before) |
-|---|---|---|
-| Goodbye(Fault/Banned) from hubs | none in 3.5 h | 106 + 18 in 5 min |
-| `rate limited` replies | 16 in 3.5 h | hundreds in minutes |
-| Backfill | 1,551,776 blocks in ~27 h (~16 blocks/s over ~16 peers) | burst on 3-6 peers |
+The rules in one place:
 
-Two causes, both on our side:
-
-1. **Same-IP colocation.** Prysm hubs penalise a second peer from one IP unless
-   it is in `--p2p-colocation-whitelist`. `.149` also runs Prysm and geth, so
-   non-whitelisted hub instances (`38.102.126.58`, `38.102.126.50:4203/4204/4210`,
-   `216.225.202.23:4201/4202`, `216.225.202.22:4210`) answer `Goodbye(Fault)`.
-   The reference node owns its IP and is accepted everywhere. This part needs
-   a hub-side whitelist entry for `38.49.214.149` to fully clear.
-2. **Backfill pace per peer.** Backfill after checkpoint sync runs even without
-   `--genesis-backfill`. Prysm answers `rate limited` and strikes the peer id
-   when one peer is asked faster than roughly one 32-block batch per 30 s.
-   Spread over ~16 peers the reference node stays below that; pinning the list
-   to 3-6 peers, and rotating the key six times in an hour (each restart is a
-   fresh burst), put us above it.
-
-A first attempt dialled only whitelisted peers (`--libp2p-addresses`,
-`--trusted-peers`). That concentrated load and made things worse; it was
-removed. The script now matches the reference node: one boot ENR, default
-discv5, default `--target-peers`. Deliberate differences: ports
-5200/5300/5301, no `--genesis-backfill` by default
-(`LIGHTHOUSE_GENESIS_BACKFILL=1` enables it), and
-`--self-limiter-protocols beacon_blocks_by_range:32/30` (override with
-`LIGHTHOUSE_SELF_LIMIT`) to match the reference pace.
-
-The peer id is stored in `data-conet-v5/beacon/network/key` and survives
-restarts, so a plain restart never clears a hub's record. Rotate it only as an
-explicit recovery step and back up the old key first. Avoid repeated restarts.
+1. Keep default discovery and default `--target-peers`; one boot ENR, as the
+   healthy reference node `70.35.205.77` does. Never pin a short peer list.
+2. Do not restart repeatedly and do not rotate `network/key` as a fix.
+3. Backfill runs after checkpoint sync even without `--genesis-backfill`.
+   Keep per-peer pace gentle (`beacon_blocks_by_range:32/30`) over many peers.
+4. `Goodbye(Fault)` from hub instances that do not whitelist `38.49.214.149`
+   is expected; the fix is a hub-side whitelist entry, not a Lighthouse flag.
+5. Read `data-conet-v5/beacon/logs/beacon.log`; the journal is info level only.
+6. Verify with `check-lighthouse.sh` for 15 minutes, never from one snapshot.
 
 ## Runtime boundary
 
