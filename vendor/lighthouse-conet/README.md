@@ -47,12 +47,20 @@ milliseconds of every new connection. Ports, firewall, fork digest and clock
 were all correct.
 
 The peer id is stored in `data-conet-v5/beacon/network/key` and survives
-restarts, so a plain restart does not clear Prysm's record. The recovery was a
-one-time key rotation plus a small peer set:
+restarts, so a plain restart does not clear Prysm's record. Rotating the key
+alone was not enough: backfill after checkpoint sync still runs without
+`--genesis-backfill`, and the fresh id was flagged again within a minute.
+Prysm's per-peer limit is 64 blocks/s with a 128-block burst; Lighthouse's
+default outbound quota is far above that. The fix has three parts:
 
+- `--self-limiter-protocols blocks_by_range:48/1` caps each peer at 48 blocks/s
+  (override with `LIGHTHOUSE_SELF_LIMIT`)
 - `--target-peers 3` (override with `LIGHTHOUSE_TARGET_PEERS`)
-- no `--genesis-backfill` until the head is stable
+- no `--genesis-backfill` by default
   (`LIGHTHOUSE_GENESIS_BACKFILL=1` turns it back on)
+
+Rotate `data-conet-v5/beacon/network/key` once, after the limiter is in place,
+so the new id never collects a strike. Back up the old key first.
 
 ## Runtime boundary
 

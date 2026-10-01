@@ -11,8 +11,12 @@
 #   Lighthouse fire blocks_by_range at every Prysm hub in the first second.
 #   Prysm answers "rate limited", counts the strikes against our peer id, and
 #   then replies Goodbye(Fault/Banned) to every later connection.
-# - Keep the peer count small and do not backfill history until the head is
-#   stable. Set LIGHTHOUSE_GENESIS_BACKFILL=1 to enable it deliberately.
+# - Backfill after checkpoint sync still runs without --genesis-backfill (the
+#   anchor was at oldest_block_slot 1560352 and kept going on every start), and
+#   rotating the peer key alone did not help: the new id was flagged within a
+#   minute. The real fix is the outbound --self-limiter-protocols cap below.
+# - Keep the peer count small. Set LIGHTHOUSE_GENESIS_BACKFILL=1 to also pull
+#   history all the way to genesis.
 # - The peer id lives in data-conet-v5/beacon/network/key. Restarting does not
 #   change it; delete it only as an explicit, one-time recovery step.
 set -euo pipefail
@@ -20,6 +24,10 @@ BASE="${LIGHTHOUSE_BASE:-/home/peter/lighthouse-conet}"
 cd "$BASE"
 
 TARGET_PEERS="${LIGHTHOUSE_TARGET_PEERS:-3}"
+# Outbound limit per peer. Prysm (BlockBatchLimit=64 blocks/s, burst 128) answers
+# "rate limited" and counts a strike against us when backfill asks faster.
+# Backfill after checkpoint sync is not optional, so cap our own request rate.
+SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-blocks_by_range:48/1}"
 
 # Hub ENRs are best effort; a hub being down must not stop the node.
 ENRS="enr:-Mq4QJ9iokTaQWac4KmyRLWCCW5aTqhZEOekgnk8krEZvnwQcSjPI5BD9GXr9dXltQF6wMUF5vNNxGreRjt-vU0j1gWGAaCc6Czeh2F0dG5ldHOIAwAAAAAAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhAwNuofZfI-D_EPXyfXWaaPS3WfJ8HGa8DDHqqvU-l90_iHN5bmNuZXRzD4N0Y3CCEGiDdWRwghDM"
@@ -42,6 +50,7 @@ exec "$BASE/bin/lighthouse-v5.3.0-conet" bn \
   --checkpoint-sync-url http://216.225.202.22:4100 \
   --boot-nodes "$ENRS" \
   --target-peers "$TARGET_PEERS" \
+  --self-limiter-protocols "$SELF_LIMIT" \
   --http --http-address 127.0.0.1 --http-port 5100 \
   --port 5200 --discovery-port 5300 --quic-port 5301 \
   --listen-address 0.0.0.0 \
