@@ -49,8 +49,8 @@ for ENTRY in "${WHITELISTED_PEERS[@]}"; do
 done
 
 TARGET_PEERS="${LIGHTHOUSE_TARGET_PEERS:-6}"
-# Outbound limit per peer: 64 blocks per 8 s (8 blocks/s, burst 2 batches).
-SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:64/8}"
+# Outbound limit per peer: one 32-block batch per 10 s. Prysm answered rate limited to any second request inside ~6-10 s on the same peer (measured 2026-10-01).
+SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:32/10}"
 
 EXTRA_ARGS=()
 if [ "${LIGHTHOUSE_GENESIS_BACKFILL:-0}" = "1" ]; then

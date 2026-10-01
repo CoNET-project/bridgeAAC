@@ -57,7 +57,7 @@ log (`data-conet-v5/beacon/logs/beacon.log`) and the Prysm hub flags:
    Prysm answered `rate limited`, counted strikes against our peer id and then
    replied `Goodbye` on every later connection. Lighthouse also scored each
    error -10 and dropped the peer. `--self-limiter-protocols
-   beacon_blocks_by_range:64/8` caps each peer at 8 blocks/s
+   beacon_blocks_by_range:32/10` allows one 32-block batch per 10 s per peer (Prysm refuses a second request within roughly 6-10 s)
    (override with `LIGHTHOUSE_SELF_LIMIT`).
 
 The peer id is stored in `data-conet-v5/beacon/network/key` and survives
