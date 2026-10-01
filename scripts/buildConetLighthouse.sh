@@ -26,7 +26,8 @@ git -C "$WORK_DIR" apply "$PATCH_FILE"
 # Lighthouse v5.3.0 still vendors a LevelDB Snappy build with a pre-3.5
 # CMake minimum; modern CMake requires this compatibility policy explicitly.
 export CMAKE_POLICY_VERSION_MINIMUM="${CMAKE_POLICY_VERSION_MINIMUM:-3.5}"
-cargo build --manifest-path "$WORK_DIR/lighthouse/Cargo.toml" --release --bin lighthouse
+CARGO_TARGET_DIR="$WORK_DIR/target" \
+  cargo build --manifest-path "$WORK_DIR/lighthouse/Cargo.toml" --release --bin lighthouse
 
 mkdir -p "$OUTPUT_DIR"
 cp "$WORK_DIR/target/release/lighthouse" "$OUTPUT_DIR/lighthouse"
