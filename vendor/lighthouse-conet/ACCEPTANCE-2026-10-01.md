@@ -67,6 +67,31 @@ accepted. The historical Lighthouse health result remains useful only as a
 consensus-client health observation; it is not evidence that the execution
 clients are isolated.
 
+## Submitted confirmation statement
+
+An operator statement dated `2026-10-01T05:30:24Z` was supplied with the
+following claims:
+
+```text
+peer_id: 16Uiu2HAmVEJPwkFzLsCYFcmmSc229ZLxpSWXPda6QojzeQiamhfM
+slot 155646 local verification: NOT AVAILABLE
+local block_root: n/a
+local state_root: n/a
+result: identity live and head-synced; historical roots pending
+```
+
+The statement was reported as signed with SSH ED25519 key fingerprint
+`SHA256:3Ksw9iagfEv/6WhFwMaIIzMw3EDOLUyT5A1tnMIBEhw` and key label
+`peternew`. The signature is not independently re-verified in this record
+because the corresponding public key and an independently controlled operator
+attestation were not supplied. In particular, this statement does not prove
+that the signer is an external operator or that the host is outside the
+signer's administrative control.
+
+Accordingly, this submission is recorded as technical evidence only. It does
+not satisfy the different-operator threshold, and it does not satisfy the
+slot-root confirmation requirement.
+
 ## Rollback
 
 If Lighthouse fails after a configuration change, stop the change and restore
