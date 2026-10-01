@@ -27,7 +27,7 @@ TARGET_PEERS="${LIGHTHOUSE_TARGET_PEERS:-3}"
 # Outbound limit per peer. Prysm (BlockBatchLimit=64 blocks/s, burst 128) answers
 # "rate limited" and counts a strike against us when backfill asks faster.
 # Backfill after checkpoint sync is not optional, so cap our own request rate.
-SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-blocks_by_range:48/1}"
+SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:48/1}"
 
 # Hub ENRs are best effort; a hub being down must not stop the node.
 ENRS="enr:-Mq4QJ9iokTaQWac4KmyRLWCCW5aTqhZEOekgnk8krEZvnwQcSjPI5BD9GXr9dXltQF6wMUF5vNNxGreRjt-vU0j1gWGAaCc6Czeh2F0dG5ldHOIAwAAAAAAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhAwNuofZfI-D_EPXyfXWaaPS3WfJ8HGa8DDHqqvU-l90_iHN5bmNuZXRzD4N0Y3CCEGiDdWRwghDM"

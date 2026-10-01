@@ -53,7 +53,7 @@ alone was not enough: backfill after checkpoint sync still runs without
 Prysm's per-peer limit is 64 blocks/s with a 128-block burst; Lighthouse's
 default outbound quota is far above that. The fix has three parts:
 
-- `--self-limiter-protocols blocks_by_range:48/1` caps each peer at 48 blocks/s
+- `--self-limiter-protocols beacon_blocks_by_range:48/1` caps each peer at 48 blocks/s
   (override with `LIGHTHOUSE_SELF_LIMIT`)
 - `--target-peers 3` (override with `LIGHTHOUSE_TARGET_PEERS`)
 - no `--genesis-backfill` by default
