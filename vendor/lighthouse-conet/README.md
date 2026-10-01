@@ -34,6 +34,26 @@ The resulting binary is intentionally not committed to this repository.
 Copy it only through the approved deployment process, then verify its
 SHA-256 against the value above.
 
+## Start script and peer limits
+
+`start-lighthouse.sh` is the source of truth for
+`/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`.
+
+On 2026-10-01 the node sat at `peers: 0`. At startup Lighthouse sent
+`blocks_by_range` to about 20 Prysm hubs at once (head sync plus
+`--genesis-backfill`). Prysm answered `rate limited` 46 times, counted the
+strikes against our peer id, and then replied `Goodbye(Fault/Banned)` within
+milliseconds of every new connection. Ports, firewall, fork digest and clock
+were all correct.
+
+The peer id is stored in `data-conet-v5/beacon/network/key` and survives
+restarts, so a plain restart does not clear Prysm's record. The recovery was a
+one-time key rotation plus a small peer set:
+
+- `--target-peers 3` (override with `LIGHTHOUSE_TARGET_PEERS`)
+- no `--genesis-backfill` until the head is stable
+  (`LIGHTHOUSE_GENESIS_BACKFILL=1` turns it back on)
+
 ## Runtime boundary
 
 This build is a consensus client only. The production node uses it in
