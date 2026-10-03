@@ -4,7 +4,111 @@ Date: 2026-10-01 (UTC)
 Host: `38.49.214.149`
 Scope: technical Lighthouse Engine API isolation only
 
-## Current result
+## Reassessment — 2026-10-03
+
+The following supersedes the pending statuses below where the newer evidence
+is explicit:
+
+| Requirement | Current status | Basis and limitation |
+|---|---|---|
+| Lighthouse dedicated Engine API | **PASS (previously observed)** | Lighthouse was observed on local `127.0.0.1:8552`; Prysm was inactive and no longer shared that endpoint. This was not re-probed after SSH access was revoked. |
+| Slot `155646` roots | **PASS by host attestation** | The supplied statement reports local block/state roots exactly matching the expected values. Independent reproduction from this workstation is unavailable after access revocation. |
+| Peter SSH access | **REVOKED by host attestation; current local key denied** | A fresh login with this workstation's currently loaded RSA key (`SHA256:VmuQ…`) returned `Permission denied (publickey)` for both `peter` and `root`. The supplied host statement separately reports that the former `peternew` ED25519 key (`SHA256:3Ksw…`) was removed and then denied. That exact ED25519 key is not present in this workspace, so its denial was not independently repeated. |
+| Peter local sudo access | **REVOKED by supplied host audit** | The supplied statement reports removal from `sudo`, removal of Peter-specific sudoers grants, and `sudo -n -l -U peter` denial. |
+| Provider/cloud management access | **NOT VERIFIED / not revoked** | The supplied statement explicitly says provider-console IAM, API keys, and out-of-band access were not revoked. |
+| Different-operator threshold | **PENDING CONTROL-PROOF COMPLETION** | `peternew` is a key identity and is not the Linux account `peter` or proof of the natural person's identity. The supplied facts support a distinct signer plus revoked host-local Peter access, but provider IAM/out-of-band control remains unverified. |
+
+### New signed evidence
+
+```text
+peer_id: 16Uiu2HAmVEJPwkFzLsCYFcmmSc229ZLxpSWXPda6QojzeQiamhfM
+version: Lighthouse/v5.3.0-d6ba8c3+/x86_64-linux
+slot: 155646
+block_root: 0x442a5f8c64592b4e45820e0e27398f0532b15a2e22456bc02f8c74df8b591336
+state_root: 0x70001a2f373450a6057e506c89bb7a3b502c58bb7ae6ed97cfeea45f590a1410
+parent_root: 0x89ff718fd2d8ff79701afa3a0577e29ff46294bab591a9f4d694a16a48bd2c7d
+head_slot: 1606733
+```
+
+The supplied signature fingerprint is
+`SHA256:3Ksw9iagfEv/6WhFwMaIIzMw3EDOLUyT5A1tnMIBEhw`, labelled `peternew`.
+The label `peternew`, the Linux login name `peter`, and a natural-person
+operator identity are three separate concepts. This record must not infer
+that the key is controlled by Peter merely because it was once authorized for
+the Unix account `peter`.
+The signed files and public key were not supplied to this workspace, so the
+cryptographic verification is recorded as user-reported rather than
+independently reproduced here.
+
+The host statement also reports that Geth and Lighthouse were left running,
+while Peter and root SSH logins using the tested key were refused. It states
+that cloud/provider IAM was intentionally not changed; therefore host-local
+revocation must not be represented as full administrative-control transfer.
+
+### Independent public observations — 2026-10-03
+
+The following checks were performed without host credentials:
+
+1. `216.225.202.82:4100` reported the declared peer ID as **connected**,
+   inbound, with the same ENR and QUIC address
+   `/ip4/38.49.214.149/udp/5301/quic-v1`.
+2. The same active reference beacon returned slot `155646` as canonical and
+   finalized, with the declared block root, state root and parent root.
+3. Public TCP reachability matched the intended boundary: SSH `22` and
+   Lighthouse P2P `5200` were reachable; Lighthouse HTTP API `5100` and Engine
+   API `8552` timed out from this workstation. This supports, but by itself
+   cannot prove, localhost-only binding because a firewall drop produces the
+   same external symptom.
+4. Batch-mode SSH as both `peter` and `root` was denied for the workstation's
+   currently loaded RSA identity. The former `peternew` ED25519 private/public
+   key files were not available locally, so the reported revocation of that
+   exact key remains host-attested.
+
+These observations independently establish live peer identity, network
+connectivity and canonical slot roots. They do not establish who controls the
+provider account, rescue console, rebuild controls or other out-of-band
+administration.
+
+## Milestone assessment
+
+### Completed in this stage
+
+1. Lighthouse uses a dedicated, local Engine API and no longer shares Prysm's
+   execution endpoint.
+2. The Lighthouse identity is stable and its head is synchronized.
+3. The local slot `155646` block root and state root were reported as matching
+   the required values in the signed operator statement.
+4. Peter's tested SSH access was denied, and the host audit reports removal of
+   Peter's local sudo grants.
+5. The signer key identity `peternew` is recorded separately from the Unix
+   account `peter`.
+
+### Next-stage acceptance target
+
+Complete the administrative-control handover evidence without granting Peter
+temporary access again:
+
+1. The external operator publishes the `peternew` public key and the exact
+   signed statement file so a verifier can reproduce `ssh-keygen -Y verify`.
+2. The provider owner supplies a redacted IAM/console report showing that the
+   external operator controls console, rescue, rebuild, serial-console and API
+   access, while Peter and Peter-controlled groups, tokens and recovery paths
+   have none.
+3. The external operator runs a fresh local read-only health check and signs
+   the resulting peer identity, head status and one newly selected historical
+   slot root.
+4. A verifier checks the signature and compares the roots without receiving
+   shell, sudo or cloud-console access to the host.
+
+When all four items are complete, the different-operator milestone can be
+marked **SATISFIED**. Until then, the technical node milestone is complete,
+while the administrative-independence milestone remains pending evidence.
+
+## Historical baseline — superseded where reassessed above
+
+The following table records the state before Engine isolation, history
+backfill and Peter access revocation. It is retained as an audit trail and is
+not the current acceptance status.
 
 | Requirement | Result | Evidence |
 |---|---|---|
