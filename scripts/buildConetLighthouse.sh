@@ -7,6 +7,7 @@ REPO_URL="${LIGHTHOUSE_REPO_URL:-https://github.com/sigp/lighthouse.git}"
 COMMIT="${LIGHTHOUSE_COMMIT:-d6ba8c397557f5c977b70f0d822a9228e98ca214}"
 SOURCE_DIR="${LIGHTHOUSE_SOURCE_DIR:-$ROOT_DIR/vendor/lighthouse-conet/src}"
 SOURCE_COMMIT_FILE="${LIGHTHOUSE_SOURCE_COMMIT_FILE:-$ROOT_DIR/vendor/lighthouse-conet/SOURCE_COMMIT}"
+SOURCE_COMMIT_OBJECT_B64="${LIGHTHOUSE_SOURCE_COMMIT_OBJECT_B64:-$ROOT_DIR/vendor/lighthouse-conet/upstream-commit-object.base64}"
 PATCH_FILE="$ROOT_DIR/vendor/lighthouse-conet/patches/0001-conet-eth1-voting-period.patch"
 OUTPUT_DIR="${LIGHTHOUSE_OUTPUT_DIR:-$ROOT_DIR/target/conet-lighthouse}"
 
@@ -35,6 +36,38 @@ if [[ -f "$SOURCE_DIR/lighthouse/Cargo.toml" ]]; then
   echo "Using vendored Lighthouse source: $SOURCE_DIR"
   mkdir -p "$WORK_DIR"
   cp -a "$SOURCE_DIR"/. "$WORK_DIR"/
+  rm -f "$WORK_DIR/CONET-SOURCE.md"
+
+  # The source snapshot intentionally does not carry .git. Recreate only the
+  # minimum Git metadata needed by git-version-macro. The source tree is
+  # byte-for-byte the pinned upstream tree, so the generated tree object is
+  # the tree recorded by the real upstream commit. The commit object is
+  # shipped as base64 data, not as a repository or a mutable local commit.
+  git -C "$WORK_DIR" init -q
+  git -C "$WORK_DIR" add -A
+  git -C "$WORK_DIR" add -f .cargo/config.toml
+  SOURCE_TREE="$(git -C "$WORK_DIR" write-tree)"
+  if [[ "$SOURCE_TREE" != "2291e580131817a34ec41c4810b642026e995505" ]]; then
+    echo "Vendored Lighthouse source tree mismatch: $SOURCE_TREE" >&2
+    echo "Expected upstream tree 2291e580131817a34ec41c4810b642026e995505" >&2
+    exit 1
+  fi
+  if [[ ! -f "$SOURCE_COMMIT_OBJECT_B64" ]]; then
+    echo "Missing vendored commit metadata: $SOURCE_COMMIT_OBJECT_B64" >&2
+    exit 1
+  fi
+  if base64 -d < "$SOURCE_COMMIT_OBJECT_B64" > "$WORK_DIR/upstream-commit-object" 2>/dev/null; then
+    :
+  else
+    base64 -D < "$SOURCE_COMMIT_OBJECT_B64" > "$WORK_DIR/upstream-commit-object"
+  fi
+  ACTUAL_COMMIT="$(git -C "$WORK_DIR" hash-object -t commit -w "$WORK_DIR/upstream-commit-object")"
+  if [[ "$ACTUAL_COMMIT" != "$COMMIT" ]]; then
+    echo "Vendored commit metadata mismatch: $ACTUAL_COMMIT (expected $COMMIT)" >&2
+    exit 1
+  fi
+  git -C "$WORK_DIR" update-ref "refs/heads/$COMMIT" "$ACTUAL_COMMIT"
+  git -C "$WORK_DIR" symbolic-ref HEAD "refs/heads/$COMMIT"
 else
   if [[ "${LIGHTHOUSE_ALLOW_NETWORK_FALLBACK:-0}" != "1" ]]; then
     echo "Vendored Lighthouse source not found at $SOURCE_DIR" >&2
@@ -51,8 +84,10 @@ if [[ ! -f "$WORK_DIR/lighthouse/Cargo.toml" ]]; then
   exit 1
 fi
 
+echo "Git version before CoNET patch: $(git -C "$WORK_DIR" describe --always --dirty=+ --abbrev=7 --match=thiswillnevermatchlol)"
 git -C "$WORK_DIR" apply --check "$PATCH_FILE"
 git -C "$WORK_DIR" apply "$PATCH_FILE"
+echo "Git version after CoNET patch: $(git -C "$WORK_DIR" describe --always --dirty=+ --abbrev=7 --match=thiswillnevermatchlol)"
 
 # Lighthouse v5.3.0 still vendors a LevelDB Snappy build with a pre-3.5
 # CMake minimum; modern CMake requires this compatibility policy explicitly.

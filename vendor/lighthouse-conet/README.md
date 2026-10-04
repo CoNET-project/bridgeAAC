@@ -36,6 +36,16 @@ the checked-in CoNET patch, and builds `lighthouse` in release mode. It does
 not deploy, restart, or modify any remote host. This is the default path and
 does not require access to `sigp/lighthouse`.
 
+The vendored source intentionally has no `.git` directory. Before compiling,
+the script verifies the source tree against the pinned upstream tree object and
+restores the exact upstream commit object from
+`upstream-commit-object.base64`. This is required because Lighthouse embeds
+`git describe` output in the binary. A build from the raw snapshot without
+this metadata can report an unrelated version such as
+`v5.3.0-<other-commit>+`, even when the source files are otherwise identical.
+The expected output is `v5.3.0-d6ba8c3+`; the script prints the version source
+before and after applying the CoNET patch and fails on a metadata mismatch.
+
 For recovery or source maintenance only, an operator may explicitly enable
 the network fallback:
 

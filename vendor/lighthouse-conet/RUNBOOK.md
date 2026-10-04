@@ -120,6 +120,16 @@ archive checksum is recorded in `SOURCE_ARCHIVE_SHA256` and
 independent operators; a build must not silently depend on a live upstream
 checkout.
 
+The `src/` directory is deliberately a source snapshot without `.git`; do not
+copy the outer `bridgeAAC/.git` directory into it. The build script recreates a
+temporary Git repository, verifies the pinned upstream tree, and restores the
+exact commit object stored in `upstream-commit-object.base64` before compiling.
+Lighthouse embeds Git metadata in the binary, so compiling the snapshot without
+this step produces a different version suffix and a different binary checksum.
+The canonical patched build must report `v5.3.0-d6ba8c3+`. If it reports
+another commit (for example `v5.3.0-31037b1+`), stop and fix the build
+metadata; do not deploy that binary.
+
 From the `bridgeAAC` repository root, build the CoNET binary with:
 
 ```bash
@@ -130,6 +140,21 @@ The build script copies the vendored source to a temporary directory and
 applies `patches/0001-conet-eth1-voting-period.patch` there. Do not apply the
 patch directly inside `src/`, and do not commit a patched source tree as a
 second source of truth.
+
+The script prints the Git version before and after the CoNET patch. The `+`
+suffix after patching is expected because the working tree is modified. The
+known Linux x86_64 release artifact from this exact source, metadata, patch,
+and toolchain is:
+
+```text
+version: v5.3.0-d6ba8c3+
+sha256: 9e4b98c88b10dc5a6dd9f6070838c14b74f947ceba8eb2940a0e2291f17be243
+```
+
+The checksum is an acceptance target for a Linux x86_64 build, not a claim
+that macOS can reproduce the Linux binary. A macOS checkout can validate the
+source tree, commit object, patch, and version metadata, but must not claim
+the final Linux checksum without a matching Linux x86_64 build.
 
 Only for an intentional source-recovery operation may an operator use the
 network fallback:
