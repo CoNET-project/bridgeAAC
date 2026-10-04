@@ -5,6 +5,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK_DIR="${LIGHTHOUSE_BUILD_DIR:-${TMPDIR:-/tmp}/lighthouse-conet-build}"
 REPO_URL="${LIGHTHOUSE_REPO_URL:-https://github.com/sigp/lighthouse.git}"
 COMMIT="${LIGHTHOUSE_COMMIT:-d6ba8c397557f5c977b70f0d822a9228e98ca214}"
+EXPECTED_VERSION="${LIGHTHOUSE_EXPECTED_VERSION:-v5.3.0-d6ba8c3+}"
+EXPECTED_SOURCE_VERSION="${LIGHTHOUSE_EXPECTED_SOURCE_VERSION:-d6ba8c3+}"
 SOURCE_DIR="${LIGHTHOUSE_SOURCE_DIR:-$ROOT_DIR/vendor/lighthouse-conet/src}"
 SOURCE_COMMIT_FILE="${LIGHTHOUSE_SOURCE_COMMIT_FILE:-$ROOT_DIR/vendor/lighthouse-conet/SOURCE_COMMIT}"
 SOURCE_COMMIT_OBJECT_B64="${LIGHTHOUSE_SOURCE_COMMIT_OBJECT_B64:-$ROOT_DIR/vendor/lighthouse-conet/upstream-commit-object.base64}"
@@ -87,13 +89,27 @@ fi
 echo "Git version before CoNET patch: $(git -C "$WORK_DIR" describe --always --dirty=+ --abbrev=7 --match=thiswillnevermatchlol)"
 git -C "$WORK_DIR" apply --check "$PATCH_FILE"
 git -C "$WORK_DIR" apply "$PATCH_FILE"
-echo "Git version after CoNET patch: $(git -C "$WORK_DIR" describe --always --dirty=+ --abbrev=7 --match=thiswillnevermatchlol)"
+SOURCE_VERSION="$(git -C "$WORK_DIR/common/lighthouse_version" describe --always --dirty=+ --abbrev=7 --match=thiswillnevermatchlol)"
+echo "Git version after CoNET patch: $SOURCE_VERSION"
+if [[ "$SOURCE_VERSION" != "$EXPECTED_SOURCE_VERSION" ]]; then
+  echo "Build metadata mismatch before Cargo: got $SOURCE_VERSION, expected $EXPECTED_SOURCE_VERSION" >&2
+  echo "Do not build or deploy a binary with an unrelated Git version." >&2
+  exit 1
+fi
 
 # Lighthouse v5.3.0 still vendors a LevelDB Snappy build with a pre-3.5
 # CMake minimum; modern CMake requires this compatibility policy explicitly.
 export CMAKE_POLICY_VERSION_MINIMUM="${CMAKE_POLICY_VERSION_MINIMUM:-3.5}"
 CARGO_TARGET_DIR="$WORK_DIR/target" \
   cargo build --manifest-path "$WORK_DIR/lighthouse/Cargo.toml" --release --bin lighthouse
+
+BUILT_VERSION="$("$WORK_DIR/target/release/lighthouse" --version 2>&1 || true)"
+if [[ "$BUILT_VERSION" != *"$EXPECTED_VERSION"* ]]; then
+  echo "Built Lighthouse version mismatch: expected $EXPECTED_VERSION" >&2
+  printf '%s\n' "$BUILT_VERSION" >&2
+  echo "The binary was not copied to the output directory." >&2
+  exit 1
+fi
 
 mkdir -p "$OUTPUT_DIR"
 cp "$WORK_DIR/target/release/lighthouse" "$OUTPUT_DIR/lighthouse"
@@ -104,5 +120,7 @@ else
 fi
 printf 'source_commit=%s\nsource_dir=%s\npatch=%s\n' "$COMMIT" \
   "$SOURCE_DIR" "0001-conet-eth1-voting-period.patch" > "$OUTPUT_DIR/build-info.txt"
+printf 'expected_version=%s\nreported_version=%s\n' "$EXPECTED_VERSION" \
+  "$BUILT_VERSION" >> "$OUTPUT_DIR/build-info.txt"
 
 echo "Built CoNET Lighthouse at $OUTPUT_DIR/lighthouse"
