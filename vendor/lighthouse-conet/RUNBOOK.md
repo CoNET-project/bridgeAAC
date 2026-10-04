@@ -156,6 +156,37 @@ that macOS can reproduce the Linux binary. A macOS checkout can validate the
 source tree, commit object, patch, and version metadata, but must not claim
 the final Linux checksum without a matching Linux x86_64 build.
 
+The verified binary is published in the
+[bridgeAAC Lighthouse release](https://github.com/CoNET-project/bridgeAAC/releases/tag/lighthouse-conet-v5.3.0-d6ba8c3):
+
+```text
+https://github.com/CoNET-project/bridgeAAC/releases/download/lighthouse-conet-v5.3.0-d6ba8c3/lighthouse-conet-v5.3.0-d6ba8c3-linux-x86_64
+https://github.com/CoNET-project/bridgeAAC/releases/download/lighthouse-conet-v5.3.0-d6ba8c3/lighthouse-conet-v5.3.0-d6ba8c3-linux-x86_64.sha256
+```
+
+For an independent Linux x86_64 deployment, download both assets and verify
+the binary before installing it:
+
+```bash
+VERSION=v5.3.0-d6ba8c3
+BASE_URL="https://github.com/CoNET-project/bridgeAAC/releases/download/lighthouse-conet-${VERSION}"
+curl -fL -o "lighthouse-conet-${VERSION}-linux-x86_64" \
+  "${BASE_URL}/lighthouse-conet-${VERSION}-linux-x86_64"
+curl -fL -o "lighthouse-conet-${VERSION}-linux-x86_64.sha256" \
+  "${BASE_URL}/lighthouse-conet-${VERSION}-linux-x86_64.sha256"
+sha256sum -c "lighthouse-conet-${VERSION}-linux-x86_64.sha256"
+file "lighthouse-conet-${VERSION}-linux-x86_64"
+```
+
+The expected result is the exact SHA-256 above and an `ELF 64-bit LSB
+executable, x86-64` binary. Do not replace this artifact with a local
+`cargo build --release` result merely because it reports the same
+`v5.3.0-d6ba8c3+` version: Lighthouse embeds build metadata and toolchain
+details, so a different binary hash is not the accepted release. In
+particular, `v5.3.0-31037b1+` and the locally rebuilt
+`f0abc657965eebaa763e4f39f7f1e0682d448156b6747d7e9bb942b69cd11bee` are not
+the approved artifact.
+
 Only for an intentional source-recovery operation may an operator use the
 network fallback:
 
