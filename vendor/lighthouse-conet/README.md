@@ -75,6 +75,8 @@ incident record.
 |---|---|
 | `start-lighthouse.sh` | Source of truth for `/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`. Edit here, push, then deploy. |
 | `check-lighthouse.sh` | Read-only health check, run on the node. `WATCH_MIN=15` samples peers for 15 minutes. |
+| `testnet-conet/config.yaml` | Lighthouse network config. Do not substitute the GitBook Prysm overlay. |
+| `testnet-conet/deposit_contract_block.txt` | Deploy block `0`. |
 | `RUNBOOK.md` | Start guide, hard rules, decision tree, incident record. |
 
 The rules in one place:

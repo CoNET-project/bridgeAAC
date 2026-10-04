@@ -1,0 +1,64 @@
+# CoNET Lighthouse network config for lighthouse-conet v5.3.0-d6ba8c3.
+#
+# This file is what `lighthouse bn --testnet-dir` loads as config.yaml.
+# Do not replace it with the published Prysm overlay
+# https://gitbook.conet.network/l1/network/config.yml
+# (SHA-256 4bda580c4cfec801ecaed6fa04ad38bb9f1e941833fa7237ed5c6327f3cfbe24).
+# That overlay is a preset delta. Prysm fills the rest. Lighthouse v5.3.0
+# parses this file with raw serde and does not merge a preset.
+#
+# PRESET_BASE must be mainnet. The live beacon spec still reports
+# PRESET_BASE=interop, but this binary only accepts minimal, mainnet, or
+# gnosis. interop exits after YAML parse with
+# "Config does not match any known preset".
+# The numbers below are the resolved CoNET spec (chainId 224422), not
+# Ethereum mainnet slot time, follow distance, fork versions, or deposit
+# chain. EPOCHS_PER_ETH1_VOTING_PERIOD=4 is compiled into the CoNET binary
+# and is not read from this file.
+PRESET_BASE: 'mainnet'
+CONFIG_NAME: 'interop'
+
+# Merge transition. CoNET is already post-merge; TTD 0.
+TERMINAL_TOTAL_DIFFICULTY: 0
+TERMINAL_BLOCK_HASH: 0x0000000000000000000000000000000000000000000000000000000000000000
+TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH: 18446744073709551615
+
+# Genesis. Count and time match the live beacon spec.
+# 16384 is the resolved chain value, not a guessed testnet fixture.
+MIN_GENESIS_ACTIVE_VALIDATOR_COUNT: 16384
+MIN_GENESIS_TIME: 1606824000
+GENESIS_FORK_VERSION: 0x20000089
+GENESIS_DELAY: 604800
+
+# Forks active from genesis through Deneb. Electra stays disabled.
+ALTAIR_FORK_VERSION: 0x20000090
+ALTAIR_FORK_EPOCH: 0
+BELLATRIX_FORK_VERSION: 0x20000091
+BELLATRIX_FORK_EPOCH: 0
+CAPELLA_FORK_VERSION: 0x20000092
+CAPELLA_FORK_EPOCH: 0
+DENEB_FORK_VERSION: 0x20000093
+DENEB_FORK_EPOCH: 0
+ELECTRA_FORK_VERSION: 0x20000094
+ELECTRA_FORK_EPOCH: 18446744073709551615
+
+# Time. CoNET slots are 6 seconds. Eth1 follow distance is 64, not 2048.
+SECONDS_PER_SLOT: 6
+SECONDS_PER_ETH1_BLOCK: 14
+MIN_VALIDATOR_WITHDRAWABILITY_DELAY: 256
+SHARD_COMMITTEE_PERIOD: 256
+ETH1_FOLLOW_DISTANCE: 64
+
+# Validator cycle.
+INACTIVITY_SCORE_BIAS: 4
+INACTIVITY_SCORE_RECOVERY_RATE: 16
+EJECTION_BALANCE: 16000000000
+MIN_PER_EPOCH_CHURN_LIMIT: 4
+CHURN_LIMIT_QUOTIENT: 65536
+MAX_PER_EPOCH_ACTIVATION_CHURN_LIMIT: 8
+
+# Deposit contract. Bytecode is in the CoNET genesis, so the deploy block
+# file in this directory is 0.
+DEPOSIT_CHAIN_ID: 224422
+DEPOSIT_NETWORK_ID: 224422
+DEPOSIT_CONTRACT_ADDRESS: 0x4242424242424242424242424242424242424242

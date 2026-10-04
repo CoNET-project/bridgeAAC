@@ -17,6 +17,8 @@ Files in this directory:
 |---|---|
 | `start-lighthouse.sh` | The only start script. Deployed to `/home/peter/lighthouse-conet/start-lighthouse.sh`. |
 | `check-lighthouse.sh` | Read-only health check. Run it on the node. |
+| `testnet-conet/config.yaml` | Complete Lighthouse network config. Not the published Prysm overlay. |
+| `testnet-conet/deposit_contract_block.txt` | Deposit contract deploy block (`0`, present at genesis). |
 | `patches/0001-conet-eth1-voting-period.patch` | The CoNET consensus constants patch. |
 | `README.md` | Pinned version, build, deployed checksum. |
 
@@ -111,50 +113,83 @@ Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
 `--target-peers` value to this launcher. Those options were the cause of the
 peer-collapse incident, not a recovery mechanism.
 
-### 2c. Configuration completeness gate
+### 2c. Install the Lighthouse testnet directory and start once
 
-The Lighthouse service on `38.49.214.149` is currently stopped and disabled.
-This is intentional until the complete CoNET Lighthouse configuration is
-available and verified. The companion Geth is still running; do not stop or
-restart it as part of this configuration check.
+An independent operator can start this client from the files in this
+repository. Lighthouse v5.3.0 does not merge a preset. The published Prysm
+overlay at `https://gitbook.conet.network/l1/network/config.yml`
+(SHA-256 `4bda580c4cfec801ecaed6fa04ad38bb9f1e941833fa7237ed5c6327f3cfbe24`,
+same bytes as `config.yaml` when that name is used for the overlay) has no
+`MIN_GENESIS_ACTIVE_VALIDATOR_COUNT` and sets `PRESET_BASE: interop`.
+Feeding that file to this binary exits during config load. Use
+`testnet-conet/config.yaml` from this directory instead.
 
-The published `config.yaml` artifact has the SHA-256 prefix
-`4bda580c…`. The operator reported that `config.yml` is the same file/content,
-not a second configuration. `genesis.ssz` also matches its published
-checksum. These two facts do not make an incomplete YAML configuration
-usable.
+`PRESET_BASE` in the Lighthouse file is `mainnet` because this binary only
+accepts `minimal`, `mainnet`, or `gnosis`. The live beacon spec still names
+the preset `interop`. The numeric overrides in the shipped file are the
+resolved CoNET values, including `MIN_GENESIS_ACTIVE_VALIDATOR_COUNT: 16384`,
+`SECONDS_PER_SLOT: 6`, `ETH1_FOLLOW_DISTANCE: 64`, deposit chain `224422`,
+and Deneb active from genesis. Do not edit those numbers. The eth1 voting
+period of 4 epochs is compiled into `lighthouse-v5.3.0-conet`; it is not a
+YAML key.
 
-Lighthouse v5.3.0 does not synthesize a value for
-`MIN_GENESIS_ACTIVE_VALIDATOR_COUNT`. If the key is absent, the config parser
-exits during startup. This is a configuration failure, not a binary checksum
-failure and not a Geth/Engine API failure. Do not invent a validator-count
-value and do not treat a locally generated number as canonical.
-
-The repository currently does not contain a complete Lighthouse config with
-this field. Therefore an operator must not enable or start
-`conet-lighthouse.service` until an authoritative config is supplied. Before
-installation, verify both the artifact identity and the required key:
+The deposit contract `0x4242424242424242424242424242424242424242` has code at
+block 0, so `deposit_contract_block.txt` is `0`. `genesis.ssz` is not stored
+in git. Download the published genesis and check it before the first start.
 
 ```bash
-CONFIG=/home/peter/lighthouse-conet/config.yaml
-test -s "$CONFIG"
-grep -nE '^MIN_GENESIS_ACTIVE_VALIDATOR_COUNT:[[:space:]]*[0-9]+[[:space:]]*$' "$CONFIG"
-sha256sum "$CONFIG"
-if test -e /home/peter/lighthouse-conet/config.yml; then
-  cmp -s "$CONFIG" /home/peter/lighthouse-conet/config.yml
-fi
+# Run from a checkout of CoNET-project/bridgeAAC.
+BASE="${LIGHTHOUSE_BASE:-/home/peter/lighthouse-conet}"
+SRC="$PWD/vendor/lighthouse-conet"
+mkdir -p "$BASE/testnet-conet" "$BASE/bin"
+cp "$SRC/testnet-conet/config.yaml" "$BASE/testnet-conet/config.yaml"
+cp "$SRC/testnet-conet/deposit_contract_block.txt" "$BASE/testnet-conet/deposit_contract_block.txt"
+cp "$SRC/testnet-conet/SHA256SUMS" "$BASE/testnet-conet/SHA256SUMS"
+cp "$SRC/start-lighthouse.sh" "$SRC/check-lighthouse.sh" "$BASE/"
+chmod 755 "$BASE/start-lighthouse.sh" "$BASE/check-lighthouse.sh"
+curl -fsSL -o "$BASE/testnet-conet/genesis.ssz" \
+  https://gitbook.conet.network/l1/network/genesis.ssz
+(
+  cd "$BASE/testnet-conet"
+  sha256sum -c SHA256SUMS
+  echo "ae0a63e7bf175bb4312d5b728ff1eced7ceb4286ff5d7074cecbfa21dfd7fb46  genesis.ssz" | sha256sum -c -
+)
+grep -qx "PRESET_BASE: 'mainnet'" "$BASE/testnet-conet/config.yaml"
+grep -qx "MIN_GENESIS_ACTIVE_VALIDATOR_COUNT: 16384" "$BASE/testnet-conet/config.yaml"
+test "$(tr -d '[:space:]' < "$BASE/testnet-conet/deposit_contract_block.txt")" = 0
 ```
 
-The full expected SHA-256 must come from the authoritative published config
-record; the abbreviated `4bda580c…` prefix is only a reference and is not
-enough for acceptance. The `grep` must return exactly one valid field. If it
-returns no line, stop. Do not substitute `config.yml`, `genesis.ssz`, the
-release binary, or a locally guessed value for the missing setting.
+The `sha256sum -c` of `SHA256SUMS` must be run with `testnet-conet` as the
+working directory, because the sums are relative to that directory. If either
+checksum fails, stop. Do not start with the GitBook overlay, and do not fill
+in a locally chosen validator count.
 
-After the complete config passes these checks, an operator may deploy the
-repository's launcher and, only with explicit approval for this host, enable
-and start Lighthouse once. Keep the service disabled and stopped while the
-config is incomplete; do not use repeated starts to probe the parser.
+Install the release binary from section 2 (SHA-256
+`9e4b98c88b10dc5a6dd9f6070838c14b74f947ceba8eb2940a0e2291f17be243`) as
+`$BASE/bin/lighthouse-v5.3.0-conet` and `chmod 755` it. Stock Lighthouse
+rejects this network. A locally rebuilt binary with a different SHA-256 is
+not a substitute.
+
+On a new host, set the advertised address to that host's public IPv4. The
+default `38.49.214.149` is only correct for the existing deployment. Keep
+the checkpoint and the single boot ENR of hub `216.225.202.22`; do not add
+`--libp2p-addresses`, `--trusted-peers`, or a handwritten `--target-peers`.
+
+```bash
+export LIGHTHOUSE_BASE="$BASE"
+export LIGHTHOUSE_ENR_ADDRESS=203.0.113.10   # replace with this host's public IPv4
+export LIGHTHOUSE_EXECUTION_ENDPOINT=http://127.0.0.1:8552
+export LIGHTHOUSE_EXECUTION_JWT="$BASE/jwtsecret"
+# Companion Geth must already be serving that Engine API with that JWT.
+"$BASE/start-lighthouse.sh"
+```
+
+Start once. Open the firewall for `5200/tcp`, `5300/udp`, and `5301/udp`.
+Then run `WATCH_MIN=15 "$BASE/check-lighthouse.sh"`. A healthy join has
+`peers >= 8` for that window, `sync_distance` 0–2, and is not optimistic.
+`el_offline=true` means the companion execution client is not answering;
+fix that client instead of restarting Lighthouse. Do not stop or restart
+Prysm, its Geth, or a validator as part of this start.
 
 ## 3. Source and reproducible build
 

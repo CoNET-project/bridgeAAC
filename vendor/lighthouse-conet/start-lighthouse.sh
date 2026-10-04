@@ -47,6 +47,10 @@ fi
 # Same boot ENR as 70.35.205.77 (Prysm hub 216.225.202.22).
 BOOT_ENR="enr:-Mq4QJ9iokTaQWac4KmyRLWCCW5aTqhZEOekgnk8krEZvnwQcSjPI5BD9GXr9dXltQF6wMUF5vNNxGreRjt-vU0j1gWGAaCc6Czeh2F0dG5ldHOIAwAAAAAAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhAwNuofZfI-D_EPXyfXWaaPS3WfJ8HGa8DDHqqvU-l90_iHN5bmNuZXRzD4N0Y3CCEGiDdWRwghDM"
 
+# Default is the existing host 38.49.214.149. A new operator must set this
+# to that machine's own public IPv4 before the first start.
+ENR_ADDRESS="${LIGHTHOUSE_ENR_ADDRESS:-38.49.214.149}"
+
 # One 32-block batch per 30 s per peer.
 SELF_LIMIT="${LIGHTHOUSE_SELF_LIMIT:-beacon_blocks_by_range:32/30}"
 
@@ -66,7 +70,7 @@ exec "$BASE/bin/lighthouse-v5.3.0-conet" bn \
   --http --http-address 127.0.0.1 --http-port 5100 \
   --port 5200 --discovery-port 5300 --quic-port 5301 \
   --listen-address 0.0.0.0 \
-  --enr-address 38.49.214.149 \
+  --enr-address "$ENR_ADDRESS" \
   --enr-tcp-port 5200 --enr-udp-port 5300 \
   --disable-upnp \
   ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
