@@ -111,6 +111,51 @@ Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
 `--target-peers` value to this launcher. Those options were the cause of the
 peer-collapse incident, not a recovery mechanism.
 
+### 2c. Configuration completeness gate
+
+The Lighthouse service on `38.49.214.149` is currently stopped and disabled.
+This is intentional until the complete CoNET Lighthouse configuration is
+available and verified. The companion Geth is still running; do not stop or
+restart it as part of this configuration check.
+
+The published `config.yaml` artifact has the SHA-256 prefix
+`4bda580c…`. The operator reported that `config.yml` is the same file/content,
+not a second configuration. `genesis.ssz` also matches its published
+checksum. These two facts do not make an incomplete YAML configuration
+usable.
+
+Lighthouse v5.3.0 does not synthesize a value for
+`MIN_GENESIS_ACTIVE_VALIDATOR_COUNT`. If the key is absent, the config parser
+exits during startup. This is a configuration failure, not a binary checksum
+failure and not a Geth/Engine API failure. Do not invent a validator-count
+value and do not treat a locally generated number as canonical.
+
+The repository currently does not contain a complete Lighthouse config with
+this field. Therefore an operator must not enable or start
+`conet-lighthouse.service` until an authoritative config is supplied. Before
+installation, verify both the artifact identity and the required key:
+
+```bash
+CONFIG=/home/peter/lighthouse-conet/config.yaml
+test -s "$CONFIG"
+grep -nE '^MIN_GENESIS_ACTIVE_VALIDATOR_COUNT:[[:space:]]*[0-9]+[[:space:]]*$' "$CONFIG"
+sha256sum "$CONFIG"
+if test -e /home/peter/lighthouse-conet/config.yml; then
+  cmp -s "$CONFIG" /home/peter/lighthouse-conet/config.yml
+fi
+```
+
+The full expected SHA-256 must come from the authoritative published config
+record; the abbreviated `4bda580c…` prefix is only a reference and is not
+enough for acceptance. The `grep` must return exactly one valid field. If it
+returns no line, stop. Do not substitute `config.yml`, `genesis.ssz`, the
+release binary, or a locally guessed value for the missing setting.
+
+After the complete config passes these checks, an operator may deploy the
+repository's launcher and, only with explicit approval for this host, enable
+and start Lighthouse once. Keep the service disabled and stopped while the
+config is incomplete; do not use repeated starts to probe the parser.
+
 ## 3. Source and reproducible build
 
 The repository includes the complete Lighthouse v5.3.0 source snapshot under
