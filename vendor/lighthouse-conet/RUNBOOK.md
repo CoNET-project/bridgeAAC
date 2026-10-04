@@ -111,7 +111,45 @@ Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
 `--target-peers` value to this launcher. Those options were the cause of the
 peer-collapse incident, not a recovery mechanism.
 
-## 3. Start and change procedure
+## 3. Source and reproducible build
+
+The repository includes the complete Lighthouse v5.3.0 source snapshot under
+`src/`. Its exact upstream commit is recorded in `SOURCE_COMMIT`, and the
+archive checksum is recorded in `SOURCE_ARCHIVE_SHA256` and
+`src/CONET-SOURCE.md`. This vendored tree is the default source for
+independent operators; a build must not silently depend on a live upstream
+checkout.
+
+From the `bridgeAAC` repository root, build the CoNET binary with:
+
+```bash
+./scripts/buildConetLighthouse.sh
+```
+
+The build script copies the vendored source to a temporary directory and
+applies `patches/0001-conet-eth1-voting-period.patch` there. Do not apply the
+patch directly inside `src/`, and do not commit a patched source tree as a
+second source of truth.
+
+Only for an intentional source-recovery operation may an operator use the
+network fallback:
+
+```bash
+LIGHTHOUSE_ALLOW_NETWORK_FALLBACK=1 ./scripts/buildConetLighthouse.sh
+```
+
+The fallback remains pinned to the commit in `SOURCE_COMMIT`; it is not a
+replacement for the vendored source. Building, copying the binary, and
+restarting the service are separate steps. A source build does not authorize
+or perform a remote restart.
+
+Never commit `target/`, release binaries, JWT files, private keys, beacon
+databases, Geth chaindata, or other runtime secrets. When updating Lighthouse,
+replace the snapshot atomically, update `SOURCE_COMMIT` and its checksum,
+review the CoNET patch, run the build and acceptance checks, then commit and
+push the complete change.
+
+## 4. Start and change procedure
 
 Never edit the script on the host. The repository copy is the source of truth.
 
@@ -142,7 +180,7 @@ the host copy as an evidence/backup file and correct it from the repository.
 - `rate limited` replies since start are 0 (a handful at start is tolerable).
 - `oldest_block_slot` keeps falling until backfill completes.
 
-## 4. Hard rules (each one was a mistake)
+## 5. Hard rules (each one was a mistake)
 
 1. **Keep default discovery and default `--target-peers`.** Use one boot ENR,
    as the reference node does. Do not pin a short peer list, do not use
@@ -185,7 +223,7 @@ the host copy as an evidence/backup file and correct it from the repository.
 8. **Local first.** Change the repository, push, then deploy the published
    file. No editing scripts or `dist` on the server.
 
-## 5. Peers fall to 0
+## 6. Peers fall to 0
 
 Work down the list. Stop at the first match.
 
@@ -216,7 +254,7 @@ curl -s http://127.0.0.1:5100/eth/v1/node/peer_count | jq .data
 curl -s http://127.0.0.1:5100/lighthouse/database/info | jq .anchor
 ```
 
-## 5a. The Prysm on the same host (`conet-beacon.service`)
+## 6a. The Prysm on the same host (`conet-beacon.service`)
 
 It shares the IP with Lighthouse, so it applied the same colocation rule and
 answered Lighthouse with `Goodbye(Fault/Banned)`.
@@ -242,7 +280,7 @@ If you add more nodes to this host, add the same whitelist flag to every Prysm
 instance on it, and expect the same colocation refusal from any hub instance
 that does not list this IP.
 
-## 6. Incident record: 2026-10-01, peers stuck at 0
+## 7. Incident record: 2026-10-01, peers stuck at 0
 
 Facts, in order:
 

@@ -5,6 +5,10 @@ consensus node on `38.49.214.149`.
 
 ## Version
 
+The complete v5.3.0 source snapshot is included in `src/`. Its pinned
+upstream identity and archive checksum are recorded in `SOURCE_COMMIT`,
+`SOURCE_ARCHIVE_SHA256`, and `src/CONET-SOURCE.md`.
+
 - Upstream repository: `https://github.com/sigp/lighthouse.git`
 - Upstream commit: `d6ba8c397557f5c977b70f0d822a9228e98ca214`
 - Upstream release: `v5.3.0`
@@ -26,9 +30,26 @@ From the `bridgeAAC` repository root:
 ./scripts/buildConetLighthouse.sh
 ```
 
-The script clones the pinned upstream commit into a temporary directory,
-applies the checked-in patch, and builds `lighthouse` in release mode. It
-does not deploy, restart, or modify any remote host.
+The script uses the pinned source snapshot in
+`vendor/lighthouse-conet/src/`, copies it into a temporary directory, applies
+the checked-in CoNET patch, and builds `lighthouse` in release mode. It does
+not deploy, restart, or modify any remote host. This is the default path and
+does not require access to `sigp/lighthouse`.
+
+For recovery or source maintenance only, an operator may explicitly enable
+the network fallback:
+
+```bash
+LIGHTHOUSE_ALLOW_NETWORK_FALLBACK=1 ./scripts/buildConetLighthouse.sh
+```
+
+The fallback still checks out the same pinned commit. It is not required for
+independent deployment and must not silently replace the vendored source.
+
+The source snapshot is upstream code and retains its upstream license files.
+`CONET-SOURCE.md` records its commit and archive checksum. Runtime secrets,
+JWT files, beacon databases, execution databases, and release binaries are
+not part of this repository.
 
 The resulting binary is intentionally not committed to this repository.
 Copy it only through the approved deployment process, then verify its
