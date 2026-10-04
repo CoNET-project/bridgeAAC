@@ -1,8 +1,15 @@
-# CoNET Lighthouse runbook (start guide and lessons)
+# CoNET Lighthouse RUNBOOK — current runtime and recovery
 
 Applies to the parallel Lighthouse beacon node on `38.49.214.149`
 (`conet-lighthouse.service`) and to any new CoNET Lighthouse node. Read this
-before you start, restart, or "fix" one. Build details are in `README.md`.
+before changing a flag or restarting Lighthouse. The launcher and health-check
+scripts in this directory are the operational source of truth; `README.md`
+records the pinned build.
+
+The current design deliberately matches the healthy `70.35.205.77` node:
+default discovery, one boot ENR, and the binary's default target peer count.
+The only intentional differences are this host's ports and its dedicated
+execution client.
 
 Files in this directory:
 
@@ -72,20 +79,48 @@ identical. Changing only the Lighthouse URL without first starting the
 matching Lighthouse Geth leaves `el_offline=true`; that is an incomplete
 deployment, not a successful isolation.
 
-The current `38.49.214.149` host is a recorded migration state: its running
-Prysm and Lighthouse still both use `127.0.0.1:8551`. Treat Engine API
-isolation as **pending** until the second Geth, its datadir, port, JWT and
-systemd wiring have been deployed and verified. Do not claim this host is
-isolated based on the Lighthouse process alone.
+The launcher refuses to start if the Lighthouse and Prysm Engine API endpoint
+or JWT path is identical. This prevents accidentally reconnecting Lighthouse
+to Prysm's execution client. A different URL alone is not sufficient: the
+companion Lighthouse execution client, its datadir, JWT, systemd unit and
+P2P ports must also be live. The 2026-10-03 acceptance reassessment recorded
+Lighthouse on `127.0.0.1:8552`; because host credentials are not available for
+continuous re-probing, every deployment must still verify the live command
+lines with `check-lighthouse.sh`.
+
+### 2b. Current launcher contract
+
+Unless explicitly overridden by environment variables, `start-lighthouse.sh`
+uses:
+
+| Item | Current value |
+|---|---|
+| Binary | `bin/lighthouse-v5.3.0-conet` |
+| Testnet config | `testnet-conet` |
+| Data directory | `/home/peter/lighthouse-conet/data-conet-v5` |
+| HTTP API | `127.0.0.1:5100` |
+| P2P TCP | `0.0.0.0:5200` |
+| Discovery UDP | `0.0.0.0:5300` |
+| QUIC UDP | `0.0.0.0:5301` |
+| Checkpoint sync | `http://216.225.202.22:4100` |
+| Boot ENR | Prysm hub `216.225.202.22` |
+| Per-peer limiter | `beacon_blocks_by_range:32/30` |
+| Genesis backfill | Off by default; enable with `LIGHTHOUSE_GENESIS_BACKFILL=1` |
+
+Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
+`--target-peers` value to this launcher. Those options were the cause of the
+peer-collapse incident, not a recovery mechanism.
 
 ## 3. Start and change procedure
 
 Never edit the script on the host. The repository copy is the source of truth.
 
-1. Edit `start-lighthouse.sh` in the repository, run `bash -n`, commit, push.
-2. `scp` the pushed file to the node, keep a `start-lighthouse.sh.bak-<UTC>`.
-3. `sudo systemctl restart conet-lighthouse.service` (this stops and starts
-   only Lighthouse; geth, Prysm and validators are untouched).
+1. Edit the scripts in the repository, run `bash -n`, commit, and push.
+2. Deploy only the published scripts to the host. Keep
+   `start-lighthouse.sh.bak-<UTC>` and `check-lighthouse.sh.bak-<UTC>`.
+3. A Lighthouse restart requires explicit operator approval for this host.
+   When approved, restart only `conet-lighthouse.service`; do not stop or
+   restart Geth, Prysm, validators, or hubs.
 4. Within 25 s run `systemctl is-active conet-lighthouse.service`. If it says
    `activating`, the service is crash-looping. Read
    `journalctl -u conet-lighthouse.service -n 30 --no-pager -o cat` and fix the
@@ -94,6 +129,10 @@ Never edit the script on the host. The repository copy is the source of truth.
 5. Run `./check-lighthouse.sh`, then `WATCH_MIN=15 ./check-lighthouse.sh`.
    Do not call a change good from one snapshot. Peers rise at start and can
    fall minutes later.
+
+Never edit `start-lighthouse.sh`, `check-lighthouse.sh`, or `dist` directly on
+the host. If a live file differs from the pushed repository version, preserve
+the host copy as an evidence/backup file and correct it from the repository.
 
 ### Healthy means
 
@@ -139,9 +178,10 @@ Never edit the script on the host. The repository copy is the source of truth.
 6. **Compare with a healthy node before inventing a cause.** Pull the peer
    list, flags and Goodbye reasons from `70.35.205.77` first. That comparison
    found in minutes what hours of config guessing missed.
-7. **Do not touch hubs, geth, Prysm or validators from a Lighthouse task.**
-   Restarting chain infrastructure needs explicit written approval in the same
-   message.
+7. **Do not touch hubs, Geth, Prysm or validators from a Lighthouse task.**
+   Any chain-infrastructure restart needs explicit written approval in the same
+   message. A Lighthouse-only restart is still an operational change and must
+   be approved before execution.
 8. **Local first.** Change the repository, push, then deploy the published
    file. No editing scripts or `dist` on the server.
 

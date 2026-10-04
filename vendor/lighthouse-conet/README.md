@@ -82,10 +82,11 @@ PRYSM_EXECUTION_JWT=/home/peter/conet-l1/jwtsecret
 
 The launcher refuses identical Lighthouse/Prysm Engine API endpoints or JWT
 paths. Do not change only the Lighthouse endpoint: without the matching
-Lighthouse Geth, `el_offline=true` is expected and the migration is
-incomplete. On `38.49.214.149`, this separation remains pending until the
-second execution client is deployed and its systemd/JWT/port wiring is
-verified.
+Lighthouse Geth, `el_offline=true` is expected and the deployment is
+incomplete. The 2026-10-03 acceptance reassessment recorded the live
+Lighthouse endpoint as `127.0.0.1:8552`; treat that as recorded evidence, not
+as a substitute for a fresh live command-line and health-check verification
+after any deployment.
 
 Do not replace the active Prysm service or restart chain infrastructure as
 part of a build.
