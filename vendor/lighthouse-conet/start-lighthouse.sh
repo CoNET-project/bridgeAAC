@@ -44,8 +44,10 @@ if [ "$EXECUTION_JWT" = "$PRYSM_EXECUTION_JWT" ]; then
   exit 1
 fi
 
-# Same boot ENR as 70.35.205.77 (Prysm hub 216.225.202.22).
-BOOT_ENR="enr:-Mq4QJ9iokTaQWac4KmyRLWCCW5aTqhZEOekgnk8krEZvnwQcSjPI5BD9GXr9dXltQF6wMUF5vNNxGreRjt-vU0j1gWGAaCc6Czeh2F0dG5ldHOIAwAAAAAAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhAwNuofZfI-D_EPXyfXWaaPS3WfJ8HGa8DDHqqvU-l90_iHN5bmNuZXRzD4N0Y3CCEGiDdWRwghDM"
+# Production Prysm hub 216.225.202.22. This ENR belongs to the persisted
+# --p2p-static-id identity and must be refreshed from /eth/v1/node/identity
+# if that identity is intentionally rotated.
+BOOT_ENR="enr:-Mq4QITTJUMUUEx9Wy_Tt4RCgD_lA6sn873OSmilcUrWyIpvF5C5rAmj7VmoeVD-KKqo9Ft2xIo2gSLGiTkaUaU5GrCGAaEKSII_h2F0dG5ldHOIAAAAAADAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhA2NcDEzWcqj_YKs-udjlY7vAzmq8xZGJP7Kb8e_Eeoq9iHN5bmNuZXRzAIN0Y3CCEGiDdWRwghDM"
 
 # Default is the existing host 38.49.214.149. A new operator must set this
 # to that machine's own public IPv4 before the first start.

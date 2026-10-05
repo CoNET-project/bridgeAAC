@@ -113,6 +113,48 @@ Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
 `--target-peers` value to this launcher. Those options were the cause of the
 peer-collapse incident, not a recovery mechanism.
 
+### 2b.1 Production Prysm bootstrap identity (`216.225.202.22`)
+
+The production Prysm beacon now starts with `--p2p-static-id`. Its generated
+network key is persisted in the production beacon data directory, so ordinary
+beacon-only restarts must retain this identity. The current identity is:
+
+```text
+peer_id: 16Uiu2HAmKLr7wW4QXa5eHQLSCVhazKecFRS7hUn4BFaq3d9A5DkY
+ENR: enr:-Mq4QITTJUMUUEx9Wy_Tt4RCgD_lA6sn873OSmilcUrWyIpvF5C5rAmj7VmoeVD-KKqo9Ft2xIo2gSLGiTkaUaU5GrCGAaEKSII_h2F0dG5ldHOIAAAAAADAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhA2NcDEzWcqj_YKs-udjlY7vAzmq8xZGJP7Kb8e_Eeoq9iHN5bmNuZXRzAIN0Y3CCEGiDdWRwghDM
+```
+
+Third-party Lighthouse operators should use the public checkpoint and this
+single ENR:
+
+```bash
+--checkpoint-sync-url http://216.225.202.22:4100 \
+--boot-nodes 'enr:-Mq4QITTJUMUUEx9Wy_Tt4RCgD_lA6sn873OSmilcUrWyIpvF5C5rAmj7VmoeVD-KKqo9Ft2xIo2gSLGiTkaUaU5GrCGAaEKSII_h2F0dG5ldHOIAAAAAADAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhA2NcDEzWcqj_YKs-udjlY7vAzmq8xZGJP7Kb8e_Eeoq9iHN5bmNuZXRzAIN0Y3CCEGiDdWRwghDM'
+```
+
+Do not use the old `.22` ENR. It described the pre-persistence identity and
+will not be restored after a future restart. Do not use the DHT sidecar
+identity or ports (`:4210` / `:4310`) as the production beacon identity;
+the production beacon is `:4200` / `:4300`.
+
+To verify the current value without logging in to `.22`, query:
+
+```bash
+curl -s http://216.225.202.22:4100/eth/v1/node/identity | jq
+```
+
+If the network key is intentionally deleted or rotated, the peer ID and ENR
+change. Update this section and `start-lighthouse.sh` before asking operators
+to restart or join. A third-party operator does not need shell access to `.22`.
+
+Post-change check of the Lighthouse reference node `70.35.205.77` found about
+16 connected peers and no immediate peer-count collapse. It still had the old
+`.22` identity in its disconnected peer records and had not yet established a
+connection to the new `.22` peer ID. This is not evidence of a production
+failure: `.22` had an inbound connection from `.77` at the time of the check.
+Update `.77`'s static boot ENR during its next approved maintenance window;
+this record does not authorize or require restarting `.77`.
+
 ### 2c. Install the Lighthouse testnet directory and start once
 
 An independent operator can start this client from the files in this
