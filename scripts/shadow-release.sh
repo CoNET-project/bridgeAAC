@@ -4,7 +4,11 @@ cd "$(dirname "$0")/.."
 mkdir -p artifacts
 . "$HOME/.cargo/env"
 target="${AAC_TARGET:-x86_64-unknown-linux-gnu}"
-cargo build --release --locked --offline --target "$target"
+if [ "${AAC_OFFLINE:-0}" = "1" ]; then
+  cargo build --release --locked --offline --target "$target"
+else
+  cargo build --release --locked --target "$target"
+fi
 bin="${CARGO_TARGET_DIR:-target}/${target}/release/bridge-aac"
 format="$(file -b "$bin")"
 case "$format" in
