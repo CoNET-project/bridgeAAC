@@ -65,6 +65,17 @@ rustup target add x86_64-unknown-linux-gnu
 cargo build --release --target x86_64-unknown-linux-gnu
 ```
 
+The production Shadow release helper uses the locked dependency graph and
+defaults to the `x86_64-unknown-linux-gnu` target:
+
+```bash
+./scripts/shadow-release.sh
+```
+
+It refuses non-ELF output. Run it on a Linux build host, or provide a working
+cross-linker on another host; a macOS Mach-O binary must never be installed as
+the production observer.
+
 Compute an AAC id:
 
 ```bash

@@ -3,6 +3,12 @@
 set -eu
 cd "$(dirname "$0")/.."
 version="$(awk -F '"' '/^version/{print $2; exit}' Cargo.toml)"
+unit_binary="$(awk -F= '/^ExecStart=/{print $2; exit}' deploy/bridge-aac-shadow-prod.service | awk '{print $1}')"
+unit_version="${unit_binary##*-}"
+if [ "$unit_version" != "$version" ]; then
+    echo "preflight refused: shadow unit uses bridge-aac-${unit_version}, Cargo.toml is ${version}"
+    exit 2
+fi
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "preflight refused: bridgeAAC is not inside a git work tree"
     exit 2
