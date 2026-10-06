@@ -75,10 +75,13 @@ x86_64-unknown-linux-gnu
 不是 Base reader。该主机当前没有本地 Base execution endpoint，因此在提供第二个
 独立 Base reader 之前，不得启动 Shadow production unit。
 
-`.77` 允许使用的独立 Base reader 主机为 `38.102.126.30` 和
+`.77` 允许探测的 Base reader 候选主机为 `38.102.126.30` 和
 `38.102.126.50`。主机名不等于 RPC endpoint；实际端口和 scheme 必须由运维写入
 `/etc/default/bridge-aac-shadow-prod`，并从 `.77` 验证 `eth_chainId == 8453`。
-若探测结果为 `224422`，该 endpoint 是 CoNET reader，禁止作为 Base reader。
+截至最近只读排查，`.30:8547` 确认为 Base `8453`，但防火墙只允许
+`216.225.202.23`、`38.102.126.58` 和本机访问；`.50` 已探测端口返回的是
+CoNET `224422`，尚未发现 Base execution endpoint。未经 chain ID 验证，不得将
+`.50` 或任何其它端口作为 Base reader。
 
 ## 6. 版本与 systemd
 
