@@ -65,7 +65,17 @@ x86_64-unknown-linux-gnu
 - 任何链上合约部署、升级、角色变更和 custody 切换，必须单独完成部署记录、
   bytecode/权限验收和 Explorer 验证。
 
-## 5. 版本与 systemd
+## 5. Shadow RPC 配置
+
+生产 unit 必须从 `/etc/default/bridge-aac-shadow-prod` 读取 RPC，配置模板见
+[`deploy/bridge-aac-shadow-prod.env.example`](deploy/bridge-aac-shadow-prod.env.example)。
+
+每条链必须配置两个可达且独立的 reader；禁止重复同一个 URL 来制造 quorum。
+`70.35.205.77` 当前本地执行客户端监听 `127.0.0.1:8545`，它是 CoNET reader，
+不是 Base reader。该主机当前没有本地 Base execution endpoint，因此在提供第二个
+独立 Base reader 之前，不得启动 Shadow production unit。
+
+## 6. 版本与 systemd
 
 `Cargo.toml` 的版本、`deploy/bridge-aac-shadow-prod.service` 中的二进制版本、
 发布 tag、Linux ELF SHA-256 和部署记录必须属于同一发布批次。
