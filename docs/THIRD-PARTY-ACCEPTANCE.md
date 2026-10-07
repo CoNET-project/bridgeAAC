@@ -24,11 +24,10 @@ sha256sum bridge-aac-0.33.5-linux-x86_64
 file bridge-aac-0.33.5-linux-x86_64
 ```
 
-Required SHA-256 is published in the `bridge-aac-v0.33.5` GitHub Release and
-must match the downloaded asset digest.
+Required SHA-256:
 
 ```text
-<release-asset-sha256>
+86c8b7f8719f04eef4a4581ee68b079206cac8f04fb6f5a41d45ae446a1bf4d5
 ```
 
 The artifact must be a Linux `x86_64` ELF executable.
