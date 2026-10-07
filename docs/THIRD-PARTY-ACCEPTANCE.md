@@ -50,6 +50,100 @@ independent-confirmations >= 3
 Current reports may still show `trusted-committee no` and `custody closed`;
 that is an expected non-acceptance result, not a reason to bypass the gate.
 
+## M3. Deploy an independent CoNET finality confirmer
+
+M3 is a separate deployment milestone. It lets a third party produce a local
+CoNET weak-subjectivity confirmation; it does not open custody.
+
+The confirmer must run on a Linux host controlled by the third party. Do not
+reuse the operator's beacon database, peer identity, Engine API, JWT, or
+validator process. Follow the Lighthouse configuration in
+[`vendor/lighthouse-conet/RUNBOOK.md`](../vendor/lighthouse-conet/RUNBOOK.md).
+
+The beacon node must include both historical options:
+
+```text
+--genesis-backfill
+--reconstruct-historic-states
+```
+
+Use a dedicated local Engine API and JWT. No validator is required for this
+read-only confirmer. Do not restart Geth or Validator as part of this step.
+
+### M3.1 Historical state availability
+
+The block header alone is not enough. The local beacon must serve the
+historical state needed by period 18:
+
+```bash
+curl -sS -o /tmp/period18-state \
+  -w 'HTTP %{http_code} bytes %{size_download}\n' \
+  http://127.0.0.1:5052/eth/v2/debug/beacon/states/155645
+```
+
+HTTP 404 means the confirmer is not ready. Do not submit an external SSZ file
+as if it were locally verified. Wait until historical state reconstruction
+serves the state successfully.
+
+### M3.2 Produce the local confirmation
+
+```bash
+./bridge-aac-0.33.7-linux-x86_64 confirm-checkpoint \
+  --beacon http://127.0.0.1:5052 \
+  --period 18 \
+  --out /tmp/aac-confirmation-<operator>.json
+```
+
+The output must include:
+
+```text
+weak-subjectivity-confirmation
+proofs yes
+trusted-committee no
+custody-gate no
+custody closed
+```
+
+`trusted-committee no` is expected for the current M3 confirmation artifact.
+It means the artifact is evidence for the multi-party gate, not a custody
+authorization.
+
+### M3.3 Combine independent confirmations
+
+One operator creates the period-18 candidate checkpoint. Other operators run
+the command above against their own local beacon and return their confirmation
+JSON. The candidate owner combines them:
+
+```bash
+./bridge-aac-0.33.7-linux-x86_64 accept-confirmations \
+  --checkpoint /path/to/aac-weak-subjectivity-period18.json \
+  --confirmation /path/to/confirmation-operator-a.json \
+  --confirmation /path/to/confirmation-operator-b.json \
+  --confirmation /path/to/confirmation-operator-c.json
+```
+
+M3 requires:
+
+```text
+confirmations >= 3
+rejected 0
+safety weak-subjectivity-trusted
+```
+
+The signers must be distinct and controlled by independent operators. Multiple
+hosts belonging to one operator do not satisfy the independence requirement.
+At least one confirmer should use a non-Prysm client, such as Lighthouse.
+
+M3 remains failed if any of these are true:
+
+```text
+historical state HTTP 404
+forced-updates > 0
+trusted-committee no for a custody decision
+confirmations < 3
+duplicate signer
+```
+
 ## 1. Download and verify the release
 
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
