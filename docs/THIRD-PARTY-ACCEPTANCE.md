@@ -65,7 +65,7 @@ file bridge-aac-0.33.7-linux-x86_64
 Required SHA-256:
 
 ```text
-2f71d51439186aa67c1e9e9096c961bc08c291c8afd669b6f6a83fe731f9322c
+b33a7b7cf38ea704baa2e2730b60987d4f09c104fed10f1abca041269e6819ec
 ```
 
 The artifact must be a Linux `x86_64` ELF executable.
