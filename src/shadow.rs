@@ -326,6 +326,74 @@ pub struct Observation {
     pub duplicate: bool,
 }
 
+/// A receipt and its Ethereum receipt-trie proof, serialized by the
+/// `export-receipt-proof` command for third-party acceptance.
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct ReceiptProofBundle {
+    pub chain_id: u64,
+    pub block_number: u64,
+    pub header_hash: String,
+    pub receipts_root: String,
+    pub receipt_index: u64,
+    pub receipt: String,
+    pub proof: Vec<String>,
+}
+
+pub fn export_receipt_proof(rpc: &str, tx_hash: &str) -> Result<ReceiptProofBundle, Error> {
+    let chain_id = parse_u64(rpc_call(rpc, "eth_chainId", serde_json::json!([]))?
+        .as_str()
+        .ok_or(Error::Rpc)?)?;
+    if chain_id != bindings::BASE_CHAIN_ID {
+        return Err(Error::ChainMismatch);
+    }
+    let tx = rpc_call(
+        rpc,
+        "eth_getTransactionByHash",
+        serde_json::json!([tx_hash]),
+    )?;
+    if tx.is_null() {
+        return Err(Error::UnknownHeader);
+    }
+    let block_hash = parse_hash(
+        tx.get("blockHash")
+            .and_then(|value| value.as_str())
+            .ok_or(Error::Rpc)?,
+    )?;
+    let receipt_index = parse_u64(
+        tx.get("transactionIndex")
+            .and_then(|value| value.as_str())
+            .ok_or(Error::Rpc)?,
+    )?;
+    let header = parse_header(
+        chain_id,
+        &rpc_call(
+            rpc,
+            "eth_getBlockByHash",
+            serde_json::json!([hex32(&block_hash), false]),
+        )?,
+    )?;
+    let fetched = fetch_receipts(rpc, &block_hash)?;
+    if receipt_index as usize >= fetched.encoded.len() {
+        return Err(Error::BadIndex);
+    }
+    let (root, proof) = prove_receipts(&fetched.encoded, receipt_index as usize)?;
+    if root != header.receipts_root {
+        return Err(Error::MerkleMismatch);
+    }
+    Ok(ReceiptProofBundle {
+        chain_id,
+        block_number: header.number,
+        header_hash: hex32(&header.header_hash),
+        receipts_root: hex32(&header.receipts_root),
+        receipt_index,
+        receipt: format!("0x{}", hex::encode(&fetched.encoded[receipt_index as usize])),
+        proof: proof
+            .into_iter()
+            .map(|node| format!("0x{}", hex::encode(node)))
+            .collect(),
+    })
+}
+
 pub fn format_observation(
     chain: &str,
     block: &AuthenticatedHeader,

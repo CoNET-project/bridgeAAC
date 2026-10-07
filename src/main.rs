@@ -179,6 +179,16 @@ fn main() -> ExitCode {
                 ExitCode::from(2)
             }
         },
+        Some("export-receipt-proof") => match export_receipt_proof_cmd(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
         _ => {
             eprintln!(
                 "bridge-aac {version}\n\
@@ -188,6 +198,7 @@ fn main() -> ExitCode {
                  bridge-aac check-header --chain base|conet --rpc <url> [--l1-rpc <url>] [--level safe|finalized] [--header <hex>]\n  \
                  bridge-aac settle <fixture.json> <log-index> [--allow-header <hex>] [--circle-balance <dec>] [--journal <file>]\n  \
                  bridge-aac verify-receipt --chain base|conet --rpc <url> [--l1-rpc <url>] --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
+                 bridge-aac export-receipt-proof --rpc <base-url> --l1-rpc <ethereum-l1-url> --tx <hash> --out <file>\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
                  bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
                  bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
@@ -698,6 +709,45 @@ fn verify_receipt_cmd(args: impl Iterator<Item = String>) -> Result<String, brid
 
 fn parse_proof(text: &str) -> Result<Vec<Vec<u8>>, bridge_aac::Error> {
     text.split(',').map(parse_raw).collect()
+}
+
+fn export_receipt_proof_cmd(
+    args: impl Iterator<Item = String>,
+) -> Result<String, bridge_aac::Error> {
+    use bridge_aac::{BaseL1Finality, FinalityVerifier};
+
+    let mut rpc = None;
+    let mut l1_rpc = None;
+    let mut tx = None;
+    let mut out = None;
+    let mut args = args;
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--rpc" => rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--l1-rpc" => l1_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--tx" => tx = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--out" => out = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    let rpc = rpc.ok_or(bridge_aac::Error::BadLength)?;
+    let l1_rpc = l1_rpc.ok_or(bridge_aac::Error::BadLength)?;
+    let tx = tx.ok_or(bridge_aac::Error::BadLength)?;
+    let out = out.ok_or(bridge_aac::Error::BadLength)?;
+
+    let bundle = bridge_aac::export_receipt_proof(&rpc, &tx)?;
+    let header = parse_bytes32(&bundle.header_hash)?;
+    let authenticated =
+        BaseL1Finality::new(l1_rpc, rpc).authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &header)?;
+    if format!("0x{}", hex::encode(authenticated.receipts_root)) != bundle.receipts_root {
+        return Err(bridge_aac::Error::DigestMismatch);
+    }
+    let json = serde_json::to_string_pretty(&bundle).map_err(|_| bridge_aac::Error::BadFixture)?;
+    fs::write(&out, format!("{json}\n")).map_err(|_| bridge_aac::Error::Journal)?;
+    Ok(format!(
+        "exported {out}\nheader_hash {}\nreceipt_index {}\nreceipts_root {}\nheader-check l1-anchor\ninclusion yes\nfinal true\ncustody closed\n",
+        bundle.header_hash, bundle.receipt_index, bundle.receipts_root
+    ))
 }
 
 fn parse_raw(text: &str) -> Result<Vec<u8>, bridge_aac::Error> {

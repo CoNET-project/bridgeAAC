@@ -1,7 +1,7 @@
 # bridgeAAC Third-Party Acceptance Guide
 
-This guide defines the acceptance evidence for `bridge-aac-v0.33.6`.
-Use the [v0.33.6 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.6)
+This guide defines the acceptance evidence for `bridge-aac-v0.33.7`.
+Use the [v0.33.7 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.7)
 as the artifact source.
 It covers the current production stage only:
 
@@ -55,11 +55,11 @@ that is an expected non-acceptance result, not a reason to bypass the gate.
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
 
 ```bash
-curl -fL -o bridge-aac-0.33.6-linux-x86_64 \
-  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.6/bridge-aac-0.33.6-linux-x86_64
+curl -fL -o bridge-aac-0.33.7-linux-x86_64 \
+  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.7/bridge-aac-0.33.7-linux-x86_64
 
-sha256sum bridge-aac-0.33.6-linux-x86_64
-file bridge-aac-0.33.6-linux-x86_64
+sha256sum bridge-aac-0.33.7-linux-x86_64
+file bridge-aac-0.33.7-linux-x86_64
 ```
 
 Required SHA-256:
@@ -73,7 +73,7 @@ The artifact must be a Linux `x86_64` ELF executable.
 ## 2. Verify the source release
 
 ```bash
-git clone --branch bridge-aac-v0.33.6 \
+git clone --branch bridge-aac-v0.33.7 \
   https://github.com/CoNET-project/bridgeAAC.git
 cd bridgeAAC
 ./scripts/preflight-shadow.sh
@@ -82,7 +82,7 @@ cd bridgeAAC
 The preflight result must be:
 
 ```text
-preflight accepted bridge-aac-v0.33.6
+preflight accepted bridge-aac-v0.33.7
 ```
 
 ## 3. Verify two independent Base readers
@@ -92,7 +92,7 @@ independent reader paths; do not repeat one URL through different schemes or
 proxies to manufacture quorum.
 
 ```bash
-./bridge-aac-0.33.6-linux-x86_64 base-quorum-reader \
+./bridge-aac-0.33.7-linux-x86_64 base-quorum-reader \
   --rpc <base-reader-1> \
   --rpc <base-reader-2> \
   --from <deployment-floor> \
@@ -110,7 +110,7 @@ rpc no
 ## 4. Verify the Ethereum L1 output anchor
 
 ```bash
-./bridge-aac-0.33.6-linux-x86_64 base-l1-output \
+./bridge-aac-0.33.7-linux-x86_64 base-l1-output \
   --l1-rpc <ethereum-l1-rpc> \
   --base-rpc <base-rpc>
 ```
@@ -126,7 +126,7 @@ execution-ahead no
 Then verify the block through the L1-bound finality path:
 
 ```bash
-./bridge-aac-0.33.6-linux-x86_64 check-header \
+./bridge-aac-0.33.7-linux-x86_64 check-header \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
@@ -147,10 +147,33 @@ current L1 output-anchor adapter, not a complete fault-proof light client.
 
 ## 5. Verify a receipt proof
 
-When a receipt and Merkle proof are available:
+Use a real Base transaction in a block at or below `anchor-l2`. The release
+includes an exporter that obtains all block receipts, builds the Ethereum
+receipt-trie proof, and binds the selected header to the Ethereum L1 anchor:
 
 ```bash
-./bridge-aac-0.33.6-linux-x86_64 verify-receipt \
+./bridge-aac-0.33.7-linux-x86_64 export-receipt-proof \
+  --rpc <base-rpc> \
+  --l1-rpc <ethereum-l1-rpc> \
+  --tx <transaction-hash> \
+  --out receipt-proof.json
+```
+
+The command must print:
+
+```text
+header-check l1-anchor
+inclusion yes
+final true
+custody closed
+```
+
+The generated JSON contains the header hash, receipt index, encoded receipt,
+receipts root, and proof nodes. It can also be checked with the lower-level
+command:
+
+```bash
+./bridge-aac-0.33.7-linux-x86_64 verify-receipt \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
