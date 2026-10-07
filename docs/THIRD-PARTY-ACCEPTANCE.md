@@ -1,6 +1,6 @@
 # bridgeAAC Third-Party Acceptance Guide
 
-This guide defines the acceptance evidence for `bridge-aac-v0.33.5`.
+This guide defines the acceptance evidence for `bridge-aac-v0.33.6`.
 It covers the current production stage only:
 
 ```text
@@ -27,22 +27,43 @@ The dispute-game contract and OptimismPortal are not valid targets for this
 selector. A valid acceptance should therefore show the registry call
 returning true rather than a game/portal revert.
 
+## CoNET custody gate status
+
+The current CoNET observer is intentionally fail-closed. A sync aggregate from
+one operator's beacon is not an independent consensus root. The CoNET custody
+gate requires all of the following before it can ever pass:
+
+```text
+beacon-agreed
+genesis-pin
+state-root-binding
+committee-handoff
+aggregate-verify
+sync-quorum
+trusted-committee
+forced-updates = 0
+independent-confirmations >= 3
+```
+
+Current reports may still show `trusted-committee no` and `custody closed`;
+that is an expected non-acceptance result, not a reason to bypass the gate.
+
 ## 1. Download and verify the release
 
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
 
 ```bash
-curl -fL -o bridge-aac-0.33.5-linux-x86_64 \
-  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.5/bridge-aac-0.33.5-linux-x86_64
+curl -fL -o bridge-aac-0.33.6-linux-x86_64 \
+  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.6/bridge-aac-0.33.6-linux-x86_64
 
-sha256sum bridge-aac-0.33.5-linux-x86_64
-file bridge-aac-0.33.5-linux-x86_64
+sha256sum bridge-aac-0.33.6-linux-x86_64
+file bridge-aac-0.33.6-linux-x86_64
 ```
 
 Required SHA-256:
 
 ```text
-86c8b7f8719f04eef4a4581ee68b079206cac8f04fb6f5a41d45ae446a1bf4d5
+2f71d51439186aa67c1e9e9096c961bc08c291c8afd669b6f6a83fe731f9322c
 ```
 
 The artifact must be a Linux `x86_64` ELF executable.
@@ -50,7 +71,7 @@ The artifact must be a Linux `x86_64` ELF executable.
 ## 2. Verify the source release
 
 ```bash
-git clone --branch bridge-aac-v0.33.5 \
+git clone --branch bridge-aac-v0.33.6 \
   https://github.com/CoNET-project/bridgeAAC.git
 cd bridgeAAC
 ./scripts/preflight-shadow.sh
@@ -59,7 +80,7 @@ cd bridgeAAC
 The preflight result must be:
 
 ```text
-preflight accepted bridge-aac-v0.33.5
+preflight accepted bridge-aac-v0.33.6
 ```
 
 ## 3. Verify two independent Base readers
@@ -69,7 +90,7 @@ independent reader paths; do not repeat one URL through different schemes or
 proxies to manufacture quorum.
 
 ```bash
-./bridge-aac-0.33.5-linux-x86_64 base-quorum-reader \
+./bridge-aac-0.33.6-linux-x86_64 base-quorum-reader \
   --rpc <base-reader-1> \
   --rpc <base-reader-2> \
   --from <deployment-floor> \
@@ -87,7 +108,7 @@ rpc no
 ## 4. Verify the Ethereum L1 output anchor
 
 ```bash
-./bridge-aac-0.33.5-linux-x86_64 base-l1-output \
+./bridge-aac-0.33.6-linux-x86_64 base-l1-output \
   --l1-rpc <ethereum-l1-rpc> \
   --base-rpc <base-rpc>
 ```
@@ -103,7 +124,7 @@ execution-ahead no
 Then verify the block through the L1-bound finality path:
 
 ```bash
-./bridge-aac-0.33.5-linux-x86_64 check-header \
+./bridge-aac-0.33.6-linux-x86_64 check-header \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
@@ -127,7 +148,7 @@ current L1 output-anchor adapter, not a complete fault-proof light client.
 When a receipt and Merkle proof are available:
 
 ```bash
-./bridge-aac-0.33.5-linux-x86_64 verify-receipt \
+./bridge-aac-0.33.6-linux-x86_64 verify-receipt \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
