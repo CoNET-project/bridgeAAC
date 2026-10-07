@@ -101,6 +101,18 @@ bridge-aac check-header --chain conet --rpc https://publicrpc.conet.network --le
 bridge-aac check-header --chain base --rpc https://base-rpc.conet.network --level finalized --header 0x44
 ```
 
+For a Base custody review, add an Ethereum L1 RPC. This path requires the
+canonical OptimismPortal wiring, a claim-valid dispute-game anchor, and the
+target Base block to be covered by that anchor; it does not treat the Base
+execution `finalized` tag as sufficient and does not open custody:
+
+```bash
+bridge-aac check-header --chain base \
+  --rpc https://base-rpc.conet.network \
+  --l1-rpc https://<ethereum-l1-reader> \
+  --level finalized --header <block-hash>
+```
+
 Settle one fixture log on the in-process test ledger. The command refuses `--rpc`. Without `--allow-header` the output does not say the header is final. `--circle-balance 0` keeps a burn-release AAC reserved.
 
 ```bash
@@ -116,6 +128,9 @@ bridge-aac settle fixtures/base-lock-receipt.json 0 --allow-header 0x44 --journa
 bridge-aac verify-receipt --chain base --rpc https://base-rpc.conet.network \
   --header <block-hash> --index 0 --receipt <rlp-hex> --proof <node-hex>
 ```
+
+The same command accepts `--l1-rpc` to bind the receipt root to an L1-covered
+Base block instead of only the execution client's finalized tag.
 
 `shadow` reads at least two execution clients. It proves one real receipt from TreasuryBridgeV3 or the GB token. A successful source receipt prints `execution-tag yes`, `registry paused`, and `consume denied`. The report does not print `final true`.
 

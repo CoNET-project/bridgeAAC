@@ -185,9 +185,9 @@ fn main() -> ExitCode {
                  usage:\n  \
                  bridge-aac aac-id <source-chain-id> <gateway> <deposit-id-hex> <target-domain-hex>\n  \
                  bridge-aac prove <fixture.json> <log-index> [--allow-header <hex>]\n  \
-                 bridge-aac check-header --chain base|conet --rpc <url> [--level safe|finalized] [--header <hex>]\n  \
+                 bridge-aac check-header --chain base|conet --rpc <url> [--l1-rpc <url>] [--level safe|finalized] [--header <hex>]\n  \
                  bridge-aac settle <fixture.json> <log-index> [--allow-header <hex>] [--circle-balance <dec>] [--journal <file>]\n  \
-                 bridge-aac verify-receipt --chain base|conet --rpc <url> --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
+                 bridge-aac verify-receipt --chain base|conet --rpc <url> [--l1-rpc <url>] --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
                  bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
                  bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
@@ -232,10 +232,12 @@ fn prove(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::E
 
 fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
     use bridge_aac::{
-        BaseFinality, ConetFinality, ExecutionView, FinalityLevel, FinalityVerifier, JsonRpcExecution,
+        BaseFinality, BaseL1Finality, ConetFinality, ExecutionView, FinalityLevel,
+        FinalityVerifier, JsonRpcExecution,
     };
     let mut chain = None;
     let mut rpc = None;
+    let mut l1_rpc = None;
     let mut level = FinalityLevel::Finalized;
     let mut header = None;
     let mut args = args;
@@ -243,6 +245,7 @@ fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac
         match flag.as_str() {
             "--chain" => chain = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--rpc" => rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--l1-rpc" => l1_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--level" => level = FinalityLevel::parse(&args.next().ok_or(bridge_aac::Error::BadLength)?)?,
             "--header" => header = Some(parse_bytes32(&args.next().ok_or(bridge_aac::Error::BadLength)?)?),
             _ => return Err(bridge_aac::Error::BadFixture),
@@ -250,7 +253,7 @@ fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac
     }
     let chain = chain.ok_or(bridge_aac::Error::BadLength)?;
     let rpc = rpc.ok_or(bridge_aac::Error::BadLength)?;
-    let api = JsonRpcExecution::new(rpc);
+    let api = JsonRpcExecution::new(rpc.clone());
     let mut last_header = header.unwrap_or([0u8; 32]);
     let mut attested = None;
     let attempts = if header.is_some() { 1 } else { 3 };
@@ -263,8 +266,14 @@ fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac
         attested = None;
         let accepted = match chain.as_str() {
             "base" => {
-                let verifier = BaseFinality { api: api.clone(), level };
-                match verifier.authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &candidate) {
+                let accepted = if let Some(l1_rpc) = l1_rpc.clone() {
+                    BaseL1Finality::new(l1_rpc, rpc.clone())
+                        .authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &candidate)
+                } else {
+                    BaseFinality { api: api.clone(), level }
+                        .authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &candidate)
+                };
+                match accepted {
                     Ok(header) => {
                         attested = Some(header);
                         true
@@ -294,8 +303,13 @@ fn check_header(args: impl Iterator<Item = String>) -> Result<String, bridge_aac
         FinalityLevel::Safe => "S",
         FinalityLevel::Finalized => "F",
     };
+    let header_check = if chain == "base" && l1_rpc.is_some() {
+        "l1-anchor"
+    } else {
+        "execution-tag"
+    };
     let mut out = format!(
-        "header_hash 0x{}\nchain {chain}\ntag {tag}\nheader-check execution-tag\nlight-client no\n",
+        "header_hash 0x{}\nchain {chain}\ntag {tag}\nheader-check {header_check}\nlight-client no\n",
         hex::encode(last_header)
     );
     if let Some(header) = attested {
@@ -617,9 +631,13 @@ fn shadow(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Erro
 }
 
 fn verify_receipt_cmd(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
-    use bridge_aac::{BaseFinality, ConetFinality, FinalityLevel, FinalityVerifier, JsonRpcExecution};
+    use bridge_aac::{
+        BaseFinality, BaseL1Finality, ConetFinality, FinalityLevel, FinalityVerifier,
+        JsonRpcExecution,
+    };
     let mut chain = None;
     let mut rpc = None;
+    let mut l1_rpc = None;
     let mut level = FinalityLevel::Finalized;
     let mut header = None;
     let mut index = None;
@@ -630,6 +648,7 @@ fn verify_receipt_cmd(args: impl Iterator<Item = String>) -> Result<String, brid
         match flag.as_str() {
             "--chain" => chain = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--rpc" => rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--l1-rpc" => l1_rpc = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             "--level" => level = FinalityLevel::parse(&args.next().ok_or(bridge_aac::Error::BadLength)?)?,
             "--header" => header = Some(parse_bytes32(&args.next().ok_or(bridge_aac::Error::BadLength)?)?),
             "--index" => {
@@ -645,17 +664,28 @@ fn verify_receipt_cmd(args: impl Iterator<Item = String>) -> Result<String, brid
     let index = index.ok_or(bridge_aac::Error::BadLength)?;
     let receipt = receipt.ok_or(bridge_aac::Error::BadLength)?;
     let proof = proof.ok_or(bridge_aac::Error::BadLength)?;
-    let api = JsonRpcExecution::new(rpc.ok_or(bridge_aac::Error::BadLength)?);
+    let rpc = rpc.ok_or(bridge_aac::Error::BadLength)?;
+    let api = JsonRpcExecution::new(rpc.clone());
+    let use_l1_anchor = chain == "base" && l1_rpc.is_some();
     let authenticated = match chain.as_str() {
-        "base" => BaseFinality { api, level }.authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &header)?,
+        "base" => {
+            if let Some(l1_rpc) = l1_rpc {
+                BaseL1Finality::new(l1_rpc, rpc)
+                    .authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &header)?
+            } else {
+                BaseFinality { api, level }
+                    .authenticate(bridge_aac::bindings::BASE_CHAIN_ID, &header)?
+            }
+        }
         "conet" => ConetFinality { api, level }.authenticate(bridge_aac::bindings::CONET_CHAIN_ID, &header)?,
         _ => return Err(bridge_aac::Error::BadFixture),
     };
     let included = bridge_aac::verify_receipt(&authenticated.receipts_root, index, &receipt, &proof).is_ok();
     let mut out = format!(
-        "header_hash 0x{}\nreceipts-root 0x{}\nheader-check execution-tag\nlight-client no\ninclusion {}\n",
+        "header_hash 0x{}\nreceipts-root 0x{}\nheader-check {}\nlight-client no\ninclusion {}\n",
         hex::encode(header),
         hex::encode(authenticated.receipts_root),
+        if use_l1_anchor { "l1-anchor" } else { "execution-tag" },
         if included { "yes" } else { "no" }
     );
     if included {

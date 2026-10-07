@@ -53,7 +53,9 @@ pub use conet_consensus::{
 };
 pub use forward_committee::observe_forward_committee;
 pub use light_client::{accept_confirmations, confirm_checkpoint, observe_weak_subjectivity};
-pub use l1_output::{assess_anchor, observe_base_l1_output, AnchorFacts, AnchorReport};
+pub use l1_output::{
+    assess_anchor, observe_base_l1_output, AnchorFacts, AnchorReport, BaseL1Finality,
+};
 pub use merkle::{build_tree, prove, verify as verify_merkle, MerkleProof, MerkleTree};
 pub use mpt::{encode_consensus_receipt, prove_receipts, single_leaf_proof, verify_receipt, ConsensusLog};
 pub use service::{

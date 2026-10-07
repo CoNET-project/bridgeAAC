@@ -8,6 +8,7 @@
 use crate::assets::bindings;
 use crate::error::Error;
 use crate::execution::JsonRpcExecution;
+use crate::finality::{AuthenticatedHeader, FinalityVerifier};
 use crate::ExecutionView;
 use std::time::Duration;
 
@@ -49,6 +50,56 @@ pub struct AnchorReport {
     pub covered: bool,
     pub execution_ahead: bool,
     pub text: String,
+}
+
+/// Base finality verifier backed by a claim-valid OptimismPortal anchor on
+/// Ethereum L1. A Base execution `finalized` tag alone is not sufficient.
+#[derive(Clone, Debug)]
+pub struct BaseL1Finality {
+    l1: L1Client,
+    base: JsonRpcExecution,
+}
+
+impl BaseL1Finality {
+    pub fn new(l1_rpc: impl Into<String>, base_rpc: impl Into<String>) -> Self {
+        Self {
+            l1: L1Client::new(&l1_rpc.into()),
+            base: JsonRpcExecution::new(base_rpc),
+        }
+    }
+}
+
+impl FinalityVerifier for BaseL1Finality {
+    fn authenticate(
+        &self,
+        chain_id: u64,
+        header_hash: &[u8; 32],
+    ) -> Result<AuthenticatedHeader, Error> {
+        if chain_id != bindings::BASE_CHAIN_ID
+            || self.base.chain_id()? != bindings::BASE_CHAIN_ID
+        {
+            return Err(Error::ChainMismatch);
+        }
+        let block = self.base.block_by_hash(header_hash)?;
+        let canonical = self.base.block_by_number(block.number)?;
+        if canonical.hash != block.hash
+            || canonical.state_root != block.state_root
+            || canonical.receipts_root != block.receipts_root
+        {
+            return Err(Error::UnknownHeader);
+        }
+        let facts = read_anchor_facts(&self.l1, block.number)?;
+        if !assess_anchor(&facts).covered {
+            return Err(Error::UnknownHeader);
+        }
+        Ok(AuthenticatedHeader {
+            chain_id,
+            header_hash: block.hash,
+            number: block.number,
+            state_root: block.state_root,
+            receipts_root: block.receipts_root,
+        })
+    }
 }
 
 pub fn assess_anchor(facts: &AnchorFacts) -> AnchorReport {
@@ -110,8 +161,18 @@ pub fn observe_base_l1_output(
 ) -> Result<String, Error> {
     let l1 = L1Client::new(l1_rpc);
     let base = JsonRpcExecution::new(base_rpc);
-    let l1_chain_id = l1.chain_id()?;
     let base_chain_id = base.chain_id()?;
+    let base_block = match base_block {
+        Some(number) => number,
+        None => base.block_by_tag("finalized")?.number,
+    };
+    let mut facts = read_anchor_facts(&l1, base_block)?;
+    facts.base_chain_id = base_chain_id;
+    Ok(assess_anchor(&facts).text)
+}
+
+fn read_anchor_facts(l1: &L1Client, base_block: u64) -> Result<AnchorFacts, Error> {
+    let l1_chain_id = l1.chain_id()?;
     let portal = pinned_address(PORTAL_HEX);
     let factory = address_word(&l1.eth_call(portal, &SEL_FACTORY)?)?;
     let registry = address_word(&l1.eth_call(portal, &SEL_REGISTRY)?)?;
@@ -123,20 +184,16 @@ pub fn observe_base_l1_output(
         (false, 0, [0u8; 32])
     } else {
         let valid = u64_word(&word(
-            &l1.eth_call(registry, &call_data(&SEL_CLAIM_VALID, &anchor_game))?,
+            &l1.eth_call(anchor_game, &call_data(&SEL_CLAIM_VALID, &anchor_game))?,
             0,
         )?)? == 1;
         let game_sequence = u64_word(&word(&l1.eth_call(anchor_game, &SEL_SEQUENCE)?, 0)?)?;
         let game_root = word(&l1.eth_call(anchor_game, &SEL_ROOT)?, 0)?;
         (valid, game_sequence, game_root)
     };
-    let base_block = match base_block {
-        Some(number) => number,
-        None => base.block_by_tag("finalized")?.number,
-    };
-    Ok(assess_anchor(&AnchorFacts {
+    Ok(AnchorFacts {
         l1_chain_id,
-        base_chain_id,
+        base_chain_id: bindings::BASE_CHAIN_ID,
         portal,
         factory,
         registry,
@@ -148,9 +205,9 @@ pub fn observe_base_l1_output(
         game_root,
         base_block,
     })
-    .text)
 }
 
+#[derive(Clone, Debug)]
 struct L1Client {
     url: String,
 }
