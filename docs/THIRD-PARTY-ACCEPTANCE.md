@@ -151,11 +151,29 @@ Use a real Base transaction in a block at or below `anchor-l2`. The release
 includes an exporter that obtains all block receipts, builds the Ethereum
 receipt-trie proof, and binds the selected header to the Ethereum L1 anchor:
 
+First obtain the current anchor height and choose a successful transaction from
+that covered block. Do not choose a transaction from the current Base head when
+the head is ahead of the L1 anchor:
+
+```bash
+ANCHOR_REPORT="$(./bridge-aac-0.33.7-linux-x86_64 base-l1-output \
+  --l1-rpc <ethereum-l1-rpc> --base-rpc <base-rpc>)"
+ANCHOR_L2="$(printf '%s\n' "$ANCHOR_REPORT" | awk '$1=="anchor-l2" {print $2; exit}')"
+BLOCK_HEX="$(printf '0x%x' "$ANCHOR_L2")"
+TX_HASH="$(curl -fsS -H 'content-type: application/json' \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBlockReceipts\",\"params\":[\"$BLOCK_HEX\"]}" \
+  <base-rpc> | jq -r '.result | map(select(.status=="0x1")) | .[0].transactionHash')"
+```
+
+For an AAC-specific acceptance, select a transaction whose receipt contains a
+TreasuryBridgeV3 or GB bridge event, rather than an unrelated successful
+transaction.
+
 ```bash
 ./bridge-aac-0.33.7-linux-x86_64 export-receipt-proof \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
-  --tx <transaction-hash> \
+  --tx "$TX_HASH" \
   --out receipt-proof.json
 ```
 
