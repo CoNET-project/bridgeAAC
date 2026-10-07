@@ -45,7 +45,8 @@ pub use hash::keccak256;
 pub use journal::{load_into, save_gateway};
 pub use consume_spec::{upgrade_appends_only, ConsumeRole, ConsumeSpec, ProofBinding, CONSUME_LAYOUT_V1};
 pub use custody_gate::{
-    consume_gate_passed, mint_gate_passed, ConsumeEvidence, MintClosureEvidence,
+    conet_finality_gate_passed, consume_gate_passed, mint_gate_passed, ConetFinalityEvidence,
+    ConsumeEvidence, MintClosureEvidence,
 };
 pub use destination::{assess_destination, observe_destination, DestinationFacts, DestinationReport};
 pub use conet_consensus::{

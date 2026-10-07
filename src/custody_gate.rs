@@ -104,6 +104,70 @@ pub fn mint_gate_passed(evidence: &MintClosureEvidence) -> bool {
     evidence.proven()
 }
 
+/// Evidence required before a CoNET beacon result can participate in custody.
+///
+/// A matching aggregate from one operator's beacon is not an independent
+/// consensus root. Forced committee updates and missing state/committee
+/// bindings therefore keep this gate closed.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ConetFinalityEvidence {
+    pub beacon_agreed: bool,
+    pub genesis_pin: bool,
+    pub state_root_bound: bool,
+    pub committee_handoff: bool,
+    pub aggregate_verified: bool,
+    pub sync_quorum: bool,
+    pub trusted_committee: bool,
+    pub forced_updates: u64,
+    pub independent_confirmations: usize,
+}
+
+impl ConetFinalityEvidence {
+    pub fn unproven() -> Self {
+        Self {
+            beacon_agreed: false,
+            genesis_pin: false,
+            state_root_bound: false,
+            committee_handoff: false,
+            aggregate_verified: false,
+            sync_quorum: false,
+            trusted_committee: false,
+            forced_updates: 0,
+            independent_confirmations: 0,
+        }
+    }
+
+    pub fn complete_for_test() -> Self {
+        Self {
+            beacon_agreed: true,
+            genesis_pin: true,
+            state_root_bound: true,
+            committee_handoff: true,
+            aggregate_verified: true,
+            sync_quorum: true,
+            trusted_committee: true,
+            forced_updates: 0,
+            independent_confirmations: 3,
+        }
+    }
+
+    pub fn proven(&self) -> bool {
+        self.beacon_agreed
+            && self.genesis_pin
+            && self.state_root_bound
+            && self.committee_handoff
+            && self.aggregate_verified
+            && self.sync_quorum
+            && self.trusted_committee
+            && self.forced_updates == 0
+            && self.independent_confirmations >= 3
+    }
+}
+
+pub fn conet_finality_gate_passed(evidence: &ConetFinalityEvidence) -> bool {
+    evidence.proven()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -139,5 +203,21 @@ mod tests {
             &ConsumeEvidence::complete_for_test()
         ));
         assert!(mint_gate_passed(&MintClosureEvidence::complete_for_test()));
+    }
+
+    #[test]
+    fn conet_finality_requires_independent_non_forced_evidence() {
+        assert!(!conet_finality_gate_passed(&ConetFinalityEvidence::unproven()));
+        assert!(conet_finality_gate_passed(
+            &ConetFinalityEvidence::complete_for_test()
+        ));
+
+        let mut forced = ConetFinalityEvidence::complete_for_test();
+        forced.forced_updates = 1;
+        assert!(!conet_finality_gate_passed(&forced));
+
+        let mut same_operator = ConetFinalityEvidence::complete_for_test();
+        same_operator.independent_confirmations = 2;
+        assert!(!conet_finality_gate_passed(&same_operator));
     }
 }
