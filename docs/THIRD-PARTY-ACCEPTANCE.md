@@ -1,6 +1,8 @@
 # bridgeAAC Third-Party Acceptance Guide
 
 This guide defines the acceptance evidence for `bridge-aac-v0.33.6`.
+Use the [v0.33.6 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.6)
+as the artifact source.
 It covers the current production stage only:
 
 ```text
@@ -12,7 +14,7 @@ custody closed
 It does not authorize minting, release, settlement broadcasting, or miner-vote
 cutover.
 
-## v0.33.5 claim-validation fix
+## L1 claim-validation fix (v0.33.5+)
 
 Use v0.33.5 or newer. v0.33.4 must not be used for acceptance because it sent
 `isGameClaimValid(game)` to the dispute-game contract. The correct call sends
