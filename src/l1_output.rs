@@ -184,7 +184,7 @@ fn read_anchor_facts(l1: &L1Client, base_block: u64) -> Result<AnchorFacts, Erro
         (false, 0, [0u8; 32])
     } else {
         let valid = u64_word(&word(
-            &l1.eth_call(anchor_game, &call_data(&SEL_CLAIM_VALID, &anchor_game))?,
+            &l1.eth_call(registry, &call_data(&SEL_CLAIM_VALID, &anchor_game))?,
             0,
         )?)? == 1;
         let game_sequence = u64_word(&word(&l1.eth_call(anchor_game, &SEL_SEQUENCE)?, 0)?)?;

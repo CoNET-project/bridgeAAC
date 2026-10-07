@@ -1,9 +1,9 @@
 # Production evaluation
 
-## Current release status — 0.33.4 source candidate
+## Current release status — 0.33.5 source candidate
 
-The repository source is now `0.33.4`. The production unit is pinned to the same
-`0.33.4` binary name in
+The repository source is now `0.33.5`. The production unit is pinned to the same
+`0.33.5` binary name in
 `deploy/bridge-aac-shadow-prod.service`, but this candidate is **not installed or
 approved** until a Linux `x86_64-unknown-linux-gnu` artifact is built, hashed,
 published, and verified on the observer host. The existing approval below is
