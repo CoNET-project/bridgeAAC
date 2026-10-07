@@ -12,6 +12,21 @@ custody closed
 It does not authorize minting, release, settlement broadcasting, or miner-vote
 cutover.
 
+## v0.33.5 claim-validation fix
+
+Use v0.33.5 or newer. v0.33.4 must not be used for acceptance because it sent
+`isGameClaimValid(game)` to the dispute-game contract. The correct call sends
+the selector to the pinned `AnchorStateRegistry` and passes the current anchor
+game as its argument:
+
+```text
+AnchorStateRegistry.isGameClaimValid(anchorGame)
+```
+
+The dispute-game contract and OptimismPortal are not valid targets for this
+selector. A valid acceptance should therefore show the registry call
+returning true rather than a game/portal revert.
+
 ## 1. Download and verify the release
 
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
