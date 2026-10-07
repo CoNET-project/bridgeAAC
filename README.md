@@ -48,6 +48,7 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 
 - [Whitepaper](docs/WHITEPAPER.md)
 - [MVP phases](docs/MVP.md)
+- [Third-party acceptance guide](docs/THIRD-PARTY-ACCEPTANCE.md)
 
 ## Build on Linux
 
