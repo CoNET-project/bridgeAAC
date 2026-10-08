@@ -329,7 +329,9 @@ heartbeat yes
 `reader-lag-warning yes` may appear during a finalized-tip transition; it is
 advisory only when the lower finalized range continues to pass quorum and root
 checks. It must not be confused with `quorum no`, `root-match no`, or a
-blocking `cursor-lag`.
+blocking `cursor-lag`. A cursor lag up to 256 blocks is tolerated while the
+catch-up batch is being processed; `stable yes` still requires 256 verified
+blocks with no blocking errors.
 
 The page state must be:
 

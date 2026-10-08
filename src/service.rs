@@ -12,8 +12,9 @@ use std::io::Write;
 use std::path::Path;
 
 pub const MAX_BLOCKS_PER_CYCLE: u64 = 32;
-pub const CATCHUP_BLOCKS: u64 = 128;
+pub const CATCHUP_BLOCKS: u64 = 256;
 pub const LAG_ALERT_BLOCKS: u64 = 64;
+pub const CURSOR_LAG_ALERT_BLOCKS: u64 = 256;
 pub const STABLE_BLOCKS: u64 = 256;
 pub const RECONCILE_LAG_BLOCKS: u64 = 256;
 pub const READER_LAG_WARNING_CYCLES: u64 = 3;
@@ -115,7 +116,7 @@ pub fn apply_stable(cursor: &mut ShadowCursor, chain: &str, height: u64, reader_
         "conet" => &mut cursor.conet_stable_at,
         _ => return String::new(),
     };
-    if cursor_lag > LAG_ALERT_BLOCKS || height == 0 {
+    if cursor_lag > CURSOR_LAG_ALERT_BLOCKS || height == 0 {
         *slot = None;
         return "stable reset\n".to_string();
     }
@@ -230,7 +231,7 @@ pub fn alerts_for(report: &str) -> Vec<&'static str> {
     if report.contains("reconcile pending") {
         alerts.push("alert reconcile");
     }
-    if max_metric(report, "cursor-lag") > LAG_ALERT_BLOCKS {
+    if max_metric(report, "cursor-lag") > CURSOR_LAG_ALERT_BLOCKS {
         alerts.push("alert cursor-lag");
     }
     alerts
@@ -512,7 +513,7 @@ pub fn drill_report(dir: &Path) -> Result<String, Error> {
         out.push_str("drill cursor yes\n");
     }
     let page = dir.join("page.txt");
-    write_page(&page, "reader-lag 200\ncursor-lag 200\n")?;
+    write_page(&page, "reader-lag 200\ncursor-lag 300\n")?;
     let open = fs::read_to_string(&page).map_err(|_| Error::Journal)?;
     write_page(&page, "reader-lag 0\ncursor-lag 0\n")?;
     let clear = fs::read_to_string(&page).map_err(|_| Error::Journal)?;

@@ -63,7 +63,8 @@ pub use service::{
     absorb_ops, alerts_for, apply_reader_lag, apply_stable, batch_for_lag, deployment_floor, drill_report, finish_cycle, load_cursor,
     max_metric, next_cursor, plan_range, prepare_cycle, prepare_cycle_with_targets, reconcile_pending, save_cursor,
     should_pause, valid_reader_set, write_cycle,
-    write_page, OpNote, PreparedCycle, ShadowCursor, CATCHUP_BLOCKS, LAG_ALERT_BLOCKS, MAX_BLOCKS_PER_CYCLE,
+    write_page, OpNote, PreparedCycle, ShadowCursor, CATCHUP_BLOCKS, CURSOR_LAG_ALERT_BLOCKS,
+    LAG_ALERT_BLOCKS, MAX_BLOCKS_PER_CYCLE,
     RECONCILE_LAG_BLOCKS, STABLE_BLOCKS,
 };
 pub use shadow::{
