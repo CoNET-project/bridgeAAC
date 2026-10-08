@@ -1,7 +1,7 @@
 # bridgeAAC Third-Party Acceptance Guide
 
-This guide defines the acceptance evidence for `bridge-aac-v0.33.7`.
-Use the [v0.33.7 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.7)
+This guide defines the acceptance evidence for `bridge-aac-v0.33.8`.
+Use the [v0.33.8 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.8)
 as the artifact source.
 It covers the current production stage only:
 
@@ -149,17 +149,17 @@ duplicate signer
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
 
 ```bash
-curl -fL -o bridge-aac-0.33.7-linux-x86_64 \
-  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.7/bridge-aac-0.33.7-linux-x86_64
+curl -fL -o bridge-aac-0.33.8-linux-x86_64 \
+  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.8/bridge-aac-0.33.8-linux-x86_64
 
-sha256sum bridge-aac-0.33.7-linux-x86_64
-file bridge-aac-0.33.7-linux-x86_64
+sha256sum bridge-aac-0.33.8-linux-x86_64
+file bridge-aac-0.33.8-linux-x86_64
 ```
 
 Required SHA-256:
 
 ```text
-b33a7b7cf38ea704baa2e2730b60987d4f09c104fed10f1abca041269e6819ec
+3298c0271fa20bde1338df6b74046b5cdc15e6bb46e446d22399b0210400eea1
 ```
 
 The artifact must be a Linux `x86_64` ELF executable.
@@ -167,7 +167,7 @@ The artifact must be a Linux `x86_64` ELF executable.
 ## 2. Verify the source release
 
 ```bash
-git clone --branch bridge-aac-v0.33.7 \
+git clone --branch bridge-aac-v0.33.8 \
   https://github.com/CoNET-project/bridgeAAC.git
 cd bridgeAAC
 ./scripts/preflight-shadow.sh
@@ -176,7 +176,7 @@ cd bridgeAAC
 The preflight result must be:
 
 ```text
-preflight accepted bridge-aac-v0.33.7
+preflight accepted bridge-aac-v0.33.8
 ```
 
 ## 3. Verify two independent Base readers
@@ -186,7 +186,7 @@ independent reader paths; do not repeat one URL through different schemes or
 proxies to manufacture quorum.
 
 ```bash
-./bridge-aac-0.33.7-linux-x86_64 base-quorum-reader \
+./bridge-aac-0.33.8-linux-x86_64 base-quorum-reader \
   --rpc <base-reader-1> \
   --rpc <base-reader-2> \
   --from <deployment-floor> \
@@ -204,7 +204,7 @@ rpc no
 ## 4. Verify the Ethereum L1 output anchor
 
 ```bash
-./bridge-aac-0.33.7-linux-x86_64 base-l1-output \
+./bridge-aac-0.33.8-linux-x86_64 base-l1-output \
   --l1-rpc <ethereum-l1-rpc> \
   --base-rpc <base-rpc>
 ```
@@ -220,7 +220,7 @@ execution-ahead no
 Then verify the block through the L1-bound finality path:
 
 ```bash
-./bridge-aac-0.33.7-linux-x86_64 check-header \
+./bridge-aac-0.33.8-linux-x86_64 check-header \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
@@ -264,7 +264,7 @@ TreasuryBridgeV3 or GB bridge event, rather than an unrelated successful
 transaction.
 
 ```bash
-./bridge-aac-0.33.7-linux-x86_64 export-receipt-proof \
+./bridge-aac-0.33.8-linux-x86_64 export-receipt-proof \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
   --tx "$TX_HASH" \
@@ -285,7 +285,7 @@ receipts root, and proof nodes. It can also be checked with the lower-level
 command:
 
 ```bash
-./bridge-aac-0.33.7-linux-x86_64 verify-receipt \
+./bridge-aac-0.33.8-linux-x86_64 verify-receipt \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
