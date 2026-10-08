@@ -321,11 +321,15 @@ shadow yes
 broadcast no
 settled no
 custody closed
-reader-lag 0
 cursor-lag 0
 stable yes
 heartbeat yes
 ```
+
+`reader-lag-warning yes` may appear during a finalized-tip transition; it is
+advisory only when the lower finalized range continues to pass quorum and root
+checks. It must not be confused with `quorum no`, `root-match no`, or a
+blocking `cursor-lag`.
 
 The page state must be:
 
@@ -339,8 +343,8 @@ Expected:
 page clear
 ```
 
-`page open` or `alert reader-lag` means the deployment is running but has not
-passed acceptance.
+`page open`, `alert quorum`, `alert inclusion`, `alert rpc`, `alert cursor`, or
+blocking `alert cursor-lag` means the deployment has not passed acceptance.
 
 ## 7. Submit the evidence
 

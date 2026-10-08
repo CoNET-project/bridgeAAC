@@ -83,6 +83,11 @@ x86_64-unknown-linux-gnu
 CoNET `224422`，尚未发现 Base execution endpoint。未经 chain ID 验证，不得将
 `.50` 或任何其它端口作为 Base reader。
 
+Reader finalized tip 的短暂差异属于 advisory `reader-lag-warning`，采用连续
+3 个周期触发、连续 3 个周期恢复的滞后策略；它本身不得打开 page 或重置
+stable。只有 lower finalized 范围内的 hash/state-root/receipts-root 不一致、
+quorum/RPC/cursor 错误，或持续的 `cursor-lag`，才是阻断性告警。
+
 ## 6. 版本与 systemd
 
 `Cargo.toml` 的版本、`deploy/bridge-aac-shadow-prod.service` 中的二进制版本、

@@ -44,11 +44,21 @@ fn quorum_inclusion_gateway_and_status_raise_alerts() {
     assert_eq!(alerts_for("rpc no\n"), vec!["alert rpc"]);
     assert_eq!(alerts_for("cursor no\naccepted no\n"), vec!["alert cursor"]);
     assert_eq!(alerts_for("reconcile pending\noperation-id 0xabc\n"), vec!["alert reconcile"]);
-    assert_eq!(
-        alerts_for("reader-lag 218\ncursor-lag 1865\n"),
-        vec!["alert reader-lag", "alert cursor-lag"]
-    );
+    assert_eq!(alerts_for("reader-lag 218\ncursor-lag 1865\n"), vec!["alert cursor-lag"]);
     assert!(alerts_for("reader-lag 64\ncursor-lag 0\n").is_empty());
+}
+
+#[test]
+fn reader_lag_is_advisory_with_hysteresis() {
+    use bridge_aac::{apply_reader_lag, ShadowCursor};
+    let mut cursor = ShadowCursor::default();
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 218), "reader-lag-warning no\n");
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 218), "reader-lag-warning no\n");
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 218), "reader-lag-warning yes\n");
+    assert!(alerts_for("reader-lag 218\ncursor-lag 0\n").is_empty());
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 0), "reader-lag-warning yes\n");
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 0), "reader-lag-warning yes\n");
+    assert_eq!(apply_reader_lag(&mut cursor, "base", 0), "reader-lag-warning no\n");
 }
 
 #[test]

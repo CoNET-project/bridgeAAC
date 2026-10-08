@@ -16,6 +16,8 @@ pub const CATCHUP_BLOCKS: u64 = 128;
 pub const LAG_ALERT_BLOCKS: u64 = 64;
 pub const STABLE_BLOCKS: u64 = 256;
 pub const RECONCILE_LAG_BLOCKS: u64 = 256;
+pub const READER_LAG_WARNING_CYCLES: u64 = 3;
+pub const READER_LAG_CLEAR_CYCLES: u64 = 3;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ShadowCursor {
@@ -31,6 +33,18 @@ pub struct ShadowCursor {
     pub base_stable_at: Option<u64>,
     #[serde(default)]
     pub conet_stable_at: Option<u64>,
+    #[serde(default)]
+    pub base_reader_lag_cycles: u64,
+    #[serde(default)]
+    pub conet_reader_lag_cycles: u64,
+    #[serde(default)]
+    pub base_reader_clear_cycles: u64,
+    #[serde(default)]
+    pub conet_reader_clear_cycles: u64,
+    #[serde(default)]
+    pub base_reader_lag_warning: bool,
+    #[serde(default)]
+    pub conet_reader_lag_warning: bool,
     #[serde(default)]
     pub ops: BTreeMap<String, OpNote>,
 }
@@ -115,6 +129,47 @@ pub fn apply_stable(cursor: &mut ShadowCursor, chain: &str, height: u64, reader_
     }
 }
 
+/// Reader tip skew is advisory when the lower finalized range is still being
+/// checked. Hysteresis prevents a normal finalized update from flapping the
+/// operator page every cycle.
+pub fn apply_reader_lag(cursor: &mut ShadowCursor, chain: &str, reader_lag: u64) -> String {
+    let (high_cycles, clear_cycles, warning) = match chain {
+        "base" => (
+            &mut cursor.base_reader_lag_cycles,
+            &mut cursor.base_reader_clear_cycles,
+            &mut cursor.base_reader_lag_warning,
+        ),
+        "conet" => (
+            &mut cursor.conet_reader_lag_cycles,
+            &mut cursor.conet_reader_clear_cycles,
+            &mut cursor.conet_reader_lag_warning,
+        ),
+        _ => return String::new(),
+    };
+    if reader_lag > LAG_ALERT_BLOCKS {
+        *high_cycles = high_cycles.saturating_add(1);
+        *clear_cycles = 0;
+        if *high_cycles >= READER_LAG_WARNING_CYCLES {
+            *warning = true;
+        }
+    } else {
+        *high_cycles = 0;
+        if *warning {
+            *clear_cycles = clear_cycles.saturating_add(1);
+            if *clear_cycles >= READER_LAG_CLEAR_CYCLES {
+                *warning = false;
+                *clear_cycles = 0;
+            }
+        } else {
+            *clear_cycles = 0;
+        }
+    }
+    format!(
+        "reader-lag-warning {}\n",
+        if *warning { "yes" } else { "no" }
+    )
+}
+
 pub fn write_page(path: &Path, report: &str) -> Result<(), Error> {
     let names = alerts_for(report);
     let mut body = if names.is_empty() {
@@ -174,9 +229,6 @@ pub fn alerts_for(report: &str) -> Vec<&'static str> {
     }
     if report.contains("reconcile pending") {
         alerts.push("alert reconcile");
-    }
-    if max_metric(report, "reader-lag") > LAG_ALERT_BLOCKS {
-        alerts.push("alert reader-lag");
     }
     if max_metric(report, "cursor-lag") > LAG_ALERT_BLOCKS {
         alerts.push("alert cursor-lag");
@@ -388,8 +440,9 @@ fn scan_chain(
     let Some((start, end)) = plan_range(last, height, floor, batch_for_lag(cursor_lag)) else {
         let observed = last.unwrap_or(height);
     let stable = apply_stable(cursor, chain, observed, reader_lag, 0);
+        let lag_warning = apply_reader_lag(cursor, chain, reader_lag);
     return Ok(format!(
-        "shadow yes\nbroadcast no\nsettled no\ncustody closed\nlight-client no\nregistry paused\nconsume denied\nchain {chain}\nblock-number {height}\nreader-lag {reader_lag}\ncursor-lag 0\n{stable}cursor caught-up\nheartbeat yes\n"
+        "shadow yes\nbroadcast no\nsettled no\ncustody closed\nlight-client no\nregistry paused\nconsume denied\nchain {chain}\nblock-number {height}\nreader-lag {reader_lag}\ncursor-lag 0\n{lag_warning}{stable}cursor caught-up\nheartbeat yes\n"
     ));
     };
     let mut report = String::new();
@@ -421,8 +474,9 @@ fn scan_chain(
     }
     let remaining = height.saturating_sub(end);
     let stable = apply_stable(cursor, chain, end, reader_lag, remaining);
+    let lag_warning = apply_reader_lag(cursor, chain, reader_lag);
     report.push_str(&format!(
-        "chain {chain}\nfloor {floor}\ncursor {end}\nreader-lag {reader_lag}\ncursor-lag {remaining}\n{stable}"
+        "chain {chain}\nfloor {floor}\ncursor {end}\nreader-lag {reader_lag}\ncursor-lag {remaining}\n{lag_warning}{stable}"
     ));
     Ok(report)
 }
@@ -458,11 +512,11 @@ pub fn drill_report(dir: &Path) -> Result<String, Error> {
         out.push_str("drill cursor yes\n");
     }
     let page = dir.join("page.txt");
-    write_page(&page, "reader-lag 200\ncursor-lag 0\n")?;
+    write_page(&page, "reader-lag 200\ncursor-lag 200\n")?;
     let open = fs::read_to_string(&page).map_err(|_| Error::Journal)?;
     write_page(&page, "reader-lag 0\ncursor-lag 0\n")?;
     let clear = fs::read_to_string(&page).map_err(|_| Error::Journal)?;
-    if open.contains("page open") && open.contains("alert reader-lag") && clear.contains("page clear") {
+    if open.contains("page open") && open.contains("alert cursor-lag") && clear.contains("page clear") {
         out.push_str("drill page yes\n");
     }
     Ok(out)
