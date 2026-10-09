@@ -145,6 +145,54 @@ confirmations < 3
 duplicate signer
 ```
 
+### M3.4 Prysm independent confirmation
+
+A Prysm operator can provide one of the independent confirmations. The Prysm
+beacon and its execution client must be controlled by that operator and must
+not reuse another operator's beacon database, peer identity, Engine API, JWT,
+execution datadir, or validator process.
+
+The Prysm beacon REST port is configurable. The RUNBOOK production example uses
+`4100`; replace it with the actual local port:
+
+```bash
+PRYSM_BEACON_HTTP_PORT=4100
+PRYSM_BEACON="http://127.0.0.1:${PRYSM_BEACON_HTTP_PORT}"
+```
+
+First prove that the local Prysm node has the historical state. Do not use an
+external SSZ file as a substitute:
+
+```bash
+curl -sS -o /tmp/prysm-period18-state \
+  -w 'HTTP %{http_code} bytes %{size_download}\n' \
+  "${PRYSM_BEACON}/eth/v2/debug/beacon/states/155645"
+```
+
+HTTP 200 is required. Then run the same local confirmation tool against the
+Prysm REST API:
+
+```bash
+./bridge-aac-0.33.10-linux-x86_64 confirm-checkpoint \
+  --beacon "$PRYSM_BEACON" \
+  --period 18 \
+  --out confirmation-prysm-<operator>.json
+```
+
+The confirmation must contain the canonical period-18 slot, header root and
+state root, plus:
+
+```text
+weak-subjectivity-confirmation
+proofs yes
+custody closed
+```
+
+Record the Prysm version, local beacon URL, peer ID, genesis validators root,
+historical-state HTTP result, and confirmation JSON. A Prysm confirmation from
+the same operator as a Lighthouse confirmation is client diversity, not
+operator independence; it does not count as a second independent operator.
+
 ## 1. Download and verify the release
 
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
