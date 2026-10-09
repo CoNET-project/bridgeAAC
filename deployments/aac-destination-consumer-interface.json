@@ -1,0 +1,26 @@
+{
+  "status": "interface-only",
+  "deployed": false,
+  "custodyGate": "closed",
+  "source": "contracts/AacDestinationConsumerInterfaces.sol",
+  "compiler": "solc 0.8.35",
+  "chains": {
+    "conet": 224422,
+    "base": 8453,
+    "ethereumL1": 1
+  },
+  "canonicalAssets": {
+    "treasuryBridgeV3": "0xa208982212978550594A7FEEB70a61665d129003",
+    "conetGbErc20": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+    "peerV5": "0x1DF0F1826e9085caDB2bDc927A117140FAb39066"
+  },
+  "requiredAdapters": [
+    "IAacOnchainProofVerifier",
+    "IAacDestinationConsumer",
+    "IAacTreasuryMintAdapter",
+    "IAacTreasuryReleaseAdapter",
+    "IAacPaidGbMintAdapter",
+    "IAacDeveloperTokenMintAdapter"
+  ],
+  "note": "This manifest defines the M4 ABI boundary only. It is not a deployment or permission grant."
+}
