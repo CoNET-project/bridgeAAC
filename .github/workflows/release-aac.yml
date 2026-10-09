@@ -1,0 +1,66 @@
+name: bridgeAAC release
+
+on:
+  push:
+    tags:
+      - "bridge-aac-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Validate tag, guide, and build
+        shell: bash
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="$(awk -F '"' '/^version/{print $2; exit}' Cargo.toml)"
+          expected_tag="bridge-aac-v${version}"
+          test "$TAG_NAME" = "$expected_tag"
+
+          cargo test --locked
+          cargo build --release --locked --target x86_64-unknown-linux-gnu
+
+          binary="target/x86_64-unknown-linux-gnu/release/bridge-aac"
+          file "$binary" | grep -q 'ELF 64-bit'
+          sha="$(sha256sum "$binary" | awk '{print $1}')"
+          guide="$(git show "$TAG_NAME:docs/THIRD-PARTY-ACCEPTANCE.md")"
+          grep -F "bridge-aac-v${version}" <<<"$guide"
+          grep -F "bridge-aac-${version}-linux-x86_64" <<<"$guide"
+          grep -F "$sha" <<<"$guide"
+
+          mkdir -p dist
+          cp "$binary" "dist/bridge-aac-${version}-linux-x86_64"
+          cp docs/THIRD-PARTY-ACCEPTANCE.md dist/THIRD-PARTY-ACCEPTANCE.md
+          (
+            cd dist
+            sha256sum "bridge-aac-${version}-linux-x86_64" \
+              THIRD-PARTY-ACCEPTANCE.md > SHA256SUMS
+          )
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/bridge-aac-*-linux-x86_64 \
+            dist/THIRD-PARTY-ACCEPTANCE.md \
+            dist/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

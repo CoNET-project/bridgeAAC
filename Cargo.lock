@@ -37,7 +37,7 @@ dependencies = [
 
 [[package]]
 name = "bridge-aac"
-version = "0.33.9"
+version = "0.33.10"
 dependencies = [
  "blst",
  "hex",
