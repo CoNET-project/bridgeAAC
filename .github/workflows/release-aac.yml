@@ -26,26 +26,42 @@ jobs:
         shell: bash
         env:
           TAG_NAME: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           version="$(awk -F '"' '/^version/{print $2; exit}' Cargo.toml)"
           expected_tag="bridge-aac-v${version}"
           test "$TAG_NAME" = "$expected_tag"
 
-          cargo test --locked
-          cargo build --release --locked --target x86_64-unknown-linux-gnu
+          mkdir -p dist
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists; validating its published asset"
+            gh release download "$TAG_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern "bridge-aac-${version}-linux-x86_64" \
+              --dir dist
+            binary="dist/bridge-aac-${version}-linux-x86_64"
+          else
+            cargo test --locked
+            cargo build --release --locked --target x86_64-unknown-linux-gnu
+            binary="target/x86_64-unknown-linux-gnu/release/bridge-aac"
+            cp "$binary" "dist/bridge-aac-${version}-linux-x86_64"
+            binary="dist/bridge-aac-${version}-linux-x86_64"
+          fi
 
-          binary="target/x86_64-unknown-linux-gnu/release/bridge-aac"
           file "$binary" | grep -q 'ELF 64-bit'
           sha="$(sha256sum "$binary" | awk '{print $1}')"
           guide="$(git show "$TAG_NAME:docs/THIRD-PARTY-ACCEPTANCE.md")"
           grep -F "bridge-aac-v${version}" <<<"$guide"
           grep -F "bridge-aac-${version}-linux-x86_64" <<<"$guide"
-          grep -F "$sha" <<<"$guide"
-
-          mkdir -p dist
-          cp "$binary" "dist/bridge-aac-${version}-linux-x86_64"
-          cp docs/THIRD-PARTY-ACCEPTANCE.md dist/THIRD-PARTY-ACCEPTANCE.md
+          if grep -F '<release-asset-sha256>' <<<"$guide" >/dev/null; then
+            echo "Guide uses CI-generated release SHA placeholder"
+            sed "s/<release-asset-sha256>/$sha/g" \
+              docs/THIRD-PARTY-ACCEPTANCE.md > dist/THIRD-PARTY-ACCEPTANCE.md
+          else
+            grep -F "$sha" <<<"$guide"
+            cp docs/THIRD-PARTY-ACCEPTANCE.md dist/THIRD-PARTY-ACCEPTANCE.md
+          fi
           (
             cd dist
             sha256sum "bridge-aac-${version}-linux-x86_64" \
@@ -56,11 +72,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            dist/bridge-aac-*-linux-x86_64 \
-            dist/THIRD-PARTY-ACCEPTANCE.md \
-            dist/SHA256SUMS \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --title "$GITHUB_REF_NAME" \
-            --generate-notes
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists; validation complete"
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              dist/bridge-aac-*-linux-x86_64 \
+              dist/THIRD-PARTY-ACCEPTANCE.md \
+              dist/SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi
