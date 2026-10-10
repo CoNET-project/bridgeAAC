@@ -8,7 +8,8 @@
     "contracts/AacDestinationConsumerInterfaces.sol",
     "contracts/AacBaseFinalityVerifier.sol",
     "contracts/AacConetFinalityVerifier.sol",
-    "contracts/AacL1OutputAnchorRelayVerifier.sol"
+    "contracts/AacL1OutputAnchorRelayVerifier.sol",
+    "contracts/AacDestinationConsumerTestnet.sol"
   ],
   "compiler": "solc 0.8.35",
   "chains": {

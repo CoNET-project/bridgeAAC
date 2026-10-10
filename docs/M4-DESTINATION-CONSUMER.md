@@ -16,6 +16,7 @@ contracts/AacBaseFinalityVerifier.sol
 contracts/AacConetFinalityVerifier.sol
 contracts/AacBaseHeaderProofRelayVerifier.sol
 contracts/AacConetSyncCommitteeRelayVerifier.sol
+contracts/AacDestinationConsumerTestnet.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -136,6 +137,11 @@ The canonical target addresses are recorded in
 `deployments/aac-destination-consumer-interface.json`. The interface package
 does not grant roles or imply that the target contracts implement these
 functions.
+
+`AacDestinationConsumerTestnet.sol` now connects the unified header commitment,
+receipt MPT verifier, consume-once state, and test adapters. It is explicitly
+testnet-only: it does not contain canonical Treasury/GB/Peer adapters and must
+not be deployed as a production custody consumer.
 
 ## Role and upgrade requirements
 
