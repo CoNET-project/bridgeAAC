@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-10-10T04:36:48.863Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "registry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "l1Relay": "0xbc7CddFdba33348357aFE5F290f242ecBbc1C090",
+  "headerRelay": "0x4E321225203276ee4a22e335f450d7ae221AbE88",
+  "finalityVerifier": "0xcb85296A6Dc978c32b1d58a1C804d995cd6F7B09",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "deployments": {
+    "headerRelay": {
+      "txHash": "0x622e36906c14efd8ab59b5304562e377cb738582a06c5c8c2d59de15a3a84005",
+      "address": "0x4E321225203276ee4a22e335f450d7ae221AbE88"
+    },
+    "finality": {
+      "txHash": "0xffda93456e5ba3b61a1fcc96329165cd4256fc2e3054e5e44cf7c69702014925",
+      "address": "0xcb85296A6Dc978c32b1d58a1C804d995cd6F7B09"
+    }
+  },
+  "testAttestations": {
+    "anchor": {
+      "txHash": "0xc3164543dec6e09984b5684dfbd5d674990ea9a7e47ed3bceb58b2c4a335f107",
+      "nonce": 2
+    },
+    "header": {
+      "txHash": "0x57b2457fd98099a5b258c392e4c984717cd9a35495f8f2d34463eb2950444d08",
+      "nonce": 1
+    }
+  },
+  "verified": true,
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "compiler": "v0.8.35+commit.47b9dedd",
+  "viaIR": true,
+  "optimizerRuns": 200
+}
