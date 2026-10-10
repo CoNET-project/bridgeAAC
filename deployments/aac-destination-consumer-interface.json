@@ -1,5 +1,5 @@
 {
-  "status": "interface-only",
+  "status": "interface-plus-testnet-mpt",
   "deployed": false,
   "custodyGate": "closed",
   "source": [
@@ -33,5 +33,23 @@
     "IAacPaidGbMintAdapter",
     "IAacDeveloperTokenMintAdapter"
   ],
-  "note": "This manifest defines the M4 ABI boundary only. It is not a deployment or permission grant."
+  "testnetDeployments": [
+    {
+      "network": "ethereum-sepolia",
+      "chainId": 11155111,
+      "address": "0x1330297821814B06A6DafE3557Fa730F690D7007",
+      "txHash": "0x012cbec4dd2f7e0ff10c4a89b463cddadc7b85992b895e5febb2823fa49078dc",
+      "deployBlock": 11881201,
+      "runtimeCodeBytes": 4059
+    },
+    {
+      "network": "base-sepolia",
+      "chainId": 84532,
+      "address": "0x622A4A21678C7944a244006350F9f862C39de691",
+      "txHash": "0x9fecf8e0329aaa6e8a47c413a57b1bc4488b1e9501979fcf71e5f2cc429b6253",
+      "deployBlock": 47913482,
+      "runtimeCodeBytes": 4059
+    }
+  ],
+  "note": "Testnet MPT verifier deployment only. No finality verifier, consumer, asset adapter, role grant, or custody permission is deployed."
 }
