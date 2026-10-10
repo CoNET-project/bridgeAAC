@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-10T01:20:54.138Z",
+  "contract": "AacReceiptMptVerifier",
+  "compiler": "v0.8.35+commit.47b9dedd",
+  "viaIR": true,
+  "optimizerRuns": 200,
+  "results": [
+    {
+      "name": "ethereum-sepolia",
+      "chainId": 11155111,
+      "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+      "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "address": "0x1330297821814B06A6DafE3557Fa730F690D7007",
+      "txHash": "0x012cbec4dd2f7e0ff10c4a89b463cddadc7b85992b895e5febb2823fa49078dc",
+      "deployBlock": 11881201,
+      "runtimeCodeBytes": 4059,
+      "verification": {
+        "provider": "Sourcify",
+        "verificationId": "01a9a74d-6577-47c4-82ac-e638f2b65a45",
+        "match": "exact_match",
+        "explorerStatus": "rate_limited"
+      }
+    },
+    {
+      "name": "base-sepolia",
+      "chainId": 84532,
+      "rpc": "https://sepolia.base.org",
+      "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "address": "0x622A4A21678C7944a244006350F9f862C39de691",
+      "txHash": "0x9fecf8e0329aaa6e8a47c413a57b1bc4488b1e9501979fcf71e5f2cc429b6253",
+      "deployBlock": 47913482,
+      "runtimeCodeBytes": 4059,
+      "verification": {
+        "provider": "Sourcify",
+        "verificationId": "42734429-60ad-4d47-bcb5-314d185252bc",
+        "match": "exact_match",
+        "explorerStatus": "rate_limited"
+      }
+    }
+  ]
+}
