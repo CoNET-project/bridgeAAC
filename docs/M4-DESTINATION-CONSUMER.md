@@ -12,6 +12,7 @@ Source:
 contracts/AacReceiptMptVerifier.sol
 contracts/AacDestinationConsumerInterfaces.sol
 contracts/AacBaseFinalityVerifier.sol
+contracts/AacConetFinalityVerifier.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -82,6 +83,14 @@ stores a monotonic anchor, and exposes it through the verifier interface. It
 does not verify Ethereum L1 consensus or AnchorStateRegistry storage proofs;
 therefore it must not be used for mainnet custody. A trustless Ethereum light
 client or an audited canonical relay must replace it before production.
+
+`AacConetFinalityVerifier.sol` supplies the corresponding CoNET-side
+orchestration boundary. It requires the injected proof verifier to establish
+the genesis validators root, finalized execution payload, state-root binding,
+committee handoff, trusted committee, and a two-thirds sync-committee quorum.
+Forced updates are rejected. The injected verifier must perform the actual
+BLS/SSZ light-client verification; this boundary itself is not a production
+light client.
 
 ## Asset adapters
 
