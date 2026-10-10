@@ -25,6 +25,14 @@ contract AacTestFinalityVerifier {
     {
         return commitment;
     }
+
+    function verifyHeader(bytes calldata, bytes calldata)
+        external
+        view
+        returns (AacHeaderCommitment.Commitment memory)
+    {
+        return commitment;
+    }
 }
 
 contract AacTestReceiptMptVerifier {
