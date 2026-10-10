@@ -21,6 +21,8 @@
   "requiredAdapters": [
     "AacBaseFinalityVerifier",
     "IAacOnchainProofVerifier",
+    "AacL1OutputAnchorRelayVerifier",
+    "AacL1OutputAnchorRelayVerifier",
     "IBaseOutputAnchorProofVerifier",
     "IBaseHeaderProofVerifier",
     "IAacDestinationConsumer",

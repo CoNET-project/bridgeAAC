@@ -76,6 +76,13 @@ does not match the L1 output anchor. The injected proof contracts are not yet
 implemented or deployed; this contract is therefore an interface-level,
 fail-closed component and is not a custody authorization.
 
+`AacL1OutputAnchorRelayVerifier.sol` is a **testnet-only** implementation of
+the output-anchor dependency. It accepts a fixed EIP-712 signer quorum,
+stores a monotonic anchor, and exposes it through the verifier interface. It
+does not verify Ethereum L1 consensus or AnchorStateRegistry storage proofs;
+therefore it must not be used for mainnet custody. A trustless Ethereum light
+client or an audited canonical relay must replace it before production.
+
 ## Asset adapters
 
 The consumer calls one and only one adapter:
