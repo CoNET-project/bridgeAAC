@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-10-10T06:28:40.459Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "gateway": "0x678F3570F9173373bB75e7544fcF383153aDAF4C",
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "contracts": {
+    "finality": "0xfFF31081991405A85F4153eb77ed19f79609601E",
+    "receipt": "0xaa1Aa34794b566408Cc7Ddba8E0519C4d13fAa55",
+    "adapter": "0xa7F0e9810913D29783e2b533533299aEC68473cE",
+    "consumer": "0x30e5A92109A91b85866599FDD358325bFe77E5e5"
+  },
+  "registerTx": "0x7f55a2ace53943ee670eb9fb463223cc610477e02c395d2510635b554fe69d0b",
+  "consumeTx": "0x7f00b2ec3b3b4a7be435b87db98ac0f83780b516830e587b07c19f41d34f62e9",
+  "consumed": true
+}
