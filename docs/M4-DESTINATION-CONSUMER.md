@@ -11,6 +11,7 @@ Source:
 ```text
 contracts/AacReceiptMptVerifier.sol
 contracts/AacDestinationConsumerInterfaces.sol
+contracts/AacBaseFinalityVerifier.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -61,6 +62,19 @@ boundary. It verifies the transaction-index trie key, branch/extension/leaf
 nodes, typed receipt bytes, and the authenticated `receiptsRoot`. It does not
 authenticate header finality or identify an AAC event; those remain separate
 consumer/verifier responsibilities.
+
+`AacBaseFinalityVerifier.sol` supplies the Base-side orchestration boundary. It
+requires two injected proof contracts:
+
+```text
+IBaseOutputAnchorProofVerifier
+IBaseHeaderProofVerifier
+```
+
+It rejects a block above `anchorL2` and rejects any block hash/state root that
+does not match the L1 output anchor. The injected proof contracts are not yet
+implemented or deployed; this contract is therefore an interface-level,
+fail-closed component and is not a custody authorization.
 
 ## Asset adapters
 

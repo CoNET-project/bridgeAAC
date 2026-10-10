@@ -4,7 +4,8 @@
   "custodyGate": "closed",
   "source": [
     "contracts/AacReceiptMptVerifier.sol",
-    "contracts/AacDestinationConsumerInterfaces.sol"
+    "contracts/AacDestinationConsumerInterfaces.sol",
+    "contracts/AacBaseFinalityVerifier.sol"
   ],
   "compiler": "solc 0.8.35",
   "chains": {
@@ -18,7 +19,10 @@
     "peerV5": "0x1DF0F1826e9085caDB2bDc927A117140FAb39066"
   },
   "requiredAdapters": [
+    "AacBaseFinalityVerifier",
     "IAacOnchainProofVerifier",
+    "IBaseOutputAnchorProofVerifier",
+    "IBaseHeaderProofVerifier",
     "IAacDestinationConsumer",
     "IAacTreasuryMintAdapter",
     "IAacTreasuryReleaseAdapter",
