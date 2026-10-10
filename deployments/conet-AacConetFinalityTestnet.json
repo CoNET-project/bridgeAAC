@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-10T04:43:20.708Z",
+  "network": "conet-mainnet-testnet-only",
+  "chainId": 224422,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "genesisValidatorsRoot": "0xacac7566fdf384a1ada45c01dcf9030d7eb0e1e5f5302659101d0b2a5bb59092",
+  "relay": {
+    "address": "0xC30371d520Ac0C93d21CF9b1Bd6cea45185Dd07d",
+    "txHash": "0x9b626e4dd03a37bd0a1e385b6c45cdb9c835e665158ac0fe62c27f534bb745c1"
+  },
+  "finalityVerifier": {
+    "address": "0xC72796C9478089816aC916AC5Fb7E5d5ffddd4Ad",
+    "txHash": "0xa4851e8d5731a64e4b6711870f0b3db87fec7555a064d4eb62b5a75679859fbc"
+  },
+  "testAttestation": {
+    "txHash": "0x961e4ca97ea8cef121a46f7a4a5382c17ebe292f3915d89a32fc88092c0dfa32",
+    "epoch": 1,
+    "blockNumber": 1,
+    "participants": 342,
+    "committeeSize": 512,
+    "threshold": 1
+  },
+  "verified": true,
+  "custodyClosed": true,
+  "testnetOnly": true,
+  "compiler": "v0.8.35+commit.47b9dedd",
+  "viaIR": true,
+  "optimizerRuns": 200
+}
