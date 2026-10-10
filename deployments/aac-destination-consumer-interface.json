@@ -4,6 +4,7 @@
   "custodyGate": "closed",
   "source": [
     "contracts/AacReceiptMptVerifier.sol",
+    "contracts/AacHeaderCommitment.sol",
     "contracts/AacDestinationConsumerInterfaces.sol",
     "contracts/AacBaseFinalityVerifier.sol",
     "contracts/AacConetFinalityVerifier.sol",

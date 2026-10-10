@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.35;
 
+import "./AacHeaderCommitment.sol";
+
 /// @notice Verifies one Base header against an Ethereum L1 output anchor.
 /// @dev The two proof contracts are deliberately injected dependencies. This
 /// orchestrator is fail-closed until audited L1/output and Base-header proof
@@ -47,16 +49,6 @@ contract AacBaseFinalityVerifier {
     error FutureBlock();
     error HeaderBindingMismatch();
 
-    struct HeaderCommitment {
-        uint256 sourceChainId;
-        uint256 blockNumber;
-        bytes32 blockHash;
-        bytes32 stateRoot;
-        bytes32 receiptsRoot;
-        bytes32 outputRoot;
-        uint256 anchorL2;
-    }
-
     constructor(
         address anchorRegistry_,
         address outputAnchorVerifier_,
@@ -78,7 +70,7 @@ contract AacBaseFinalityVerifier {
     function verifyHeader(
         bytes calldata outputAnchorProof,
         bytes calldata baseHeaderProof
-    ) external view returns (HeaderCommitment memory commitment) {
+    ) external view returns (AacHeaderCommitment.Commitment memory commitment) {
         (
             bool anchorValid,
             bytes32 outputRoot,
@@ -112,14 +104,14 @@ contract AacBaseFinalityVerifier {
             revert HeaderBindingMismatch();
         }
 
-        return HeaderCommitment({
+        return AacHeaderCommitment.Commitment({
             sourceChainId: BASE_CHAIN_ID,
+            finalityHeight: anchorL2,
             blockNumber: blockNumber,
             blockHash: blockHash,
             stateRoot: stateRoot,
             receiptsRoot: receiptsRoot,
-            outputRoot: outputRoot,
-            anchorL2: anchorL2
+            finalityDigest: keccak256(abi.encode(outputRoot, anchorL2))
         });
     }
 }

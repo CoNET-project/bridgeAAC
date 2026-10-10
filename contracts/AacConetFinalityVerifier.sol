@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.35;
 
+import "./AacHeaderCommitment.sol";
+
 interface IConetLightClientProofVerifier {
     function verifyFinality(bytes calldata proof)
         external
@@ -39,16 +41,6 @@ contract AacConetFinalityVerifier {
     error ForcedUpdate();
     error InsufficientQuorum();
 
-    struct HeaderCommitment {
-        uint256 sourceChainId;
-        uint256 finalizedEpoch;
-        uint256 executionBlockNumber;
-        bytes32 executionBlockHash;
-        bytes32 stateRoot;
-        bytes32 receiptsRoot;
-        bytes32 genesisValidatorsRoot;
-    }
-
     constructor(bytes32 genesisRoot_, address proofVerifier_) {
         if (genesisRoot_ == bytes32(0) || proofVerifier_ == address(0)) {
             revert InvalidConfiguration();
@@ -60,7 +52,7 @@ contract AacConetFinalityVerifier {
     function verifyHeader(bytes calldata proof)
         external
         view
-        returns (HeaderCommitment memory commitment)
+        returns (AacHeaderCommitment.Commitment memory commitment)
     {
         (
             bool valid,
@@ -95,14 +87,16 @@ contract AacConetFinalityVerifier {
             revert InvalidFinality();
         }
 
-        return HeaderCommitment({
+        return AacHeaderCommitment.Commitment({
             sourceChainId: CONET_CHAIN_ID,
-            finalizedEpoch: finalizedEpoch,
-            executionBlockNumber: executionBlockNumber,
-            executionBlockHash: executionBlockHash,
+            finalityHeight: finalizedEpoch,
+            blockNumber: executionBlockNumber,
+            blockHash: executionBlockHash,
             stateRoot: stateRoot,
             receiptsRoot: receiptsRoot,
-            genesisValidatorsRoot: genesisValidatorsRoot
+            finalityDigest: keccak256(
+                abi.encode(genesisValidatorsRoot, finalizedEpoch, executionBlockHash, forcedUpdates)
+            )
         });
     }
 }

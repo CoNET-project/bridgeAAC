@@ -10,6 +10,7 @@ Source:
 
 ```text
 contracts/AacReceiptMptVerifier.sol
+contracts/AacHeaderCommitment.sol
 contracts/AacDestinationConsumerInterfaces.sol
 contracts/AacBaseFinalityVerifier.sol
 contracts/AacConetFinalityVerifier.sol
@@ -93,6 +94,21 @@ committee handoff, trusted committee, and a two-thirds sync-committee quorum.
 Forced updates are rejected. The injected verifier must perform the actual
 BLS/SSZ light-client verification; this boundary itself is not a production
 light client.
+
+Both finality boundaries now return the shared
+`AacHeaderCommitment.Commitment` shape:
+
+```text
+sourceChainId
+finalityHeight
+blockNumber
+blockHash
+stateRoot
+receiptsRoot
+finalityDigest
+```
+
+This is the only header commitment shape that the future consumer may accept.
 
 `AacBaseHeaderProofRelayVerifier.sol` is the testnet-only companion for the
 Base header proof boundary. It makes the Base Sepolia pipeline executable for
