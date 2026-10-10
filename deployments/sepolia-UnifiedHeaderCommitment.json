@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-10T05:03:57Z",
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "baseSepolia": {
+    "chainId": 84532,
+    "address": "0xBC6b53065b5647261396d002bDBA0d3396E0722f",
+    "txHash": "0xcd1d58e701c9d09171f1ff4c0bd96611392741529cbdaf6a1285587fbacbe718",
+    "registry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+    "outputAnchorRelay": "0xbc7CddFdba33348357aFE5F290f242ecBbc1C090",
+    "headerProofRelay": "0x4E321225203276ee4a22e335f450d7ae221AbE88",
+    "verified": true,
+    "commitment": {
+      "sourceChainId": 8453,
+      "finalityHeight": 1,
+      "blockNumber": 1,
+      "blockHash": "0x2a029991fc8a8f316f4b0ea69b6dd921d634264010a90dddedd10343a52928c1"
+    }
+  },
+  "conetTestnetOnly": {
+    "chainId": 224422,
+    "address": "0x2d37bae078cAB17CF0DEFC4f3B61120342aDc24C",
+    "txHash": "0x90b5f8dce84732b35e8debacd97aff40160981d3f203b8519ce326c23df71360",
+    "syncCommitteeRelay": "0xC30371d520Ac0C93d21CF9b1Bd6cea45185Dd07d",
+    "verified": true,
+    "commitment": {
+      "sourceChainId": 224422,
+      "finalityHeight": 1,
+      "blockNumber": 1,
+      "blockHash": "0x763004e3a9eae1945172ff7b05b51bfdde4fabbc4ce85ed833981449a83aa47f"
+    }
+  },
+  "note": "Unified HeaderCommitment testnet pipeline only; no asset adapter, mint, release, or custody role."
+}
