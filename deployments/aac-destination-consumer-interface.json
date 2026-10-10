@@ -5,7 +5,9 @@
   "source": [
     "contracts/AacReceiptMptVerifier.sol",
     "contracts/AacDestinationConsumerInterfaces.sol",
-    "contracts/AacBaseFinalityVerifier.sol"
+    "contracts/AacBaseFinalityVerifier.sol",
+    "contracts/AacConetFinalityVerifier.sol",
+    "contracts/AacL1OutputAnchorRelayVerifier.sol"
   ],
   "compiler": "solc 0.8.35",
   "chains": {
@@ -21,9 +23,7 @@
   "requiredAdapters": [
     "AacBaseFinalityVerifier",
     "AacConetFinalityVerifier",
-    "AacConetFinalityVerifier",
     "IAacOnchainProofVerifier",
-    "AacL1OutputAnchorRelayVerifier",
     "AacL1OutputAnchorRelayVerifier",
     "IBaseOutputAnchorProofVerifier",
     "IBaseHeaderProofVerifier",
@@ -49,6 +49,18 @@
       "txHash": "0x9fecf8e0329aaa6e8a47c413a57b1bc4488b1e9501979fcf71e5f2cc429b6253",
       "deployBlock": 47913482,
       "runtimeCodeBytes": 4059
+    },
+    {
+      "network": "base-sepolia",
+      "chainId": 84532,
+      "contract": "AacL1OutputAnchorRelayVerifier",
+      "address": "0xbc7CddFdba33348357aFE5F290f242ecBbc1C090",
+      "txHash": "0x1a414c58483870a6dde9ddc96482c827b0fd6ea8b7687ef7bd9fc1874ded3917",
+      "deployBlock": 47917326,
+      "runtimeCodeBytes": 2992,
+      "testnetOnly": true,
+      "custodyClosed": true,
+      "verification": "Sourcify exact_match"
     }
   ],
   "note": "Testnet MPT verifier deployment only. No finality verifier, consumer, asset adapter, role grant, or custody permission is deployed."

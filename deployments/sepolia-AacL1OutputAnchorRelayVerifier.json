@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-10-10T03:29:02.643Z",
+  "contract": "AacL1OutputAnchorRelayVerifier",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "address": "0xbc7CddFdba33348357aFE5F290f242ecBbc1C090",
+  "txHash": "0x1a414c58483870a6dde9ddc96482c827b0fd6ea8b7687ef7bd9fc1874ded3917",
+  "deployBlock": 47917326,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "anchorRegistry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "signers": [
+    "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1"
+  ],
+  "threshold": 1,
+  "compiler": "v0.8.35+commit.47b9dedd",
+  "viaIR": true,
+  "optimizerRuns": 200,
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "1bf20f05-0afc-40ce-8aef-84cf2c0ee90a",
+    "match": "exact_match",
+    "explorerStatus": "rate_limited"
+  }
+}
