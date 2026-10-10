@@ -22,6 +22,7 @@
   },
   "requiredAdapters": [
     "AacBaseFinalityVerifier",
+    "AacBaseHeaderProofRelayVerifier",
     "AacConetFinalityVerifier",
     "IAacOnchainProofVerifier",
     "AacL1OutputAnchorRelayVerifier",

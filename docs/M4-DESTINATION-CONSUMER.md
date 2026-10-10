@@ -13,6 +13,7 @@ contracts/AacReceiptMptVerifier.sol
 contracts/AacDestinationConsumerInterfaces.sol
 contracts/AacBaseFinalityVerifier.sol
 contracts/AacConetFinalityVerifier.sol
+contracts/AacBaseHeaderProofRelayVerifier.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -91,6 +92,10 @@ committee handoff, trusted committee, and a two-thirds sync-committee quorum.
 Forced updates are rejected. The injected verifier must perform the actual
 BLS/SSZ light-client verification; this boundary itself is not a production
 light client.
+
+`AacBaseHeaderProofRelayVerifier.sol` is the testnet-only companion for the
+Base header proof boundary. It makes the Base Sepolia pipeline executable for
+integration tests; it is an EIP-712 relay, not a trustless Base light client.
 
 ## Asset adapters
 
