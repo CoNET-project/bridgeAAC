@@ -10,7 +10,8 @@
     "contracts/AacConetFinalityVerifier.sol",
     "contracts/AacL1OutputAnchorRelayVerifier.sol",
     "contracts/AacDestinationConsumerTestnet.sol",
-    "contracts/AacTestM4Mocks.sol"
+    "contracts/AacTestM4Mocks.sol",
+    "contracts/AacCanonicalAssetAdapterInterfaces.sol"
   ],
   "compiler": "solc 0.8.35",
   "chains": {

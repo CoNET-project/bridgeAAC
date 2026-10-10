@@ -18,6 +18,7 @@ contracts/AacBaseHeaderProofRelayVerifier.sol
 contracts/AacConetSyncCommitteeRelayVerifier.sol
 contracts/AacDestinationConsumerTestnet.sol
 contracts/AacTestM4Mocks.sol
+contracts/AacCanonicalAssetAdapterInterfaces.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -147,6 +148,17 @@ not be deployed as a production custody consumer.
 `AacTestM4Mocks.sol` supplies the Base Sepolia integration-only finality,
 receipt, and asset-effect mocks. They deliberately do not validate real
 proofs or move assets.
+
+`AacCanonicalAssetAdapterInterfaces.sol` records the verified ABI boundary:
+
+- TreasuryBridgeV3 `executeMint` / `executeRelease` require the complete
+  operation payload and validator signatures.
+- GBTokenV2 uses `executeBridgeMint(bytes32 sourceTxHash)`.
+- The canonical Peer v5 address currently has no deployed code, so the
+  developer-token adapter cannot yet be wired or deployed.
+
+No adapter may call a simplified `mint`, `release`, or `execute` selector in
+place of these verified interfaces.
 
 ## Role and upgrade requirements
 
