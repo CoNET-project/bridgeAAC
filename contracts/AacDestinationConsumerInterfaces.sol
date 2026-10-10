@@ -59,6 +59,17 @@ interface IAacOnchainProofVerifier {
     ) external view returns (bool);
 }
 
+interface IAacReceiptMptVerifier {
+    function verifyReceiptProof(
+        uint256 sourceChainId,
+        bytes32 sourceHeader,
+        bytes32 receiptsRoot,
+        uint64 receiptIndex,
+        bytes calldata receiptRlp,
+        bytes[] calldata receiptProof
+    ) external view returns (bool);
+}
+
 /// @notice The consume-once registry/gateway ABI expected by destination
 /// asset adapters.
 interface IAacDestinationConsumer {

@@ -2,7 +2,10 @@
   "status": "interface-only",
   "deployed": false,
   "custodyGate": "closed",
-  "source": "contracts/AacDestinationConsumerInterfaces.sol",
+  "source": [
+    "contracts/AacReceiptMptVerifier.sol",
+    "contracts/AacDestinationConsumerInterfaces.sol"
+  ],
   "compiler": "solc 0.8.35",
   "chains": {
     "conet": 224422,

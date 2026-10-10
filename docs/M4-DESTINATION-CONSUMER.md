@@ -9,6 +9,7 @@ accept these calls.
 Source:
 
 ```text
+contracts/AacReceiptMptVerifier.sol
 contracts/AacDestinationConsumerInterfaces.sol
 deployments/aac-destination-consumer-interface.json
 ```
@@ -54,6 +55,12 @@ adapter before accepting the receipt trie proof. Base requires the Ethereum L1
 output-anchor path. CoNET requires an independently trusted beacon finality
 path. The current Rust observers are read-only evidence producers; they are
 not this on-chain verifier.
+
+`AacReceiptMptVerifier.sol` now supplies the standalone receipt-trie verifier
+boundary. It verifies the transaction-index trie key, branch/extension/leaf
+nodes, typed receipt bytes, and the authenticated `receiptsRoot`. It does not
+authenticate header finality or identify an AAC event; those remain separate
+consumer/verifier responsibilities.
 
 ## Asset adapters
 
