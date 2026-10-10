@@ -12,6 +12,12 @@
     "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1"
   ],
   "threshold": 1,
+  "testAnchorSubmission": {
+    "nonce": 1,
+    "txHash": "0x29ce9531eb00dc8e7f0422d4be03f5d12353bb5d32cc7d5c072d874ca952b4c",
+    "block": 47919236,
+    "status": 1
+  },
   "compiler": "v0.8.35+commit.47b9dedd",
   "viaIR": true,
   "optimizerRuns": 200,
