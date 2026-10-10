@@ -17,6 +17,7 @@ contracts/AacConetFinalityVerifier.sol
 contracts/AacBaseHeaderProofRelayVerifier.sol
 contracts/AacConetSyncCommitteeRelayVerifier.sol
 contracts/AacDestinationConsumerTestnet.sol
+contracts/AacTestM4Mocks.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -142,6 +143,10 @@ functions.
 receipt MPT verifier, consume-once state, and test adapters. It is explicitly
 testnet-only: it does not contain canonical Treasury/GB/Peer adapters and must
 not be deployed as a production custody consumer.
+
+`AacTestM4Mocks.sol` supplies the Base Sepolia integration-only finality,
+receipt, and asset-effect mocks. They deliberately do not validate real
+proofs or move assets.
 
 ## Role and upgrade requirements
 
