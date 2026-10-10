@@ -14,6 +14,7 @@ contracts/AacDestinationConsumerInterfaces.sol
 contracts/AacBaseFinalityVerifier.sol
 contracts/AacConetFinalityVerifier.sol
 contracts/AacBaseHeaderProofRelayVerifier.sol
+contracts/AacConetSyncCommitteeRelayVerifier.sol
 deployments/aac-destination-consumer-interface.json
 ```
 
@@ -96,6 +97,13 @@ light client.
 `AacBaseHeaderProofRelayVerifier.sol` is the testnet-only companion for the
 Base header proof boundary. It makes the Base Sepolia pipeline executable for
 integration tests; it is an EIP-712 relay, not a trustless Base light client.
+
+`AacConetSyncCommitteeRelayVerifier.sol` is the corresponding CoNET testnet
+integration relay. It carries the same evidence fields required by
+`AacConetFinalityVerifier`, including genesis root, finalized execution
+payload, state binding, committee handoff, quorum, trusted-committee status,
+and forced-update count. It is not a BLS/SSZ light client and must not be used
+for mainnet custody.
 
 ## Asset adapters
 
