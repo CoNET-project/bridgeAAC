@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-10-11T11:40:38.003Z",
+  "network": "base",
+  "chainId": 8453,
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "proxyTx": "0xe0692d9486cca7afd219c42b2304e1e5740efc8c5f5a4b278bd4fd56a289702b",
+  "implementation": "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD",
+  "implementationTx": "0xf7b3dabef271b54c26e93312eeedf7e658e920b1391a013ced7018009d21ad64",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "settleReverts": true,
+  "custodyClosed": true,
+  "meaning": "Stable production proxy on Base. This implementation quotes the accepted proof link and cannot settle. headerFinal stays false. No Treasury, GB, or Peer role was granted. The deployer can upgrade the implementation later.",
+  "acceptance": {
+    "pass": true,
+    "settleSelector": "0x61839255"
+  },
+  "verification": {
+    "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD": {
+      "verificationId": "f1c77612-2ae0-4f62-b665-b2ef1274b9bc",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match",
+      "contractIdentifier": "AacProductionCustodyGate.sol:AacProductionCustodyGate"
+    },
+    "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd": {
+      "verificationId": "aec5c018-1f5f-46b3-a4de-67354b7869a7",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match",
+      "contractIdentifier": "AacErc1967Proxy.sol:AacErc1967Proxy"
+    }
+  }
+}

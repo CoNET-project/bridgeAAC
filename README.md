@@ -74,6 +74,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Base anchor log proof acceptance](docs/M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md)
 - [Base anchor header and log link](docs/M4-BASE-ANCHOR-HEADER-LOG-LINK.md)
 - [Base anchor header and log link acceptance](docs/M4-BASE-ANCHOR-HEADER-LOG-LINK-ACCEPTANCE.md)
+- [Production custody gate](docs/M4-PRODUCTION-CUSTODY-GATE.md)
+- [Production custody gate acceptance](docs/M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md)
 
 ## Build on Linux
 
