@@ -70,6 +70,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Base anchor receipt root acceptance](docs/M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md)
 - [Base anchor receipt inclusion](docs/M4-BASE-ANCHOR-RECEIPT-INCLUSION.md)
 - [Base anchor receipt inclusion acceptance](docs/M4-BASE-ANCHOR-RECEIPT-INCLUSION-ACCEPTANCE.md)
+- [Base anchor log proof](docs/M4-BASE-ANCHOR-LOG-PROOF.md)
+- [Base anchor log proof acceptance](docs/M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md)
 
 ## Build on Linux
 

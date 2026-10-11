@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-11T10:26:40.907Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseAnchorLogProof",
+  "address": "0x1815d6DA04DE7910A5438168E1642e0f4eA25D28",
+  "tx": "0x69e8a967690dd65790ba64514a36b748543563afc5e86051e888d7fa210f0211",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "receiptInclusion": "0x9D246a233A4197ae63ab8852b625B3DCE466b727",
+  "baseBlock": 52239960,
+  "receiptIndex": 9,
+  "logIndex": 13,
+  "transactionHash": "0x9c82a2144101b7cbf81827921fc45189cbe16417864423185813a3b6d54140f2",
+  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "from": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
+  "to": "0xb093da272A66D47b7445cA389CEbdc6d3Ac7753D",
+  "amount": "236185820404",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "receiptsRoot": "0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "A USDC Transfer log inside Base block 52239960 is inside a receipt included in the anchored receipts root. This is not an AAC custody transfer and not beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "2187dc01-9a16-41d7-a2ed-cdc48a528d3b",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
