@@ -158,3 +158,82 @@ contract AacGbTokenV2AdapterTestnet {
         }
     }
 }
+
+contract AacTestTreasuryTarget {
+    uint256 public mintCalls;
+    uint256 public releaseCalls;
+    bytes32 public lastOperationId;
+
+    event TestMint(bytes32 indexed operationId);
+    event TestRelease(bytes32 indexed operationId);
+
+    function executeMint(
+        bytes32 operationId,
+        uint256,
+        uint256,
+        address,
+        address,
+        address,
+        address[] calldata,
+        uint256[] calldata,
+        ITreasuryBridgeV3AdapterTarget.AssetMode,
+        uint256,
+        uint256,
+        bytes32,
+        uint256,
+        address,
+        bytes[] calldata
+    ) external {
+        mintCalls++;
+        lastOperationId = operationId;
+        emit TestMint(operationId);
+    }
+
+    function executeRelease(
+        bytes32 operationId,
+        uint256,
+        uint256,
+        address,
+        address,
+        address,
+        address[] calldata,
+        uint256[] calldata,
+        uint256,
+        uint256,
+        bytes32,
+        uint256,
+        bytes[] calldata
+    ) external {
+        releaseCalls++;
+        lastOperationId = operationId;
+        emit TestRelease(operationId);
+    }
+}
+
+contract AacTestGbTarget {
+    uint256 public mintCalls;
+    bytes32 public lastSourceTxHash;
+
+    function executeBridgeMint(bytes32 sourceTxHash) external {
+        mintCalls++;
+        lastSourceTxHash = sourceTxHash;
+    }
+}
+
+contract AacTestAdapterCaller {
+    address public immutable owner;
+
+    error NotOwner();
+    error CallFailed();
+
+    constructor(address owner_) {
+        owner = owner_;
+    }
+
+    function callTarget(address target, bytes calldata data) external returns (bytes memory) {
+        if (msg.sender != owner) revert NotOwner();
+        (bool ok, bytes memory result) = target.call(data);
+        if (!ok) revert CallFailed();
+        return result;
+    }
+}
