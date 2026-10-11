@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-10-11T08:02:37.450Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseOutputRootProof",
+  "address": "0x57A498086d00A7Da80c8304F6189712b583c34C4",
+  "tx": "0xa2710464b939c04f6098ff89623714cf5e300a6f77606960ddf3603ac2fb9c96",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "gameCodeProof": "0x09849ead789E902fA2F497dB08Ff2B6f0a19b716",
+  "messagePasser": "0x4200000000000000000000000000000000000016",
+  "ethereumProofBlock": 26167826,
+  "ethereumHeaderHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "baseBlock": 52239960,
+  "baseBlockHash": "0x4c766d1b4a530a35b14fb4847f8e910a6cbabec6c326f5953abd1617d610b278",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "The pinned game output root equals the Optimism output root of Base block 52239960. This is not Ethereum beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "995549db-1ddc-40c4-84e6-428d4c89adad",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}

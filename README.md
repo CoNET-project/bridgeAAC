@@ -62,6 +62,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Base L1 origin ancestry acceptance](docs/M4-BASE-L1-ORIGIN-ANCESTRY-ACCEPTANCE.md)
 - [Anchor game code proof](docs/M4-ANCHOR-GAME-CODE-PROOF.md)
 - [Anchor game code proof acceptance](docs/M4-ANCHOR-GAME-CODE-PROOF-ACCEPTANCE.md)
+- [Base output root proof](docs/M4-BASE-OUTPUT-ROOT-PROOF.md)
+- [Base output root proof acceptance](docs/M4-BASE-OUTPUT-ROOT-PROOF-ACCEPTANCE.md)
 
 ## Build on Linux
 
