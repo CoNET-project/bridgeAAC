@@ -66,6 +66,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Base output root proof acceptance](docs/M4-BASE-OUTPUT-ROOT-PROOF-ACCEPTANCE.md)
 - [Ethereum header parent chain](docs/M4-ETHEREUM-HEADER-CHAIN.md)
 - [Ethereum header parent chain acceptance](docs/M4-ETHEREUM-HEADER-CHAIN-ACCEPTANCE.md)
+- [Base anchor receipt root](docs/M4-BASE-ANCHOR-RECEIPT-ROOT.md)
+- [Base anchor receipt root acceptance](docs/M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md)
 
 ## Build on Linux
 

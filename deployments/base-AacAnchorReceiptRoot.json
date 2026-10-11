@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-11T08:34:58.962Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseAnchorReceiptRoot",
+  "address": "0x1b455F3C47EaAA675E2288dA7d74d542B74aF60A",
+  "tx": "0xf6cb682f963e94c2fa16a57944268673837a149d3e248021c2598749d849c7c6",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "outputRootProof": "0x57A498086d00A7Da80c8304F6189712b583c34C4",
+  "baseBlock": 52239960,
+  "baseBlockHash": "0x4c766d1b4a530a35b14fb4847f8e910a6cbabec6c326f5953abd1617d610b278",
+  "stateRoot": "0x8d50f47c6cf7780a1fa98f3577f05e9dc61576550a79fd26169a381805372877",
+  "receiptsRoot": "0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "The receipts root of Base block 52239960 is bound to the pinned anchor output root. Receipt inclusion can be checked against this root. This is not beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "b0c41de1-9eb9-498b-a60d-ba1ec2ba74d9",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
