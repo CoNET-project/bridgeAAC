@@ -12,7 +12,8 @@
     "contracts/AacDestinationConsumerTestnet.sol",
     "contracts/AacTestM4Mocks.sol",
     "contracts/AacCanonicalAssetAdapterInterfaces.sol",
-    "contracts/AacCanonicalAdaptersTestnet.sol"
+    "contracts/AacCanonicalAdaptersTestnet.sol",
+    "contracts/AacDestinationConsumerV2.sol"
   ],
   "compiler": "solc 0.8.35",
   "chains": {

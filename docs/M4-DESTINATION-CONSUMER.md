@@ -167,6 +167,12 @@ failure. They are not connected to production Treasury/GB roles. Peer v5
 remains blocked until its canonical address has deployed code and a verified
 ABI.
 
+`AacDestinationConsumerV2.sol` adds the payload-binding boundary needed for
+Treasury/GB adapter integration. It stores `effectHash` at registration and
+passes the exact bound calldata to the adapter at consume time. The V2
+adapters reject wrong selectors, wrong operation/source hashes, non-consumer
+callers, and target call failures.
+
 ## Role and upgrade requirements
 
 Before any custody deployment:
