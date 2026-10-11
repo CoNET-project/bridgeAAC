@@ -18,3 +18,7 @@ the Base header and the L2-to-L1 message passer account proof.
 | Sourcify | creation `match`, runtime `match` |
 
 Machine-readable result: `deployments/base-AacOutputRootProof.json`.
+
+A later replay of the same proofs returned the same output root, Base block
+hash, sequence `52239960`, and `headerFinal = false`. Sourcify remained
+`match`.

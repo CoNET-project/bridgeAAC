@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-10-11T08:21:00.445Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacEthereumHeaderChain",
+  "address": "0x9C6Fd974650ad6cF6CBa8d1596DA34522C681E8D",
+  "tx": "0x2fb34087b92964f5bf46c5225be3aca5664e3a39735318ae277b58e210427ad3",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "oldestBlock": 26167726,
+  "oldestHash": "0xdd3fe0ec9dad8d8dcf13953eba383c251776b527900bf50f8b39acb1a40453aa",
+  "newestBlock": 26167826,
+  "newestHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "links": "100",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "Ethereum block 26167826, which carries the anchor-game code, extends block 26167726, which records that game as the registry anchor. This parent chain is not beacon finality.",
+  "outputRootReplay": {
+    "pass": true,
+    "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+    "baseBlock": "52239960",
+    "headerFinal": false
+  },
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "e21ccc1c-b6d0-47df-95f4-31b9f948e909",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
