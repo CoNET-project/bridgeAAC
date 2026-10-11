@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-11T07:26:30.438Z",
+  "custodyClosed": true,
+  "observationOnly": true,
+  "chainId": 1,
+  "address": "0x9b027ac2d98dc8d2C9d5Dd08F98002538177Aa72",
+  "portal": "0x49048044D57e1C92A77f79988d21Fa8fAF74E97e",
+  "factory": "0x43edB88C4B80fDD2AdFF2412A7BebF9dF42cB40e",
+  "registry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "portalFactory": "0x43edB88C4B80fDD2AdFF2412A7BebF9dF42cB40e",
+  "portalRegistry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "anchorGame": "0xE28b612B506ABE85AA8269AF61f007472EA0d934",
+  "outputRoot": "0xfc02aff63ed130070679bc9b47134d37f9b80539739808fb99380abcab5cbd9b",
+  "l2Sequence": "52239360",
+  "claimValid": true,
+  "gameSequence": "52239360",
+  "gameRoot": "0xfc02aff63ed130070679bc9b47134d37f9b80539739808fb99380abcab5cbd9b",
+  "direct": {
+    "game": "0xE28b612B506ABE85AA8269AF61f007472EA0d934",
+    "outputRoot": "0xfc02aff63ed130070679bc9b47134d37f9b80539739808fb99380abcab5cbd9b",
+    "l2Sequence": "52239360",
+    "claimValid": true,
+    "gameSequence": "52239360",
+    "gameRoot": "0xfc02aff63ed130070679bc9b47134d37f9b80539739808fb99380abcab5cbd9b"
+  },
+  "coveredAtAnchor": true,
+  "coveredAhead": false,
+  "codeBytes": 1087,
+  "metadataTail": "a164736f6c6343000823000a",
+  "sourcify": {
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  },
+  "wiring": true,
+  "agree": true,
+  "pass": true
+}

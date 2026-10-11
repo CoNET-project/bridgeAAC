@@ -1,6 +1,7 @@
 # Ethereum L1 Base Anchor View
 
-Status: **deployed and Sourcify-matched; observation only; custody closed**.
+Status: **accepted; observation only; custody closed**. See
+[the acceptance report](M4-ETHEREUM-L1-ANCHOR-ACCEPTANCE.md).
 
 `AacEthereumL1AnchorView` reads the pinned Optimism portal and anchor registry
 on Ethereum. It checks that the portal still points at the expected factory
