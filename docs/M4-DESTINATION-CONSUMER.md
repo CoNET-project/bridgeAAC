@@ -160,6 +160,13 @@ proofs or move assets.
 No adapter may call a simplified `mint`, `release`, or `execute` selector in
 place of these verified interfaces.
 
+`AacCanonicalAdaptersTestnet.sol` provides strict testnet-only forwarding
+boundaries for the verified TreasuryBridgeV3 and GBTokenV2 selectors. They
+allow only the configured consumer to call the target and revert on target
+failure. They are not connected to production Treasury/GB roles. Peer v5
+remains blocked until its canonical address has deployed code and a verified
+ABI.
+
 ## Role and upgrade requirements
 
 Before any custody deployment:
