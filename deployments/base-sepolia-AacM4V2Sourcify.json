@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-10-11T07:06:37.203Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "provider": "Sourcify",
+  "compiler": "0.8.35+commit.47b9dedd",
+  "viaIR": true,
+  "optimizerRuns": 2,
+  "bytecodeHash": "none",
+  "standardInput": "deployments/verify-input/base-sepolia-m4-v2-standard-input.json",
+  "results": [
+    {
+      "name": "AacTestReceiptMptVerifier",
+      "address": "0x6733591d6F480A3DEfB6C29E788DEfedff01a42B",
+      "verificationId": "961e3404-9127-4f85-bbe1-434de3c290fe",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacTestFinalityVerifier",
+      "address": "0x3977f35c531895CeD50fAf5e02bd9e7EB890D2D1",
+      "verificationId": "9c01852b-a75a-4996-a60a-2deedc470414",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacTestTreasuryTarget",
+      "address": "0xEb95B6fbC747838BBF3D88758034E0F169190793",
+      "verificationId": "0b18cfaa-005a-42f1-b6c3-1d579c236b89",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacTestGbTarget",
+      "address": "0xb1FeF0c828Bc4895f92d17f56C2bed18d0FcE3a7",
+      "verificationId": "77fa636d-504e-4c74-b258-9b580018391d",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacDestinationConsumerV2",
+      "address": "0xa7CB78dDC105AB8afC921d2693897a4D0cDCf309",
+      "verificationId": "9f281cf2-3c7b-47a5-a765-a26ee994d582",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacTreasuryBridgeV3AdapterV2",
+      "address": "0xC0eE75027BF11fb43b89eE27E36303e00715c421",
+      "verificationId": "f2911e5e-9135-44a3-b311-7beb30a91b56",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    },
+    {
+      "name": "AacGbTokenV2AdapterV2",
+      "address": "0x383F1B8ABABbA54016c8c87E3Da01F3Dd65984ac",
+      "verificationId": "057617c1-cccf-4b3e-ad95-ca377a6493f1",
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    }
+  ]
+}

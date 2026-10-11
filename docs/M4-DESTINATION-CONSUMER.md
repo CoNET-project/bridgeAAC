@@ -1,6 +1,6 @@
 # M4 Destination Consumer Interface Package
 
-Status: **interface-only; not deployed; custody closed**.
+Status: **testnet mock pipeline deployed and Sourcify-matched; mainnet custody closed**.
 
 This package defines the ABI boundary for the next AAC milestone. It does not
 claim that TreasuryBridgeV3, GBToken, Peer v5, or a proof verifier currently

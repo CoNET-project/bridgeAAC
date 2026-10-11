@@ -66,6 +66,7 @@ trustless light client, and it does not move canonical assets.
 | Treasury consume | `0x31838ac92df85f8bac527989fa47113bd1caa901fd7adddc2b310f9f4471d17c` |
 | GB consume | `0x3d8b1b89e63b7936118667c917125807f1b6ce8fd22ad6970abf475b69b34096` |
 | Result | both consumed once; target counters are `1`; replay calls revert |
+| Verification | Sourcify `match` on creation and runtime for all seven contracts |
 | Custody | closed |
 
 ## Explicit limits
