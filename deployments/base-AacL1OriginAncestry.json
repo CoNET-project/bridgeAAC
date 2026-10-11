@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-11T07:44:07.612Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseL1OriginAncestry",
+  "address": "0x4b73C39F2db3F68f89A8ce711c54F00410CbeDbf",
+  "tx": "0x6db706d8d36fb874e463396be632faad1d21fed77e276ca323cf619b505b534f",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "l1Block": "0x4200000000000000000000000000000000000015",
+  "oldestBlock": 26167726,
+  "oldestHash": "0xdd3fe0ec9dad8d8dcf13953eba383c251776b527900bf50f8b39acb1a40453aa",
+  "oldestStateRoot": "0x50a32b1ae6a5f3f70de2b4e303751a63d2b9b057c79d7e64aebfcfb2672e26e1",
+  "originNumber": "26167779",
+  "originHash": "0x57ba49119d800fdf4768fd6d2ec0f8687920048cd627999615e862548187fcc1",
+  "links": "53",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "The proven Ethereum header is an ancestor of the L1 origin currently committed by Base. This is not Ethereum beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "6f88a1a0-5047-4277-ba4d-7bdecda9129f",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}

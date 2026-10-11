@@ -1,7 +1,8 @@
 # Ethereum Header-Bound Anchor Proof
 
-Status: **deployed and Sourcify-matched. Header hash is checked. Canonical
-finality is not claimed. Custody remains closed.**
+Status: **accepted. Header hash is checked. Canonical finality is not
+claimed. Custody remains closed.** Acceptance:
+[M4-ETHEREUM-HEADER-ANCHOR-ACCEPTANCE.md](M4-ETHEREUM-HEADER-ANCHOR-ACCEPTANCE.md).
 
 `AacEthereumHeaderAnchor` checks `keccak256(headerRlp)`, reads that header's
 state root, and passes the root to the accepted storage-proof contract. A

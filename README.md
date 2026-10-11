@@ -57,6 +57,9 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Base anchor storage proof](docs/M4-BASE-ANCHOR-STORAGE-PROOF.md)
 - [Base anchor storage proof acceptance](docs/M4-BASE-ANCHOR-STORAGE-PROOF-ACCEPTANCE.md)
 - [Ethereum header-bound anchor proof](docs/M4-ETHEREUM-HEADER-ANCHOR.md)
+- [Ethereum header-bound anchor acceptance](docs/M4-ETHEREUM-HEADER-ANCHOR-ACCEPTANCE.md)
+- [Base L1 origin ancestry](docs/M4-BASE-L1-ORIGIN-ANCESTRY.md)
+- [Base L1 origin ancestry acceptance](docs/M4-BASE-L1-ORIGIN-ANCESTRY-ACCEPTANCE.md)
 
 ## Build on Linux
 
