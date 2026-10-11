@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-11T09:17:13.605Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseAnchorReceiptInclusion",
+  "address": "0x9D246a233A4197ae63ab8852b625B3DCE466b727",
+  "tx": "0xdc3a1a6068ee5a5cef932de55a578ac1dc15aa2709d6235f42be609bd3058347",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "receiptRootProof": "0x1b455F3C47EaAA675E2288dA7d74d542B74aF60A",
+  "receiptVerifier": "0xC9D0949f7D54eD827BAdb51fD4970baEdE5B5d10",
+  "baseBlock": 52239960,
+  "receiptsRoot": "0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "receiptIndex": 1,
+  "transactionHash": "0x1b05ca7e26ca07789fa6064309ade835872fe8ee36c5da6882ba4465911a7455",
+  "receiptType": "0x2",
+  "receiptStatus": "0x1",
+  "logCount": 0,
+  "receiptHash": "0x3cdd0b1cbd772d18f6b7b9a3a85f6863d796f985b2f26483bfb651707ffe609a",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "One real Base receipt is included in the receipts root bound to the pinned anchor output root. This is not beacon finality and not a custody event.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "440f1e65-b273-40bf-aa54-b89d5335b76e",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
