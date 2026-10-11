@@ -1,0 +1,26 @@
+{
+  "collectedAt": "2026-10-11T22:15:41.032Z",
+  "address": "0xc9F20370b13266F3DfD71e257df8D2F84B8a3e0b",
+  "headerHashOnChain": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "headerNumberOnChain": "26167826",
+  "quoted": {
+    "headerHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+    "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+    "headerNumber": "26167826",
+    "headerFinal": false
+  },
+  "executionParentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+  "wrongHeaderReverted": true,
+  "wrongHeaderData": "0xbabb01dd",
+  "runtimeBytes": 1509,
+  "metadataTail": "a164736f6c6343000823000a",
+  "sourcify": "match",
+  "gate": {
+    "implementation": "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD",
+    "headerFinal": false,
+    "custodyOpen": false,
+    "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+    "settleData": "0x61839255"
+  },
+  "pass": true
+}

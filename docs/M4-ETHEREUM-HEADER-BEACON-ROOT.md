@@ -18,4 +18,5 @@ and returns the field. A matching execution header is still not a beacon
 finality proof. The production gate was not upgraded and its `settle` path
 still reverts.
 
-Acceptance: [M4-ETHEREUM-HEADER-BEACON-ROOT-ACCEPTANCE.md](M4-ETHEREUM-HEADER-BEACON-ROOT-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-ETHEREUM-HEADER-BEACON-ROOT-ACCEPTANCE.md](M4-ETHEREUM-HEADER-BEACON-ROOT-ACCEPTANCE.md).

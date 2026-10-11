@@ -21,7 +21,10 @@
       "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
       "headerNumber": "26167826",
       "headerFinal": false
-    }
+    },
+    "replayedAt": "2026-10-11T22:15:41.032Z",
+    "runtimeBytes": 1509,
+    "sourcify": "match"
   },
   "verification": {
     "verificationId": "5ecf4782-faba-40e6-aed6-00b20763da7d",
