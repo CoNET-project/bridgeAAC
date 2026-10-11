@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-10-11T07:19:50.743Z",
+  "network": "ethereum",
+  "chainId": 1,
+  "address": "0x9b027ac2d98dc8d2C9d5Dd08F98002538177Aa72",
+  "tx": "0xa1d8e106f4997a93d3066e8829429165cca6da9050622c92b3a391263ecfbcce",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "custodyClosed": true,
+  "observationOnly": true,
+  "agree": true,
+  "coveredAtAnchor": true,
+  "coveredAhead": false,
+  "l2Sequence": "52239360",
+  "anchorGame": "0xE28b612B506ABE85AA8269AF61f007472EA0d934",
+  "outputRoot": "0xfc02aff63ed130070679bc9b47134d37f9b80539739808fb99380abcab5cbd9b",
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "df584960-20c0-4c05-bc34-73b6c986fa31",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}

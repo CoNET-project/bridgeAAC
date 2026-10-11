@@ -1,6 +1,6 @@
 # M4 Paused Mainnet Canary
 
-Status: **deployed and explorer-matched; custody remains closed**.
+Status: **accepted; custody remains closed**.
 
 This canary places the receipt verifier, a fail-closed finality placeholder,
 and the payload-bound consumer on Base and CoNET. The consumer is paused in
@@ -16,8 +16,11 @@ upgradeable, so the pause lock cannot be removed by an implementation upgrade.
 | Base `8453` | `0x04e07eddB62e8c9EBee0DA411b1575ead55104d9` | `0xC9D0949f7D54eD827BAdb51fD4970baEdE5B5d10` | `0x4D4E6056150Dba14abeDC0BE2f070949aa40BC28` |
 | CoNET `224422` | `0xc9a4BCc087d51851cFa4cb7B5C581D9139487720` | `0x805BF6E41df8Ce5C106A5993fc062095dBFDE61E` | `0x757709739c6bA273c23928A793becE1A6Bc7978F` |
 
-Acceptance on both chains: `paused == true`, `unpause` reverts, registration
-reverts, and the finality placeholder reverts.
+Acceptance on both chains, re-read after deployment: `paused == true`,
+`unpause` reverts, the finality placeholder reverts, both adapters point at
+the canonical Treasury and GB addresses, and none of the canary contracts is
+the Treasury owner. Peer v5 still has no code. The record is
+`deployments/mainnet-AacPausedCanary-acceptance.json`.
 
 Verification:
 

@@ -52,6 +52,7 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [M4 destination consumer interface package](docs/M4-DESTINATION-CONSUMER.md)
 - [M4 testnet acceptance record](docs/M4-TESTNET-ACCEPTANCE.md)
 - [M4 paused mainnet canary](docs/M4-MAINNET-CANARY.md)
+- [Ethereum L1 Base anchor view](docs/M4-ETHEREUM-L1-ANCHOR-VIEW.md)
 
 ## Build on Linux
 

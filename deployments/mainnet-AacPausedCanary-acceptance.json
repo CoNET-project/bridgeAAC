@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-10-11T07:18:40.657Z",
+  "custodyClosed": true,
+  "chains": {
+    "base": {
+      "chainId": 8453,
+      "paused": true,
+      "unpause": "reverted",
+      "finality": "reverted",
+      "adapter0": true,
+      "adapter1": true,
+      "targetsMatch": true,
+      "treasuryOwner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "gbOwner": "unavailable",
+      "canaryIsTreasuryOwner": false,
+      "peerCodeBytes": 0,
+      "explorer": [
+        {
+          "key": "receipt",
+          "match": "match",
+          "runtimeMatch": "match",
+          "creationMatch": "match"
+        },
+        {
+          "key": "finality",
+          "match": "match",
+          "runtimeMatch": "match",
+          "creationMatch": "match"
+        },
+        {
+          "key": "consumer",
+          "match": "match",
+          "runtimeMatch": "match",
+          "creationMatch": "match"
+        },
+        {
+          "key": "treasuryAdapter",
+          "match": "match",
+          "runtimeMatch": "match",
+          "creationMatch": "match"
+        },
+        {
+          "key": "gbAdapter",
+          "match": "match",
+          "runtimeMatch": "match",
+          "creationMatch": "match"
+        }
+      ],
+      "pass": true
+    },
+    "conet": {
+      "chainId": 224422,
+      "paused": true,
+      "unpause": "reverted",
+      "finality": "reverted",
+      "adapter0": true,
+      "adapter1": true,
+      "targetsMatch": true,
+      "treasuryOwner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "gbOwner": "unavailable",
+      "canaryIsTreasuryOwner": false,
+      "peerCodeBytes": 0,
+      "explorer": [
+        {
+          "key": "receipt",
+          "is_verified": true,
+          "is_partially_verified": true
+        },
+        {
+          "key": "finality",
+          "is_verified": true,
+          "is_partially_verified": true
+        },
+        {
+          "key": "consumer",
+          "is_verified": true,
+          "is_partially_verified": true
+        },
+        {
+          "key": "treasuryAdapter",
+          "is_verified": true,
+          "is_partially_verified": true
+        },
+        {
+          "key": "gbAdapter",
+          "is_verified": true,
+          "is_partially_verified": true
+        }
+      ],
+      "pass": true
+    }
+  },
+  "pass": true
+}
