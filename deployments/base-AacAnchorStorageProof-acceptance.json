@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-10-11T07:35:08.921Z",
+  "custodyClosed": true,
+  "address": "0x8248Fe0Ee2f9B70AD18675efc303D08FD306c3A9",
+  "registry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "slot": "2",
+  "replay": {
+    "anchorGame": "0x0896E5a1469847D56089e1f073f3a100Bc041c44",
+    "headerFinal": false,
+    "stateRoot": "0x50a32b1ae6a5f3f70de2b4e303751a63d2b9b057c79d7e64aebfcfb2672e26e1",
+    "ethereumBlock": 26167726
+  },
+  "sourcify": {
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  },
+  "codeBytes": 3718,
+  "metadataTail": "a164736f6c6343000823000a",
+  "pass": true
+}

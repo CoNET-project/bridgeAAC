@@ -1,7 +1,7 @@
 # Base Anchor Storage Proof
 
-Status: **deployed, proven against one Ethereum state root, and Sourcify-matched.
-The Ethereum header is not authenticated. Custody remains closed.**
+Status: **accepted. The Ethereum header is not authenticated. Custody remains
+closed.** See [the acceptance report](M4-BASE-ANCHOR-STORAGE-PROOF-ACCEPTANCE.md).
 
 `AacBaseAnchorStorageProof` runs on Base. It verifies an Ethereum Merkle
 proof that the pinned AnchorStateRegistry account contains `anchorGame` in
