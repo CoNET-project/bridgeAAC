@@ -50,6 +50,7 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [MVP phases](docs/MVP.md)
 - [Third-party acceptance guide](docs/THIRD-PARTY-ACCEPTANCE.md)
 - [M4 destination consumer interface package](docs/M4-DESTINATION-CONSUMER.md)
+- [M4 testnet acceptance record](docs/M4-TESTNET-ACCEPTANCE.md)
 
 ## Build on Linux
 

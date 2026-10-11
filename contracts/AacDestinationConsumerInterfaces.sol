@@ -98,6 +98,10 @@ interface IAacAssetAdapter {
     function consumeAac(bytes32 aacId) external;
 }
 
+interface IAacPayloadAssetAdapter {
+    function consumeAac(bytes32 aacId, bytes calldata effectData) external;
+}
+
 /// @notice Canonical CoNET TreasuryBridgeV3 mint adapter.
 interface IAacTreasuryMintAdapter is IAacAssetAdapter {}
 

@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-10-11T06:06:33.897Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "gateway": "0x678F3570F9173373bB75e7544fcF383153aDAF4C",
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "mockFinality": true,
+  "contracts": {
+    "finality": "0x3977f35c531895CeD50fAf5e02bd9e7EB890D2D1",
+    "receipt": "0x6733591d6F480A3DEfB6C29E788DEfedff01a42B",
+    "consumer": "0xa7CB78dDC105AB8afC921d2693897a4D0cDCf309",
+    "treasuryTarget": "0xEb95B6fbC747838BBF3D88758034E0F169190793",
+    "gbTarget": "0xb1FeF0c828Bc4895f92d17f56C2bed18d0FcE3a7",
+    "treasuryAdapter": "0xC0eE75027BF11fb43b89eE27E36303e00715c421",
+    "gbAdapter": "0x383F1B8ABABbA54016c8c87E3Da01F3Dd65984ac"
+  },
+  "deploys": {
+    "finality": "0xd5ad48c9573c392d9ff6839fd7153a65f09a511ebe6514ee4ea03f6b97ed8ef5",
+    "receipt": "0xcac551654bc4cf57ffd605f47d96497873391b6eb4711a9cb31685098aab316a",
+    "consumer": "0xef3d91c1407106215b927f8a3e3359f4b77590885b4240b6f56ea724e9215918",
+    "treasuryTarget": "0xa1d27de31bc4c3736409c2237689926dc4abe124e4af9f644b436562079019d6",
+    "gbTarget": "0xb24363f9fbfa3b6320de229be4d9f5fbe4c467b5240dff18a6b1d329e5b4c547",
+    "treasuryAdapter": "0xb0a837840be13412feac6523e158b731e44783d2d9382c9b29da7b4ec5d94aa7",
+    "gbAdapter": "0x118458f271e924c3ef00c71135e1650a52b91006a316daeeceec5f255f7da5da"
+  },
+  "flows": {
+    "mint": {
+      "aacId": "0x82a8fd8b3412d41b2c1df206123b6a734545b32d70647cc7ce019c7a4c41f059",
+      "register": "0x28699b490ba4da44eec74bf5330b86f388d64d77a32f4219a418e008d7e1c04a",
+      "consume": "0x31838ac92df85f8bac527989fa47113bd1caa901fd7adddc2b310f9f4471d17c",
+      "replay": "reverted"
+    },
+    "gb": {
+      "aacId": "0x640372b2b58a562b63c6d618fa5933b5b8e5526a8e23ba93f3a67b2836beb7c8",
+      "register": "0x9b9c8a8415084aa12b5b79cdf0688c8d2a862910ae243769f02d735ae8656560",
+      "consume": "0x3d8b1b89e63b7936118667c917125807f1b6ce8fd22ad6970abf475b69b34096",
+      "replay": "reverted"
+    }
+  },
+  "effects": {
+    "treasuryMintCalls": "1",
+    "treasuryLast": "0x82a8fd8b3412d41b2c1df206123b6a734545b32d70647cc7ce019c7a4c41f059",
+    "gbMintCalls": "1",
+    "gbLast": "0x640372b2b58a562b63c6d618fa5933b5b8e5526a8e23ba93f3a67b2836beb7c8"
+  },
+  "consumed": {
+    "mint": true,
+    "gb": true
+  },
+  "replay": {
+    "mint": "reverted",
+    "gb": "reverted"
+  },
+  "verified": true,
+  "notes": "Mock finality and receipt verifiers only. Custody remains closed. The first read immediately after the GB receipt was stale; a subsequent read confirmed status Consumed, mintCalls 1, and replay rejection."
+}
