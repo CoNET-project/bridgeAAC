@@ -21,7 +21,15 @@
     "headerFinal": false
   },
   "acceptance": {
-    "pass": true
+    "pass": true,
+    "replayedAt": "2026-10-11T08:28:40.901Z",
+    "codeBytes": 1923,
+    "metadataTail": "a164736f6c6343000823000a",
+    "sourcify": {
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    }
   },
   "verification": {
     "provider": "Sourcify",

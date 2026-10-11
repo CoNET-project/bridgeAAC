@@ -3,9 +3,8 @@
 Status: **PASS. The output-root header extends the registry-proof header.
 `headerFinal` stays false. Custody remains closed.**
 
-The output-root contract was replayed in the same pass. It still returns
-output root `0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f`
-for Base block `52239960`, with `headerFinal = false`.
+Collected at `2026-10-11T08:28:40Z` by fetching Ethereum blocks `26167726`
+through `26167826` again and replaying them through the deployed contract.
 
 | Check | Result |
 |---|---|
@@ -17,6 +16,9 @@ for Base block `52239960`, with `headerFinal = false`.
 | Parent links | `100` |
 | Numbers increase by one | yes |
 | `headerFinal` | false |
+| Runtime size | 1923 bytes |
+| Metadata tail | `solc 0.8.35` (`000823`) |
 | Sourcify | creation `match`, runtime `match` |
 
-Machine-readable result: `deployments/base-AacEthereumHeaderChain.json`.
+Machine-readable result:
+`deployments/base-AacEthereumHeaderChain-acceptance.json`.

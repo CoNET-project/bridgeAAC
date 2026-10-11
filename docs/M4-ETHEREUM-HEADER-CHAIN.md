@@ -27,4 +27,5 @@ code used for the Base output root. This parent chain connects those two
 proofs. It does not prove that Ethereum beacon finality includes either
 header.
 
-Acceptance: [M4-ETHEREUM-HEADER-CHAIN-ACCEPTANCE.md](M4-ETHEREUM-HEADER-CHAIN-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-ETHEREUM-HEADER-CHAIN-ACCEPTANCE.md](M4-ETHEREUM-HEADER-CHAIN-ACCEPTANCE.md).
