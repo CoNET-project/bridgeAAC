@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-10-11T11:04:51.921Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacBaseAnchorHeaderLogLink",
+  "address": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "tx": "0x339c92e26444a011b461d4ad772c3f8fddbe9f98c3285b9b0fd112809dfb5543",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "headerChain": "0x9C6Fd974650ad6cF6CBa8d1596DA34522C681E8D",
+  "logProof": "0x1815d6DA04DE7910A5438168E1642e0f4eA25D28",
+  "oldestBlock": 26167726,
+  "oldestHash": "0xdd3fe0ec9dad8d8dcf13953eba383c251776b527900bf50f8b39acb1a40453aa",
+  "newestBlock": 26167826,
+  "newestHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "links": "100",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "from": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
+  "to": "0xb093da272A66D47b7445cA389CEbdc6d3Ac7753D",
+  "amount": "236185820404",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "The USDC log proof uses the Ethereum header at the end of the 100-step chain that starts at the registry-proof header. This is not beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "d0b423cd-8c05-47f7-90a7-e1d5bc0af9d4",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
