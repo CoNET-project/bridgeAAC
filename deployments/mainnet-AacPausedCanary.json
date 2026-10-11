@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-10-11T07:12:11.820Z",
+  "custodyClosed": true,
+  "canary": true,
+  "rolesGranted": false,
+  "treasury": "0xa208982212978550594A7FEEB70a61665d129003",
+  "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+  "chains": {
+    "base": {
+      "chainId": 8453,
+      "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "gateway": "0x678F3570F9173373bB75e7544fcF383153aDAF4C",
+      "contracts": {
+        "receipt": "0xC9D0949f7D54eD827BAdb51fD4970baEdE5B5d10",
+        "finality": "0x4D4E6056150Dba14abeDC0BE2f070949aa40BC28",
+        "consumer": "0x04e07eddB62e8c9EBee0DA411b1575ead55104d9",
+        "treasuryAdapter": "0x16753e6eAF8f36BD1FbD2B5C695B6f8F5FADea62",
+        "gbAdapter": "0xE43C4C14dcE842eBEf85242E4EC7A217F7aBa3c7"
+      },
+      "deploys": {
+        "receipt": "0xe65c2b0f50ad5f5c0df2c3ea29d552e7fcf33d0123fbbd3a7a61ee21bc6f45a8",
+        "finality": "0xd260f606737ce892a88890402753b8315551baa1f47080595e2763172c0cdd9a",
+        "consumer": "0x6ba55eefe7b0c2f07937f64dc99ed92319f6fe53b0597549ce64861506192ef8",
+        "treasuryAdapter": "0xc2793316c9694c9bc192701a5b9291034900cb46e567b64111b1fe67cbc94ac4",
+        "gbAdapter": "0x5ae2b34ba1556b287315bd1be3d64cf4ba31d4174eea3c61f36654eddba4857e"
+      },
+      "acceptance": {
+        "paused": true,
+        "unpause": "reverted",
+        "register": "reverted",
+        "finalityCall": "reverted",
+        "adapter0": true,
+        "adapter1": true,
+        "setAdapter": [
+          "0x24ddfbf76943520e1d078a129dd212a4eab4e36bd3f8ee6c4b504ed2dec3fc15",
+          "0x5009b66591669f89f73d55b3495b6a76b3c627269aa4fe8860a1d3515b46193f"
+        ]
+      },
+      "functionalAcceptance": true
+    },
+    "conet": {
+      "chainId": 224422,
+      "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "gateway": "0x678F3570F9173373bB75e7544fcF383153aDAF4C",
+      "contracts": {
+        "receipt": "0x805BF6E41df8Ce5C106A5993fc062095dBFDE61E",
+        "finality": "0x757709739c6bA273c23928A793becE1A6Bc7978F",
+        "consumer": "0xc9a4BCc087d51851cFa4cb7B5C581D9139487720",
+        "treasuryAdapter": "0x64f6b0Dbc9c5Df38b2241A1C0181493E73521D2f",
+        "gbAdapter": "0x69564D8d8626d387c825bbc407EA7AA7BA6e7a69"
+      },
+      "deploys": {
+        "receipt": "0x085041dd45c1bc3e99cf0ef6be356880e1fefd7743cf6983a689f1bcd7476e9a",
+        "finality": "0xbcdb3f12ca935626a9c5a1e32dd6b97af119ebd68288f1da0e89705c2b7e9eb1",
+        "consumer": "0xd3f72d84a1609c5f7901e3b1c53aac5be3d0419257125c241119b71774401599",
+        "treasuryAdapter": "0xcf9c3ad1764baaa0aa0ca274eb740a2608689a8f830399c55d4f94e8a7d06ac4",
+        "gbAdapter": "0x30c077ae3f7b08dfb4d52169c2cc213c3be0bed42819f86fc0eff5edeaa002a4"
+      },
+      "acceptance": {
+        "paused": true,
+        "unpause": "reverted",
+        "register": "reverted",
+        "finalityCall": "reverted",
+        "adapter0": true,
+        "adapter1": true,
+        "setAdapter": [
+          "0x0fff8870350c6e48cca97d5fab02af2a296aab57b29f4081d3783e62d4cac064",
+          "0x97a41f4075c81263508c24aadd635114dd1df461a15891020b5d2b2af08e738c"
+        ]
+      },
+      "functionalAcceptance": true
+    }
+  },
+  "explorer": {
+    "base": {
+      "provider": "Sourcify",
+      "chainId": 8453,
+      "match": "match",
+      "creationMatch": "match",
+      "runtimeMatch": "match"
+    },
+    "conet": {
+      "provider": "Blockscout",
+      "chainId": 224422,
+      "is_verified": true,
+      "is_partially_verified": true,
+      "sourcify": "unsupported_chain"
+    }
+  }
+}
