@@ -17,7 +17,15 @@
   "custodyClosed": true,
   "meaning": "The receipts root of Base block 52239960 is bound to the pinned anchor output root. Receipt inclusion can be checked against this root. This is not beacon finality.",
   "acceptance": {
-    "pass": true
+    "pass": true,
+    "replayedAt": "2026-10-11T09:02:34.009Z",
+    "codeBytes": 2227,
+    "metadataTail": "a164736f6c6343000823000a",
+    "sourcify": {
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    }
   },
   "verification": {
     "provider": "Sourcify",

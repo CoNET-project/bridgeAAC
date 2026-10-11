@@ -4,6 +4,10 @@ Status: **PASS. The receipts root matches Base block 52239960 and is bound
 to the pinned output root. `headerFinal` stays false. Custody remains
 closed.**
 
+Collected at `2026-10-11T09:02:34Z` by replaying the Ethereum game-code proof,
+the Base header, and the message-passer account proof through the deployed
+contract.
+
 | Check | Result |
 |---|---|
 | Contract | `0x1b455F3C47EaAA675E2288dA7d74d542B74aF60A` |
@@ -14,6 +18,9 @@ closed.**
 | Receipts root | `0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8` |
 | Output root | `0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f` |
 | `headerFinal` | false |
+| Runtime size | 2227 bytes |
+| Metadata tail | `solc 0.8.35` (`000823`) |
 | Sourcify | creation `match`, runtime `match` |
 
-Machine-readable result: `deployments/base-AacAnchorReceiptRoot.json`.
+Machine-readable result:
+`deployments/base-AacAnchorReceiptRoot-acceptance.json`.

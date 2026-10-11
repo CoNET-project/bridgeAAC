@@ -22,4 +22,5 @@ inclusion proof can use this receipts root. `headerFinal` stays false.
 | `headerFinal` | false |
 | Sourcify | creation `match`, runtime `match` |
 
-Acceptance: [M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md](M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md](M4-BASE-ANCHOR-RECEIPT-ROOT-ACCEPTANCE.md).
