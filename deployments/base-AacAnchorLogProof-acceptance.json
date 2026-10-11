@@ -1,0 +1,24 @@
+{
+  "collectedAt": "2026-10-11T11:04:08.081Z",
+  "address": "0x1815d6DA04DE7910A5438168E1642e0f4eA25D28",
+  "receiptInclusion": "0x9D246a233A4197ae63ab8852b625B3DCE466b727",
+  "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "receiptsRoot": "0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8",
+  "from": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
+  "to": "0xb093da272A66D47b7445cA389CEbdc6d3Ac7753D",
+  "amount": "236185820404",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "receiptIndex": 9,
+  "logIndex": 13,
+  "transactionHash": "0x9c82a2144101b7cbf81827921fc45189cbe16417864423185813a3b6d54140f2",
+  "codeBytes": 3112,
+  "metadataTail": "a164736f6c6343000823000a",
+  "sourcify": {
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  },
+  "custodyClosed": true,
+  "pass": true
+}

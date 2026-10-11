@@ -26,4 +26,5 @@ It is not an AAC custody event.
 | `headerFinal` | false |
 | Sourcify | creation `match`, runtime `match` |
 
-Acceptance: [M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md](M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md](M4-BASE-ANCHOR-LOG-PROOF-ACCEPTANCE.md).

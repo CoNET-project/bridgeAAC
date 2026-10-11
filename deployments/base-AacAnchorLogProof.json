@@ -22,7 +22,15 @@
   "custodyClosed": true,
   "meaning": "A USDC Transfer log inside Base block 52239960 is inside a receipt included in the anchored receipts root. This is not an AAC custody transfer and not beacon finality.",
   "acceptance": {
-    "pass": true
+    "pass": true,
+    "replayedAt": "2026-10-11T11:04:08.081Z",
+    "codeBytes": 3112,
+    "metadataTail": "a164736f6c6343000823000a",
+    "sourcify": {
+      "match": "match",
+      "runtimeMatch": "match",
+      "creationMatch": "match"
+    }
   },
   "verification": {
     "provider": "Sourcify",

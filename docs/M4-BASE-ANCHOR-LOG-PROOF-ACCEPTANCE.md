@@ -3,9 +3,14 @@
 Status: **PASS. The USDC Transfer log is inside the included receipt.
 `headerFinal` stays false. Custody remains closed.**
 
+Collected at `2026-10-11T11:04:08Z` by rebuilding the receipt trie for Base
+block `52239960` and replaying the inclusion proof through the deployed
+contract.
+
 | Check | Result |
 |---|---|
 | Contract | `0x1815d6DA04DE7910A5438168E1642e0f4eA25D28` |
+| Receipt inclusion | `0x9D246a233A4197ae63ab8852b625B3DCE466b727` |
 | Base block | `52239960` |
 | Receipt index | `9` |
 | Log index | `13` |
@@ -17,6 +22,9 @@ Status: **PASS. The USDC Transfer log is inside the included receipt.
 | Output root | `0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f` |
 | Receipts root | `0xd173446a38a5f51df48b36ee47bc926691d797529c4ef98036756207efccfaa8` |
 | `headerFinal` | false |
+| Runtime size | 3112 bytes |
+| Metadata tail | `solc 0.8.35` (`000823`) |
 | Sourcify | creation `match`, runtime `match` |
 
-Machine-readable result: `deployments/base-AacAnchorLogProof.json`.
+Machine-readable result:
+`deployments/base-AacAnchorLogProof-acceptance.json`.
