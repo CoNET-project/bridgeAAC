@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-10-11T07:50:52.468Z",
+  "network": "base",
+  "chainId": 8453,
+  "contract": "AacAnchorGameCodeProof",
+  "address": "0x09849ead789E902fA2F497dB08Ff2B6f0a19b716",
+  "tx": "0xbde89564daa796b1ebb3715a259f7b55de7379cea0ab0029dcdb9e9938abe766",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "game": "0x0896E5a1469847D56089e1f073f3a100Bc041c44",
+  "historicalEthereumBlock": 26167726,
+  "historicalCodeHash": "0x1e01d4f7d3ab0f3de2ccb41e9e954da615ee826af109fb35fef2a4a4cf7affbd",
+  "proofBlock": 26167826,
+  "headerHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "stateRoot": "0xa1fd16d6ff44d1225f45691aa863adb599f45e01e77773c891eebb0b99ede358",
+  "codeHash": "0x1e01d4f7d3ab0f3de2ccb41e9e954da615ee826af109fb35fef2a4a4cf7affbd",
+  "rootClaim": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+  "l2SequenceNumber": "52239960",
+  "headerFinal": false,
+  "custodyClosed": true,
+  "meaning": "The anchor game pinned at Ethereum block 26167726 has the same runtime code inside this later header. The output root and L2 sequence are read from that code. This is not beacon finality.",
+  "acceptance": {
+    "pass": true
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "44714465-3658-4455-a0f7-62f33001f4cd",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
