@@ -25,4 +25,5 @@ implementation later. This implementation itself has no settle path.
 | `custodyOpen` | false |
 | Sourcify | proxy and implementation creation `match`, runtime `match` |
 
-Acceptance: [M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md](M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md](M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md).

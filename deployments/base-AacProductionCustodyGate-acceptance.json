@@ -1,0 +1,35 @@
+{
+  "collectedAt": "2026-10-11T20:43:27.907Z",
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "implementation": "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "settleData": "0x61839255",
+  "implInitReverted": true,
+  "quote": {
+    "newestHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+    "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+    "from": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
+    "to": "0xb093da272A66D47b7445cA389CEbdc6d3Ac7753D",
+    "amount": "236185820404",
+    "links": "100",
+    "headerFinal": false
+  },
+  "codeBytes": {
+    "proxy": 86,
+    "implementation": 1904
+  },
+  "metadataTail": {
+    "proxy": "a164736f6c6343000823000a",
+    "implementation": "a164736f6c6343000823000a"
+  },
+  "sourcify": {
+    "proxy": "match",
+    "implementation": "match"
+  },
+  "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+  "custodyClosed": true,
+  "pass": true
+}

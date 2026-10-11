@@ -16,7 +16,16 @@
   "meaning": "Stable production proxy on Base. This implementation quotes the accepted proof link and cannot settle. headerFinal stays false. No Treasury, GB, or Peer role was granted. The deployer can upgrade the implementation later.",
   "acceptance": {
     "pass": true,
-    "settleSelector": "0x61839255"
+    "settleSelector": "0x61839255",
+    "replayedAt": "2026-10-11T20:43:27.907Z",
+    "codeBytes": {
+      "proxy": 86,
+      "implementation": 1904
+    },
+    "sourcify": {
+      "proxy": "match",
+      "implementation": "match"
+    }
   },
   "verification": {
     "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD": {
