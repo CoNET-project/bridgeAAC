@@ -55,7 +55,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Ethereum L1 Base anchor view](docs/M4-ETHEREUM-L1-ANCHOR-VIEW.md)
 - [Ethereum L1 anchor acceptance](docs/M4-ETHEREUM-L1-ANCHOR-ACCEPTANCE.md)
 - [Base anchor storage proof](docs/M4-BASE-ANCHOR-STORAGE-PROOF.md)
-- [Base anchor storage proof](docs/M4-BASE-ANCHOR-STORAGE-PROOF.md)
+- [Base anchor storage proof acceptance](docs/M4-BASE-ANCHOR-STORAGE-PROOF-ACCEPTANCE.md)
+- [Ethereum header-bound anchor proof](docs/M4-ETHEREUM-HEADER-ANCHOR.md)
 
 ## Build on Linux
 
