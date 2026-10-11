@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-10-11T07:33:00.081Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x8248Fe0Ee2f9B70AD18675efc303D08FD306c3A9",
+  "tx": "0x485224ab394e75fe8a2d11e94dda146357d0809bc6f47a2b1880908b852caa08",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "registry": "0x909f6cf47ed12f010A796527f562bFc26C7F4E72",
+  "anchorGameSlot": 2,
+  "headerFinal": false,
+  "custodyClosed": true,
+  "acceptance": {
+    "pass": true,
+    "anchorGame": "0x0896E5a1469847D56089e1f073f3a100Bc041c44",
+    "ethereumBlock": 26167726,
+    "stateRoot": "0x50a32b1ae6a5f3f70de2b4e303751a63d2b9b057c79d7e64aebfcfb2672e26e1"
+  },
+  "verification": {
+    "provider": "Sourcify",
+    "verificationId": "7ba843ce-2abf-4623-a46f-d306ea1d1120",
+    "match": "match",
+    "runtimeMatch": "match",
+    "creationMatch": "match"
+  }
+}
