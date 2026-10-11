@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-10-11T00:16:52.753Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "testnetOnly": true,
+  "custodyClosed": true,
+  "contracts": {
+    "caller": "0xdFae5bfd1d0a3aa4833b3EADa888f313541220d8",
+    "treasuryTarget": "0xFe17Ec37EadCc39F688b2a18f3A6Ce3FdAC3Fc71",
+    "gbTarget": "0x03D97be110555A350053236e22020C7fC8161b73",
+    "treasuryAdapter": "0x684b0ac760cEE9c9b85de36d69746420648Cf9e2",
+    "gbAdapter": "0xfFDc8d2021A41F4638Cb3eCf58B5155383EE9f6d"
+  },
+  "effects": {
+    "mintCalls": "1",
+    "releaseCalls": "1",
+    "gbMintCalls": "1"
+  },
+  "verified": true
+}
