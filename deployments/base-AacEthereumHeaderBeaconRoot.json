@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-10-11T20:46:54.328Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0xc9F20370b13266F3DfD71e257df8D2F84B8a3e0b",
+  "tx": "0x9d64b4e7b2b9d3b76a3e7bbe6380166ef8b891168a0b7be523a06728ede50e41",
+  "blockNumber": 52481068,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "headerHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "headerNumber": 26167826,
+  "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 1509,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "Reads parentBeaconBlockRoot from the already accepted Ethereum execution header 26167826. This is not beacon finality. headerFinal stays false. The production gate is unchanged and cannot settle.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "headerHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+      "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+      "headerNumber": "26167826",
+      "headerFinal": false
+    }
+  },
+  "verification": {
+    "verificationId": "5ecf4782-faba-40e6-aed6-00b20763da7d",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumHeaderBeaconRoot.sol:AacEthereumHeaderBeaconRoot"
+  }
+}
