@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-10-12T06:01:36.336Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E",
+  "tx": "0xfc2dd86d358a0a816903d4a2ba3ea2634bc817c3b8ca6f1b6b905965c95cf293",
+  "blockNumber": 52497769,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "ancestry": "0x4E28D764151AD328d7c50a0fFB380935d07a26dF",
+  "aggregate": "0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341",
+  "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+  "anchorRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+  "links": 6348,
+  "participants": 505,
+  "aggregateVerified": true,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 1252,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "One call checks the 6348-header ancestry and the 505-of-512 sync aggregate for finalized slot 15413120. headerFinal stays false. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+      "anchorRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+      "links": "6348",
+      "participants": "505",
+      "aggregateVerified": true,
+      "headerFinal": false
+    },
+    "tamperedKey": "0x09bde339",
+    "shortenedChain": "0xbabb01dd",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "c2214733-8a2a-4f25-b7df-e8705d5ad0c3",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumBeaconCheckpointLink.sol:AacEthereumBeaconCheckpointLink"
+  }
+}
