@@ -25,7 +25,9 @@
       "beaconSlot": "15406750",
       "headerFinal": false
     },
-    "tamperedBranch": "0x09bde339"
+    "tamperedBranch": "0x09bde339",
+    "replayedAt": "2026-10-12T05:08:00.062Z",
+    "sourcify": "match"
   },
   "verification": {
     "verificationId": "519c7ec8-f92f-4a19-9727-16166649218e",

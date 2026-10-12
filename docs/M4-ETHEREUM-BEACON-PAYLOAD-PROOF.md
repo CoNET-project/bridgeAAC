@@ -24,4 +24,5 @@ The beacon API reports this slot as finalized. That report is not the proof.
 `headerFinal` stays false until a finalized-checkpoint proof is accepted.
 The production gate was not upgraded.
 
-Acceptance: [M4-ETHEREUM-BEACON-PAYLOAD-PROOF-ACCEPTANCE.md](M4-ETHEREUM-BEACON-PAYLOAD-PROOF-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-ETHEREUM-BEACON-PAYLOAD-PROOF-ACCEPTANCE.md](M4-ETHEREUM-BEACON-PAYLOAD-PROOF-ACCEPTANCE.md).

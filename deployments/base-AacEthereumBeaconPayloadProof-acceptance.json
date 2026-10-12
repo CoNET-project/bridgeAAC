@@ -1,0 +1,29 @@
+{
+  "collectedAt": "2026-10-12T05:08:00.062Z",
+  "address": "0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55",
+  "executionHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "beaconBlockRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+  "beaconSlot": "15406750",
+  "gindex": "6444",
+  "quoted": {
+    "executionHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+    "beaconBlockRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+    "beaconSlot": "15406750",
+    "headerFinal": false
+  },
+  "tamperedData": "0x09bde339",
+  "runtimeBytes": 833,
+  "metadataTail": "a164736f6c6343000823000a",
+  "sourcify": "match",
+  "gate": {
+    "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+    "headerFinal": false,
+    "custodyOpen": false,
+    "settleData": "0x61839255"
+  },
+  "localHeaderRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+  "stateRoot": "0xd76ecb4a62849bdea4c583647c331719a4f03cd2249255336858d19504f68cfe",
+  "bodyRoot": "0xd1afa9902289b021cfd866901c6711c524ece0d6816697305279a1b89fd94581",
+  "proposer": "665390",
+  "pass": true
+}
