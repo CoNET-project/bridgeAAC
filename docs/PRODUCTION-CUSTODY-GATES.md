@@ -64,10 +64,12 @@ resulting committee signs period `293` with `509` of `512` keys. Contract
 period-`293` committee signs period `294` with `511` of `512` keys. The
 stateful store `0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a` starts from that
 period-`294` committee and has accepted the next supermajority update, so it
-now holds the period-`304` committee after supermajority updates from period
-`294`. The bridge beacon slot `15413404` is in period `1881`, and the call
-returns `messageCovered` false. Signature periods `304` through `1880` are
-still required before slot `15406750` or the bridge message is finalized.
+now holds the period-`630` committee after `336` supermajority updates from
+period `294`. The bridge beacon slot `15413404` is in period `1881`. Ethereum
+head slot `15414746` is already past that slot and still inside period `1881`.
+The store returns `messageCovered` false. Signature periods `630` through
+`1880` are still required before the period-`1881` committee can verify a
+finalized header at the bridge slot.
 The earlier checkpoint link
 `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` checks the `6348`-header ancestry
 and the `505`-of-`512` sync aggregate in one call. The committee is pinned

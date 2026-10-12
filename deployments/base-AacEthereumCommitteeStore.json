@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T09:19:00.925Z",
+  "generatedAt": "2026-10-12T10:30:11.813Z",
   "network": "base",
   "chainId": 8453,
   "proxy": "0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a",
@@ -7,13 +7,13 @@
   "implementationTx": "0xfa09c793b2154c767ba97591841b4458dd7f4f860276f798fdb2ba457f91b930",
   "proxyTx": "0x97210c45a829001455e3bd26a547ce6612fab8d1556d93be0e09daa4c44bb0f2",
   "upgradeTx": "0xc651c255d5fcc8479bc973710e4ba4dcc921648a59324e17b7a67fe8fc313d95",
-  "updateTx": "0x6610405c953bbb1f63b9ad0f63298963e769dbe3b00688586645b8adc704d735",
-  "updateBlock": 52503922,
-  "fromPeriod": 303,
-  "toPeriod": 304,
+  "updateTx": "0xdb90e6bb65d843dfd1a7e507db625b5d4ec877d2c8eef1dc87ae65fc2da6cdf7",
+  "updateBlock": 52505783,
+  "fromPeriod": 629,
+  "toPeriod": 630,
   "participants": 510,
-  "attestedSlot": 2482801,
-  "signatureSlot": 2482802,
+  "attestedSlot": 5152878,
+  "signatureSlot": 5152879,
   "updates": [
     {
       "tx": "0x110395254935b5c376f814904f0078becbae99dc1acd21a209a39fa7da198cbb",
@@ -104,6 +104,2940 @@
       "participants": 510,
       "attestedSlot": 2482801,
       "signatureSlot": 2482802
+    },
+    {
+      "tx": "0x3abbd104b41ed2ead8b7463fb87fe3ec4b71a44f86a0b0c7672e895748b98aa9",
+      "block": 52504453,
+      "fromPeriod": 304,
+      "toPeriod": 305,
+      "participants": 512,
+      "attestedSlot": 2491333,
+      "signatureSlot": 2491334
+    },
+    {
+      "tx": "0xa4c176db77c9edb81e49bd4dd97a6505b1ce253502a7d045870b6f901a191932",
+      "block": 52504457,
+      "fromPeriod": 305,
+      "toPeriod": 306,
+      "participants": 511,
+      "attestedSlot": 2503829,
+      "signatureSlot": 2503830
+    },
+    {
+      "tx": "0x82ded2a84de820c0c869dc22bdcbef9dc9b4dd0f98cc4217273f75e2205c6023",
+      "block": 52504460,
+      "fromPeriod": 306,
+      "toPeriod": 307,
+      "participants": 510,
+      "attestedSlot": 2513284,
+      "signatureSlot": 2513285
+    },
+    {
+      "tx": "0xfd754c1d28223c76bc4ac7439f792cd66fe52df5744333a935fde4857ddfd733",
+      "block": 52504464,
+      "fromPeriod": 307,
+      "toPeriod": 308,
+      "participants": 511,
+      "attestedSlot": 2515812,
+      "signatureSlot": 2515814
+    },
+    {
+      "tx": "0x4e22f1f2c4c1fdf5f73d86e328970ffb4a1c6741c284efa77f2e901d7d06ea6a",
+      "block": 52504467,
+      "fromPeriod": 308,
+      "toPeriod": 309,
+      "participants": 511,
+      "attestedSlot": 2529401,
+      "signatureSlot": 2529402
+    },
+    {
+      "tx": "0x49628f15dcf9b6da28ebbcb7ee6baf7788e5de3c90ea043a44a0d7764b67a783",
+      "block": 52504471,
+      "fromPeriod": 309,
+      "toPeriod": 310,
+      "participants": 511,
+      "attestedSlot": 2531842,
+      "signatureSlot": 2531844
+    },
+    {
+      "tx": "0x73fb9f3fff89c8927d901982621308c92c9a6a6b8edac65a67f17f5d06fdaab9",
+      "block": 52504474,
+      "fromPeriod": 310,
+      "toPeriod": 311,
+      "participants": 511,
+      "attestedSlot": 2547176,
+      "signatureSlot": 2547177
+    },
+    {
+      "tx": "0x6d1204d2f2e2146540b9e497c6b4d4badd16175ce6d19e9c2dd50d04ff47c7f2",
+      "block": 52504478,
+      "fromPeriod": 311,
+      "toPeriod": 312,
+      "participants": 510,
+      "attestedSlot": 2547802,
+      "signatureSlot": 2547803
+    },
+    {
+      "tx": "0x1331c10afc6e9fb25233f780f50ad598a511cb9430fba3104832216cecfccf69",
+      "block": 52504481,
+      "fromPeriod": 312,
+      "toPeriod": 313,
+      "participants": 512,
+      "attestedSlot": 2555990,
+      "signatureSlot": 2555991
+    },
+    {
+      "tx": "0x4ace819440922ac454059859e680bd2fa6abf15e64ad84c8a679dfda767e7e38",
+      "block": 52504485,
+      "fromPeriod": 313,
+      "toPeriod": 314,
+      "participants": 510,
+      "attestedSlot": 2568777,
+      "signatureSlot": 2568778
+    },
+    {
+      "tx": "0x4df3d6234b6dd59a97501ba31912ac5bee728a229acc98fe173fb35dd512620a",
+      "block": 52504488,
+      "fromPeriod": 314,
+      "toPeriod": 315,
+      "participants": 511,
+      "attestedSlot": 2572484,
+      "signatureSlot": 2572485
+    },
+    {
+      "tx": "0x27bb78ea53660b012abaa604ea8c7ae2f31d1cc61cf2fffc9655a636ae9db8e9",
+      "block": 52504492,
+      "fromPeriod": 315,
+      "toPeriod": 316,
+      "participants": 511,
+      "attestedSlot": 2587641,
+      "signatureSlot": 2587643
+    },
+    {
+      "tx": "0x3304183aa67f83959490105c426a79bc244a21646e0cb30f9b194702bbfc5a52",
+      "block": 52504496,
+      "fromPeriod": 316,
+      "toPeriod": 317,
+      "participants": 509,
+      "attestedSlot": 2588981,
+      "signatureSlot": 2588982
+    },
+    {
+      "tx": "0xf504df4f0dd7f8eb7c0a0d577cb88da9bc06a5f308ddbe9a3811adf17d5d36ff",
+      "block": 52504499,
+      "fromPeriod": 317,
+      "toPeriod": 318,
+      "participants": 512,
+      "attestedSlot": 2597084,
+      "signatureSlot": 2597085
+    },
+    {
+      "tx": "0x6ff36083803e4b805895297706d87818681a65bfdc86a707e385cfff076e8493",
+      "block": 52504503,
+      "fromPeriod": 318,
+      "toPeriod": 319,
+      "participants": 508,
+      "attestedSlot": 2607011,
+      "signatureSlot": 2607012
+    },
+    {
+      "tx": "0x356ef63c85b2d192beb6d32ea06938b921aee9ce68dec967e91a536d6fc33b18",
+      "block": 52504506,
+      "fromPeriod": 319,
+      "toPeriod": 320,
+      "participants": 510,
+      "attestedSlot": 2616787,
+      "signatureSlot": 2616788
+    },
+    {
+      "tx": "0x738bd846bfc1dae2b4bfdb0e9bb8b6cb04eeed69797de71a03b2aa12d422d875",
+      "block": 52504510,
+      "fromPeriod": 320,
+      "toPeriod": 321,
+      "participants": 511,
+      "attestedSlot": 2621520,
+      "signatureSlot": 2621521
+    },
+    {
+      "tx": "0x5f40acb3da5edcccbe66ea7b809e2a03e3bf1921835293c173d7e567be5da203",
+      "block": 52504513,
+      "fromPeriod": 321,
+      "toPeriod": 322,
+      "participants": 510,
+      "attestedSlot": 2635224,
+      "signatureSlot": 2635225
+    },
+    {
+      "tx": "0x78e127f7964899050668439a85d0287c53103f8c4aa58ead896ddbbcf428ec5c",
+      "block": 52504517,
+      "fromPeriod": 322,
+      "toPeriod": 323,
+      "participants": 511,
+      "attestedSlot": 2638173,
+      "signatureSlot": 2638174
+    },
+    {
+      "tx": "0xd37d22f7f650220aa4d78aaff40a88e28a40a2e55e5b5eb910df9749073a1ded",
+      "block": 52504521,
+      "fromPeriod": 323,
+      "toPeriod": 324,
+      "participants": 510,
+      "attestedSlot": 2647534,
+      "signatureSlot": 2647535
+    },
+    {
+      "tx": "0x3d925abd51a043e8d7cada003f58cf12b8b904ae82a6e9d51ae79bd65fbe1038",
+      "block": 52504524,
+      "fromPeriod": 324,
+      "toPeriod": 325,
+      "participants": 511,
+      "attestedSlot": 2654319,
+      "signatureSlot": 2654320
+    },
+    {
+      "tx": "0xf7f0004c9e78e92bf1425cad3dec67c6ab9451153d644a725901a43df2cc331a",
+      "block": 52504528,
+      "fromPeriod": 325,
+      "toPeriod": 326,
+      "participants": 512,
+      "attestedSlot": 2664169,
+      "signatureSlot": 2664170
+    },
+    {
+      "tx": "0xfb232220b6385ddf3fce28d8f8fa335ac97144688c4b35c1cc207135defd9d44",
+      "block": 52504531,
+      "fromPeriod": 326,
+      "toPeriod": 327,
+      "participants": 510,
+      "attestedSlot": 2674197,
+      "signatureSlot": 2674198
+    },
+    {
+      "tx": "0x9697b4cc08b3acb5f8b83b2b1a143039289d9884fa761dfc72263de5c0668eac",
+      "block": 52504535,
+      "fromPeriod": 327,
+      "toPeriod": 328,
+      "participants": 510,
+      "attestedSlot": 2679689,
+      "signatureSlot": 2679690
+    },
+    {
+      "tx": "0xdea832f9300654131b1afdf906c9ee4243d54ded192f762bead9bc62da4eaf1c",
+      "block": 52504538,
+      "fromPeriod": 328,
+      "toPeriod": 329,
+      "participants": 511,
+      "attestedSlot": 2687306,
+      "signatureSlot": 2687307
+    },
+    {
+      "tx": "0x9518d2b8b71fea80d9ab9236fd712ea6adb1111cf8beb09f42d82a1f1e7c18ea",
+      "block": 52504542,
+      "fromPeriod": 329,
+      "toPeriod": 330,
+      "participants": 510,
+      "attestedSlot": 2695502,
+      "signatureSlot": 2695503
+    },
+    {
+      "tx": "0xf450dae34b4aed928c39407b7ddcebb58a78e373315c09e1f18dae2c42a8c029",
+      "block": 52504545,
+      "fromPeriod": 330,
+      "toPeriod": 331,
+      "participants": 510,
+      "attestedSlot": 2706779,
+      "signatureSlot": 2706780
+    },
+    {
+      "tx": "0xc14b5f00afe870e9c2120fa6455cf4231a8429a9c56e4c1b9c0238315c146a2c",
+      "block": 52504549,
+      "fromPeriod": 331,
+      "toPeriod": 332,
+      "participants": 512,
+      "attestedSlot": 2714503,
+      "signatureSlot": 2714504
+    },
+    {
+      "tx": "0xfe71e334be22bb533fe111a52b7c52da5282cb2658673b5f629e91417b9ef0aa",
+      "block": 52504553,
+      "fromPeriod": 332,
+      "toPeriod": 333,
+      "participants": 511,
+      "attestedSlot": 2719826,
+      "signatureSlot": 2719827
+    },
+    {
+      "tx": "0x4e84c304ac0242aef510853905b2e997832021c40cd9455286b42b360a071a21",
+      "block": 52504556,
+      "fromPeriod": 333,
+      "toPeriod": 334,
+      "participants": 512,
+      "attestedSlot": 2729282,
+      "signatureSlot": 2729283
+    },
+    {
+      "tx": "0xedc9846a0483476d7c9c075ccabbca2b0b47d56bc0f40c1d550ee6fa45769e45",
+      "block": 52504560,
+      "fromPeriod": 334,
+      "toPeriod": 335,
+      "participants": 510,
+      "attestedSlot": 2736551,
+      "signatureSlot": 2736552
+    },
+    {
+      "tx": "0xf59f098a05c2c13d78e03a0e055bc5f09d014d84056638a71680fc5e150fbe7d",
+      "block": 52504563,
+      "fromPeriod": 335,
+      "toPeriod": 336,
+      "participants": 509,
+      "attestedSlot": 2745373,
+      "signatureSlot": 2745374
+    },
+    {
+      "tx": "0x8bfa1cd580c7776748cf16df4f2dd9da5e2c830195541a6219d4c25273a196be",
+      "block": 52504567,
+      "fromPeriod": 336,
+      "toPeriod": 337,
+      "participants": 512,
+      "attestedSlot": 2752581,
+      "signatureSlot": 2752582
+    },
+    {
+      "tx": "0x12e9699a5803803833e92c2243a77fd212224c546c582c1b806c0e54773fe965",
+      "block": 52504571,
+      "fromPeriod": 337,
+      "toPeriod": 338,
+      "participants": 510,
+      "attestedSlot": 2765134,
+      "signatureSlot": 2765135
+    },
+    {
+      "tx": "0x50347299ca40b70f667521e298bd60122d3bf74ecc9a200a75d49bb1dd27d69c",
+      "block": 52504574,
+      "fromPeriod": 338,
+      "toPeriod": 339,
+      "participants": 511,
+      "attestedSlot": 2768967,
+      "signatureSlot": 2768968
+    },
+    {
+      "tx": "0xe5e71e4fcb811773d5e47cfc4722a1cf4ba4c24f597476294f3b365a78f30967",
+      "block": 52504578,
+      "fromPeriod": 339,
+      "toPeriod": 340,
+      "participants": 508,
+      "attestedSlot": 2777268,
+      "signatureSlot": 2777269
+    },
+    {
+      "tx": "0x6ed2bc4ddc381a9a66e8a422954c0fa0290542cbf84a219cff91de218821d0d9",
+      "block": 52504582,
+      "fromPeriod": 340,
+      "toPeriod": 341,
+      "participants": 511,
+      "attestedSlot": 2789905,
+      "signatureSlot": 2789906
+    },
+    {
+      "tx": "0x76029058fa44ed985a8a60e201ec77614b26a6c1b6b819a54e4c63ff560a1c00",
+      "block": 52504585,
+      "fromPeriod": 341,
+      "toPeriod": 342,
+      "participants": 512,
+      "attestedSlot": 2800239,
+      "signatureSlot": 2800240
+    },
+    {
+      "tx": "0x39f04accd8aefa1645e8ece27dff59aa4bab50dace9d00608f039435095dae67",
+      "block": 52504589,
+      "fromPeriod": 342,
+      "toPeriod": 343,
+      "participants": 511,
+      "attestedSlot": 2802261,
+      "signatureSlot": 2802262
+    },
+    {
+      "tx": "0xd0b7d13e99cdd4a8000ffd370f4940d1f37e938d69158d4498996f83337c0209",
+      "block": 52504592,
+      "fromPeriod": 343,
+      "toPeriod": 344,
+      "participants": 512,
+      "attestedSlot": 2812186,
+      "signatureSlot": 2812188
+    },
+    {
+      "tx": "0x6140a000e1ac2a866b0826527adaf8f0f6a087754c016b3f5f93b1c0ed092fb9",
+      "block": 52504596,
+      "fromPeriod": 344,
+      "toPeriod": 345,
+      "participants": 507,
+      "attestedSlot": 2819330,
+      "signatureSlot": 2819331
+    },
+    {
+      "tx": "0x9e162528083a26ffaf168382694233def95aa29876ced625497503cfceca1576",
+      "block": 52504600,
+      "fromPeriod": 345,
+      "toPeriod": 346,
+      "participants": 510,
+      "attestedSlot": 2827419,
+      "signatureSlot": 2827420
+    },
+    {
+      "tx": "0x0d85356065c8588ffb33bc6a01196391609ad3dd0c2b3cc2010bc42c92b4c899",
+      "block": 52504603,
+      "fromPeriod": 346,
+      "toPeriod": 347,
+      "participants": 512,
+      "attestedSlot": 2836424,
+      "signatureSlot": 2836425
+    },
+    {
+      "tx": "0xe48b3f9a29c4cce96696a4cbbfbada603a04108be54df4fc0577a0ac1e2c151a",
+      "block": 52504607,
+      "fromPeriod": 347,
+      "toPeriod": 348,
+      "participants": 509,
+      "attestedSlot": 2847132,
+      "signatureSlot": 2847134
+    },
+    {
+      "tx": "0x53b062deea0dac7801c3a17e64e0a06a9f54a41798bd7e686af61a85e4606a5e",
+      "block": 52504610,
+      "fromPeriod": 348,
+      "toPeriod": 349,
+      "participants": 509,
+      "attestedSlot": 2851091,
+      "signatureSlot": 2851092
+    },
+    {
+      "tx": "0x7a7066783c5bb17b5b2786d1291bc489ac07fefd18fff7cc046e4d77285ed321",
+      "block": 52504614,
+      "fromPeriod": 349,
+      "toPeriod": 350,
+      "participants": 510,
+      "attestedSlot": 2864464,
+      "signatureSlot": 2864465
+    },
+    {
+      "tx": "0xe08218ef86113ea097e6c98a62968b7c01e1dddd7eea8784abd9eef6ee9f903f",
+      "block": 52504617,
+      "fromPeriod": 350,
+      "toPeriod": 351,
+      "participants": 508,
+      "attestedSlot": 2867326,
+      "signatureSlot": 2867327
+    },
+    {
+      "tx": "0xfb973c9d234f66d1b23b8c69c6bc5ad3aa416ee669bb64d2801bd82cc1be1271",
+      "block": 52504621,
+      "fromPeriod": 351,
+      "toPeriod": 352,
+      "participants": 509,
+      "attestedSlot": 2878394,
+      "signatureSlot": 2878395
+    },
+    {
+      "tx": "0xcf0cc84f0db755329942c92c54839f730342d1a833ab2c11d8cf89933b912ee1",
+      "block": 52504624,
+      "fromPeriod": 352,
+      "toPeriod": 353,
+      "participants": 512,
+      "attestedSlot": 2886516,
+      "signatureSlot": 2886517
+    },
+    {
+      "tx": "0xa02d0ed9c1e216ca09223bc395447d1c27d649df806981ac21219944149d285d",
+      "block": 52504628,
+      "fromPeriod": 353,
+      "toPeriod": 354,
+      "participants": 510,
+      "attestedSlot": 2893029,
+      "signatureSlot": 2893030
+    },
+    {
+      "tx": "0x17ad8a3f274b493ae53c53e6e4487fe171649a3be9d69d620790e8c4ba8bb806",
+      "block": 52504632,
+      "fromPeriod": 354,
+      "toPeriod": 355,
+      "participants": 510,
+      "attestedSlot": 2901747,
+      "signatureSlot": 2901749
+    },
+    {
+      "tx": "0x9cb9f99ee1687109fe5083cd0e16502f33303fa15fe01b8b1c0a352b6ab9944c",
+      "block": 52504635,
+      "fromPeriod": 355,
+      "toPeriod": 356,
+      "participants": 512,
+      "attestedSlot": 2912745,
+      "signatureSlot": 2912746
+    },
+    {
+      "tx": "0x3a03f4a9a55a5ef5a2b2cf08ef46564221e1165726d37afc3eb486c721bcfa7a",
+      "block": 52504639,
+      "fromPeriod": 356,
+      "toPeriod": 357,
+      "participants": 510,
+      "attestedSlot": 2919882,
+      "signatureSlot": 2919883
+    },
+    {
+      "tx": "0x464499ecd3d5aefe7466c9b765f2b51a8aa520a792e8d19948e5e2e1f128c62d",
+      "block": 52504642,
+      "fromPeriod": 357,
+      "toPeriod": 358,
+      "participants": 512,
+      "attestedSlot": 2924668,
+      "signatureSlot": 2924669
+    },
+    {
+      "tx": "0xc77c36674966be2148ee8f605dc397f5cd13d5202f4aec530019ab35471caffe",
+      "block": 52504646,
+      "fromPeriod": 358,
+      "toPeriod": 359,
+      "participants": 512,
+      "attestedSlot": 2939057,
+      "signatureSlot": 2939058
+    },
+    {
+      "tx": "0xb8402d3af5534cb7698fae143f311a742669f0b78886d085746294ac2642a6e0",
+      "block": 52504650,
+      "fromPeriod": 359,
+      "toPeriod": 360,
+      "participants": 512,
+      "attestedSlot": 2947986,
+      "signatureSlot": 2947987
+    },
+    {
+      "tx": "0xac538909d5d42eac58cf59b8d869a36e3a498b68dbf7c8cb5c57e231fc2f6124",
+      "block": 52504653,
+      "fromPeriod": 360,
+      "toPeriod": 361,
+      "participants": 510,
+      "attestedSlot": 2949197,
+      "signatureSlot": 2949198
+    },
+    {
+      "tx": "0xb644f1befcdb98e97f7a191fbc6a438171ec95c545b0c68d71a05cd15aa1625a",
+      "block": 52504657,
+      "fromPeriod": 361,
+      "toPeriod": 362,
+      "participants": 512,
+      "attestedSlot": 2959313,
+      "signatureSlot": 2959314
+    },
+    {
+      "tx": "0x7c8ef9f967a309014a54168acb66ce9e6987501ea1e436b8804e11d5510a401b",
+      "block": 52504660,
+      "fromPeriod": 362,
+      "toPeriod": 363,
+      "participants": 509,
+      "attestedSlot": 2973132,
+      "signatureSlot": 2973133
+    },
+    {
+      "tx": "0xe7ff3a44c03d8d6593be31eca85417f42054ad9e80c559bf9f6392895051e5cb",
+      "block": 52504664,
+      "fromPeriod": 363,
+      "toPeriod": 364,
+      "participants": 509,
+      "attestedSlot": 2975994,
+      "signatureSlot": 2975995
+    },
+    {
+      "tx": "0x2e19525fea838f8225ffe8ffab6ea64ed64c3948200bc3827752883c988b2d40",
+      "block": 52504668,
+      "fromPeriod": 364,
+      "toPeriod": 365,
+      "participants": 511,
+      "attestedSlot": 2982767,
+      "signatureSlot": 2982768
+    },
+    {
+      "tx": "0x33e91dc08f651434e7dfb2f29319938df41f5a843058a8106a462698bcc6308c",
+      "block": 52504671,
+      "fromPeriod": 365,
+      "toPeriod": 366,
+      "participants": 512,
+      "attestedSlot": 2991427,
+      "signatureSlot": 2991428
+    },
+    {
+      "tx": "0x1d7a9045f9f88b136dbd014afe32c0cfcce2fa855d6137877347a24022bdf48b",
+      "block": 52504675,
+      "fromPeriod": 366,
+      "toPeriod": 367,
+      "participants": 512,
+      "attestedSlot": 2999017,
+      "signatureSlot": 2999018
+    },
+    {
+      "tx": "0xafc59cbca4cda6924166fd89c4ec9a21885120e7061162e9b564398ea27cf5c1",
+      "block": 52504679,
+      "fromPeriod": 367,
+      "toPeriod": 368,
+      "participants": 512,
+      "attestedSlot": 3009699,
+      "signatureSlot": 3009700
+    },
+    {
+      "tx": "0x2c6b6bbee894773812b4d9f0068ad7a728ac158e2f14d09928fe484b7dcb66a4",
+      "block": 52504682,
+      "fromPeriod": 368,
+      "toPeriod": 369,
+      "participants": 512,
+      "attestedSlot": 3014956,
+      "signatureSlot": 3014957
+    },
+    {
+      "tx": "0x59065e79a8954bf8255e4b389980c7ddafefaf13965954f358d4fc177058b05b",
+      "block": 52504686,
+      "fromPeriod": 369,
+      "toPeriod": 370,
+      "participants": 511,
+      "attestedSlot": 3027914,
+      "signatureSlot": 3027915
+    },
+    {
+      "tx": "0xa6877486707105f6f1b403d8309b1dabc33822e5faee625e18c4c802cb44e573",
+      "block": 52504689,
+      "fromPeriod": 370,
+      "toPeriod": 371,
+      "participants": 512,
+      "attestedSlot": 3032414,
+      "signatureSlot": 3032415
+    },
+    {
+      "tx": "0x0571cb8c47412b6e3b4f40141f106865e7de1fb1b4c4fe8e003f7fd8a116e790",
+      "block": 52504693,
+      "fromPeriod": 371,
+      "toPeriod": 372,
+      "participants": 511,
+      "attestedSlot": 3040141,
+      "signatureSlot": 3040142
+    },
+    {
+      "tx": "0xf992a29632c2baae1d345b73c6a6f3558f2b96c4ec0cbf4a4dd06290715561e8",
+      "block": 52504696,
+      "fromPeriod": 372,
+      "toPeriod": 373,
+      "participants": 511,
+      "attestedSlot": 3051492,
+      "signatureSlot": 3051493
+    },
+    {
+      "tx": "0x7e2ac1dcc5a1ad1c8bd0ab8e21cbb5462c94630dfb7ec850dc0fc019a8b2b534",
+      "block": 52504700,
+      "fromPeriod": 373,
+      "toPeriod": 374,
+      "participants": 510,
+      "attestedSlot": 3059262,
+      "signatureSlot": 3059263
+    },
+    {
+      "tx": "0x7dbeb0668bf24871a24f318a94fec7b0697d8e541cdb0c9612dae402a60fd18c",
+      "block": 52504704,
+      "fromPeriod": 374,
+      "toPeriod": 375,
+      "participants": 510,
+      "attestedSlot": 3064140,
+      "signatureSlot": 3064141
+    },
+    {
+      "tx": "0x81f56de0a1c17e78c444b96c35c7fc536e07bd83b51df3985dc6a40d8f6911a8",
+      "block": 52504707,
+      "fromPeriod": 375,
+      "toPeriod": 376,
+      "participants": 510,
+      "attestedSlot": 3076621,
+      "signatureSlot": 3076622
+    },
+    {
+      "tx": "0x54f737ba8338248aada564219999e87013f2c3f9e575f7a1a820b6db846f5018",
+      "block": 52504711,
+      "fromPeriod": 376,
+      "toPeriod": 377,
+      "participants": 512,
+      "attestedSlot": 3087045,
+      "signatureSlot": 3087047
+    },
+    {
+      "tx": "0x1f725b8931eb5ad37ba9a53532357f10c9ceef575ac4403497efa6b2e19a8d89",
+      "block": 52504715,
+      "fromPeriod": 377,
+      "toPeriod": 378,
+      "participants": 511,
+      "attestedSlot": 3090522,
+      "signatureSlot": 3090523
+    },
+    {
+      "tx": "0xc712360ef40afe929c529adb98b5505f6c11194b08e422acb455fe1bcc64bad9",
+      "block": 52504718,
+      "fromPeriod": 378,
+      "toPeriod": 379,
+      "participants": 512,
+      "attestedSlot": 3104387,
+      "signatureSlot": 3104388
+    },
+    {
+      "tx": "0xcfdd77fe2d8c891b3e20d8d1aa1cd6254c96bcaa21d05fa0282740c7aa0bfd43",
+      "block": 52504722,
+      "fromPeriod": 379,
+      "toPeriod": 380,
+      "participants": 512,
+      "attestedSlot": 3111993,
+      "signatureSlot": 3111995
+    },
+    {
+      "tx": "0x9b1d9b323e0df018970b82a97ab64c391b7c584e57144464539fedc690b171c5",
+      "block": 52504726,
+      "fromPeriod": 380,
+      "toPeriod": 381,
+      "participants": 511,
+      "attestedSlot": 3117361,
+      "signatureSlot": 3117362
+    },
+    {
+      "tx": "0x0ad030d541f852d0dd46b4e6407b802715dcffe09ae867601feb087014d8fd2c",
+      "block": 52504730,
+      "fromPeriod": 381,
+      "toPeriod": 382,
+      "participants": 510,
+      "attestedSlot": 3121241,
+      "signatureSlot": 3121242
+    },
+    {
+      "tx": "0xec8fe4f928a534f70f3649d80fa48d13d87c6e82506154380974f9409038ceea",
+      "block": 52504733,
+      "fromPeriod": 382,
+      "toPeriod": 383,
+      "participants": 511,
+      "attestedSlot": 3129441,
+      "signatureSlot": 3129443
+    },
+    {
+      "tx": "0xbb8bf0c3629dbd96df1bab43554bd12f1be857279350459dbc976823daaa490f",
+      "block": 52504737,
+      "fromPeriod": 383,
+      "toPeriod": 384,
+      "participants": 512,
+      "attestedSlot": 3140049,
+      "signatureSlot": 3140050
+    },
+    {
+      "tx": "0xf62b8741987e163b531657353c6ae0f935450bd57d6aa415636f4599cfd9351b",
+      "block": 52504740,
+      "fromPeriod": 384,
+      "toPeriod": 385,
+      "participants": 512,
+      "attestedSlot": 3145931,
+      "signatureSlot": 3145933
+    },
+    {
+      "tx": "0xae08e76a4441709158dd0e6f68bb6314b7dc172d0d610a8c31701187ab597540",
+      "block": 52504744,
+      "fromPeriod": 385,
+      "toPeriod": 386,
+      "participants": 511,
+      "attestedSlot": 3156213,
+      "signatureSlot": 3156214
+    },
+    {
+      "tx": "0xc59ede1388f22dfaba8a9c906803a95b53887aa495fc3748cd70b1bd6702eb5b",
+      "block": 52504748,
+      "fromPeriod": 386,
+      "toPeriod": 387,
+      "participants": 509,
+      "attestedSlot": 3162630,
+      "signatureSlot": 3162631
+    },
+    {
+      "tx": "0xa2a858a14855aabcb0bd2f8e338b3a4d284851f46040a2f835aafbeb850a4b4b",
+      "block": 52504751,
+      "fromPeriod": 387,
+      "toPeriod": 388,
+      "participants": 511,
+      "attestedSlot": 3170627,
+      "signatureSlot": 3170628
+    },
+    {
+      "tx": "0x27d5b0c6c2cf3a80529dc03abf63485ae14eee20b539dd3e2e377d17f4d00a92",
+      "block": 52504755,
+      "fromPeriod": 388,
+      "toPeriod": 389,
+      "participants": 512,
+      "attestedSlot": 3179240,
+      "signatureSlot": 3179241
+    },
+    {
+      "tx": "0x26e894fdc49e73d5054c15bd402393c7463f4316e0af01a3b3a9ea04bd905fa3",
+      "block": 52504758,
+      "fromPeriod": 389,
+      "toPeriod": 390,
+      "participants": 509,
+      "attestedSlot": 3186773,
+      "signatureSlot": 3186774
+    },
+    {
+      "tx": "0x9e20aead9157f69625b9668af627150847fe768c303a85dc801363941dfd6a6b",
+      "block": 52504762,
+      "fromPeriod": 390,
+      "toPeriod": 391,
+      "participants": 511,
+      "attestedSlot": 3198749,
+      "signatureSlot": 3198750
+    },
+    {
+      "tx": "0x9c9e95df998418ba30b62ab3baf0ffbfce93b9d4f9ceb2585f119f52f06b3691",
+      "block": 52504766,
+      "fromPeriod": 391,
+      "toPeriod": 392,
+      "participants": 511,
+      "attestedSlot": 3204114,
+      "signatureSlot": 3204115
+    },
+    {
+      "tx": "0x338cb2b857062a09fe8788eae517b65ce5725b085290c6697c706d98ce5d7cb6",
+      "block": 52504769,
+      "fromPeriod": 392,
+      "toPeriod": 393,
+      "participants": 509,
+      "attestedSlot": 3212776,
+      "signatureSlot": 3212777
+    },
+    {
+      "tx": "0xf6fd0fb7aad6d4707fe392037966fa3d9224ae25f412b0304ae7180c32660b93",
+      "block": 52504773,
+      "fromPeriod": 393,
+      "toPeriod": 394,
+      "participants": 511,
+      "attestedSlot": 3223692,
+      "signatureSlot": 3223693
+    },
+    {
+      "tx": "0x02f586e65c8f5d0a284db0be1ddd963a4f428871a6b0604b0199a551801314a6",
+      "block": 52504776,
+      "fromPeriod": 394,
+      "toPeriod": 395,
+      "participants": 512,
+      "attestedSlot": 3228807,
+      "signatureSlot": 3228808
+    },
+    {
+      "tx": "0x81b28fe0753471dd05c86030063d06d315d909f50ab693a29a7a02bbc63d2a85",
+      "block": 52504780,
+      "fromPeriod": 395,
+      "toPeriod": 396,
+      "participants": 512,
+      "attestedSlot": 3237914,
+      "signatureSlot": 3237915
+    },
+    {
+      "tx": "0xcdd235683ff7e40026b4f55733f8c5c4fda8a78e160af937edf04eb87dd19871",
+      "block": 52504784,
+      "fromPeriod": 396,
+      "toPeriod": 397,
+      "participants": 511,
+      "attestedSlot": 3247017,
+      "signatureSlot": 3247018
+    },
+    {
+      "tx": "0x5a80320f84042cb620a005ab16a87c7a4d62eb643f9ea2c58c4fade815479343",
+      "block": 52504787,
+      "fromPeriod": 397,
+      "toPeriod": 398,
+      "participants": 511,
+      "attestedSlot": 3253407,
+      "signatureSlot": 3253408
+    },
+    {
+      "tx": "0xbdb145e889c749bed3b75d78b6986362e1585cf694d91c88511d5fd7fb1a3ffe",
+      "block": 52504791,
+      "fromPeriod": 398,
+      "toPeriod": 399,
+      "participants": 510,
+      "attestedSlot": 3261869,
+      "signatureSlot": 3261871
+    },
+    {
+      "tx": "0x30b3737c1343d8cf310d77fac3007a200c07e1927564a5f5fa4f1ae0116b29ed",
+      "block": 52504794,
+      "fromPeriod": 399,
+      "toPeriod": 400,
+      "participants": 509,
+      "attestedSlot": 3269706,
+      "signatureSlot": 3269707
+    },
+    {
+      "tx": "0xe389c2e97ad61c918766c5427dadedcb53a8427eabd7e1890b0c8b6885775c18",
+      "block": 52504798,
+      "fromPeriod": 400,
+      "toPeriod": 401,
+      "participants": 511,
+      "attestedSlot": 3278023,
+      "signatureSlot": 3278024
+    },
+    {
+      "tx": "0x7a8427a04e57facda863a846f62ea953adf0c94226b280a63186509dc7b6dd65",
+      "block": 52504801,
+      "fromPeriod": 401,
+      "toPeriod": 402,
+      "participants": 511,
+      "attestedSlot": 3285749,
+      "signatureSlot": 3285750
+    },
+    {
+      "tx": "0xc6a1104169d10f4645b3af30d7ce1ec2a2be2d35a089b1709d973acd429546b8",
+      "block": 52504805,
+      "fromPeriod": 402,
+      "toPeriod": 403,
+      "participants": 510,
+      "attestedSlot": 3297180,
+      "signatureSlot": 3297181
+    },
+    {
+      "tx": "0x9ac88676226e7c603da03dff47036f22dd323e923ee59b790966eb49cb2d503e",
+      "block": 52504808,
+      "fromPeriod": 403,
+      "toPeriod": 404,
+      "participants": 510,
+      "attestedSlot": 3301547,
+      "signatureSlot": 3301548
+    },
+    {
+      "tx": "0x2562b62aae7f5c6adb5475cefe7e37d2e484751e8c778d2f81bb77a708b541ab",
+      "block": 52504812,
+      "fromPeriod": 404,
+      "toPeriod": 405,
+      "participants": 511,
+      "attestedSlot": 3312493,
+      "signatureSlot": 3312494
+    },
+    {
+      "tx": "0x5b4c43b700d8242b74f0771721acb732abc15451878ddec4d582698a3a0407ba",
+      "block": 52504816,
+      "fromPeriod": 405,
+      "toPeriod": 406,
+      "participants": 512,
+      "attestedSlot": 3318536,
+      "signatureSlot": 3318537
+    },
+    {
+      "tx": "0xe740a1bab87e6422bd4eec6ef6456541ece9c85765aa9a84254488cb46b43ede",
+      "block": 52504819,
+      "fromPeriod": 406,
+      "toPeriod": 407,
+      "participants": 511,
+      "attestedSlot": 3326797,
+      "signatureSlot": 3326798
+    },
+    {
+      "tx": "0x3e942043fd73e93d686248304324b594fc17fc0a2a7bc16116b188eafc82f676",
+      "block": 52504823,
+      "fromPeriod": 407,
+      "toPeriod": 408,
+      "participants": 511,
+      "attestedSlot": 3335076,
+      "signatureSlot": 3335077
+    },
+    {
+      "tx": "0x6bb86e70cc6eb3bea0c2d5a8428138e3e00c5313974c8096516c648f1e1846eb",
+      "block": 52504826,
+      "fromPeriod": 408,
+      "toPeriod": 409,
+      "participants": 511,
+      "attestedSlot": 3346965,
+      "signatureSlot": 3346966
+    },
+    {
+      "tx": "0xbfe294b2a1112687a910cfe0886983861a3a972449e188a6e2c2d1e237919587",
+      "block": 52504830,
+      "fromPeriod": 409,
+      "toPeriod": 410,
+      "participants": 510,
+      "attestedSlot": 3351562,
+      "signatureSlot": 3351563
+    },
+    {
+      "tx": "0xcad7cddd2956469cdb303e16212c341b5541653400e8e4b0a603630d11db815e",
+      "block": 52504834,
+      "fromPeriod": 410,
+      "toPeriod": 411,
+      "participants": 511,
+      "attestedSlot": 3365970,
+      "signatureSlot": 3365971
+    },
+    {
+      "tx": "0x907b1e1c7ed37d0924e909a94c552f0c21bfaa9f4769e5c97168908ec429916f",
+      "block": 52504837,
+      "fromPeriod": 411,
+      "toPeriod": 412,
+      "participants": 511,
+      "attestedSlot": 3375090,
+      "signatureSlot": 3375092
+    },
+    {
+      "tx": "0xc7d39601814f4c9a9fea253b5d9dab099ee61942e0c24c0afb6e6f2aae43d185",
+      "block": 52504841,
+      "fromPeriod": 412,
+      "toPeriod": 413,
+      "participants": 511,
+      "attestedSlot": 3376556,
+      "signatureSlot": 3376557
+    },
+    {
+      "tx": "0x8acc608c7b6a9aeccdde0d5c6f7df6539bcd5f78b668f5bdc763c9371e2dcc88",
+      "block": 52504844,
+      "fromPeriod": 413,
+      "toPeriod": 414,
+      "participants": 512,
+      "attestedSlot": 3386863,
+      "signatureSlot": 3386864
+    },
+    {
+      "tx": "0x8ed0d305a926cf310b9663b64f96eb563df8d1356af64a8fd55680b5422d9bee",
+      "block": 52504848,
+      "fromPeriod": 414,
+      "toPeriod": 415,
+      "participants": 510,
+      "attestedSlot": 3393156,
+      "signatureSlot": 3393157
+    },
+    {
+      "tx": "0xa22c3ae7f0b6af9da539ed87c89eddd4cdd37a024cefaa565a96b0d7cfa7ab15",
+      "block": 52504851,
+      "fromPeriod": 415,
+      "toPeriod": 416,
+      "participants": 512,
+      "attestedSlot": 3404349,
+      "signatureSlot": 3404350
+    },
+    {
+      "tx": "0x03b3a993f46c59b420f9b9b4bf2b8fde912da8b3a016833cf063ac7c577f2158",
+      "block": 52504855,
+      "fromPeriod": 416,
+      "toPeriod": 417,
+      "participants": 512,
+      "attestedSlot": 3408260,
+      "signatureSlot": 3408261
+    },
+    {
+      "tx": "0x13a28e557c953fd7f1540dbef2f683d7feabf94169984d37fc28c7794824941b",
+      "block": 52504858,
+      "fromPeriod": 417,
+      "toPeriod": 418,
+      "participants": 512,
+      "attestedSlot": 3418427,
+      "signatureSlot": 3418428
+    },
+    {
+      "tx": "0xa8d6096bf4b6b16904f7371e3fd666dcf08025d1d8a15bc0123baae84d85783f",
+      "block": 52504862,
+      "fromPeriod": 418,
+      "toPeriod": 419,
+      "participants": 511,
+      "attestedSlot": 3432173,
+      "signatureSlot": 3432174
+    },
+    {
+      "tx": "0xd44d1f3ab5a5bb5ee4ae6719a5db68b022c6191095ac00df72786103f4b90aff",
+      "block": 52504865,
+      "fromPeriod": 419,
+      "toPeriod": 420,
+      "participants": 511,
+      "attestedSlot": 3434165,
+      "signatureSlot": 3434166
+    },
+    {
+      "tx": "0x6d578939ba4df2d55f0e4b2c6ee04e602c16118d980a1b1dd6a3756dead347ae",
+      "block": 52504869,
+      "fromPeriod": 420,
+      "toPeriod": 421,
+      "participants": 511,
+      "attestedSlot": 3440746,
+      "signatureSlot": 3440747
+    },
+    {
+      "tx": "0xd638447c1130acadc41c1791e66b2bb9c0142bce4e48f609194b06ddb5cc0b7e",
+      "block": 52504872,
+      "fromPeriod": 421,
+      "toPeriod": 422,
+      "participants": 512,
+      "attestedSlot": 3449318,
+      "signatureSlot": 3449319
+    },
+    {
+      "tx": "0x461567582556af12fe0de3d5d4794fa0a6e852c8d59a8fbe1b1439bfe394254c",
+      "block": 52504876,
+      "fromPeriod": 422,
+      "toPeriod": 423,
+      "participants": 511,
+      "attestedSlot": 3458372,
+      "signatureSlot": 3458374
+    },
+    {
+      "tx": "0xe483f50ae758355332f615dd6f86923d2dc20ede3e9cbb6e7381f9710e9b5adf",
+      "block": 52504880,
+      "fromPeriod": 423,
+      "toPeriod": 424,
+      "participants": 511,
+      "attestedSlot": 3467058,
+      "signatureSlot": 3467059
+    },
+    {
+      "tx": "0xe0642b26a02fc18fa0b637964c9024e4ffdc8a43814aeee81508d3415ea1f061",
+      "block": 52504883,
+      "fromPeriod": 424,
+      "toPeriod": 425,
+      "participants": 510,
+      "attestedSlot": 3474676,
+      "signatureSlot": 3474677
+    },
+    {
+      "tx": "0x22acec9e19a002cae3eb753c1ac5ff9453bdb25afa7dbcb2d9faba6ccff12596",
+      "block": 52504887,
+      "fromPeriod": 425,
+      "toPeriod": 426,
+      "participants": 512,
+      "attestedSlot": 3481669,
+      "signatureSlot": 3481670
+    },
+    {
+      "tx": "0x460ae1b068d6dfcbb23b3e661163fd2a21dd70ea73658aa13a11ff04f2056d34",
+      "block": 52504891,
+      "fromPeriod": 426,
+      "toPeriod": 427,
+      "participants": 510,
+      "attestedSlot": 3489913,
+      "signatureSlot": 3489914
+    },
+    {
+      "tx": "0x1cf36eb2b5c8b70988b4d7b6c571623b43e1b53b38a361641eecd7150feeda60",
+      "block": 52504894,
+      "fromPeriod": 427,
+      "toPeriod": 428,
+      "participants": 511,
+      "attestedSlot": 3498154,
+      "signatureSlot": 3498155
+    },
+    {
+      "tx": "0x68577222ff65e2edcbec63ee2f145e73c69b3583afb4f686cfe9719310d2d108",
+      "block": 52504898,
+      "fromPeriod": 428,
+      "toPeriod": 429,
+      "participants": 511,
+      "attestedSlot": 3506309,
+      "signatureSlot": 3506310
+    },
+    {
+      "tx": "0x6633497c9d9236224f9be53b9f137982f1a7fb60acea67bc8b4856313a2b6319",
+      "block": 52504902,
+      "fromPeriod": 429,
+      "toPeriod": 430,
+      "participants": 511,
+      "attestedSlot": 3514467,
+      "signatureSlot": 3514468
+    },
+    {
+      "tx": "0x41b63feaaa8d66f818190e824bcefaf08e1be071f4d4049699e6f694109231fb",
+      "block": 52504905,
+      "fromPeriod": 430,
+      "toPeriod": 431,
+      "participants": 511,
+      "attestedSlot": 3523076,
+      "signatureSlot": 3523077
+    },
+    {
+      "tx": "0x1cca6d45ce7297b65531470541485f1e8acd6a67bd12dc3504c7102a85bd6081",
+      "block": 52504909,
+      "fromPeriod": 431,
+      "toPeriod": 432,
+      "participants": 512,
+      "attestedSlot": 3531203,
+      "signatureSlot": 3531204
+    },
+    {
+      "tx": "0xfaba01e2ecff1d8026b5419073300d2e1a6e4fafa660beca87f36b601c68bed0",
+      "block": 52504912,
+      "fromPeriod": 432,
+      "toPeriod": 433,
+      "participants": 510,
+      "attestedSlot": 3540617,
+      "signatureSlot": 3540618
+    },
+    {
+      "tx": "0x4289cd525649621da490068d3c7ebc4a6fed33fdc10736d29a43f133624588c4",
+      "block": 52504916,
+      "fromPeriod": 433,
+      "toPeriod": 434,
+      "participants": 511,
+      "attestedSlot": 3547211,
+      "signatureSlot": 3547212
+    },
+    {
+      "tx": "0x03c63205917c152444d755564360e32e4f4ed2e789e8222078f88b8670626c45",
+      "block": 52504919,
+      "fromPeriod": 434,
+      "toPeriod": 435,
+      "participants": 511,
+      "attestedSlot": 3557530,
+      "signatureSlot": 3557532
+    },
+    {
+      "tx": "0x7cc19edc5b2181ebcb898062f3d15a24824199027a27bf43ca0e25fa8f5ce4a2",
+      "block": 52504923,
+      "fromPeriod": 435,
+      "toPeriod": 436,
+      "participants": 511,
+      "attestedSlot": 3563601,
+      "signatureSlot": 3563602
+    },
+    {
+      "tx": "0x657d94f1c320158c46924c570cd357d4613e3b5666f1e3788c937f09bfdf7beb",
+      "block": 52504927,
+      "fromPeriod": 436,
+      "toPeriod": 437,
+      "participants": 511,
+      "attestedSlot": 3571835,
+      "signatureSlot": 3571836
+    },
+    {
+      "tx": "0x41b58b660ee795cfa75cfd72e2c579b0740e3dc7afbadab28155a79f5056f77e",
+      "block": 52504930,
+      "fromPeriod": 437,
+      "toPeriod": 438,
+      "participants": 510,
+      "attestedSlot": 3579972,
+      "signatureSlot": 3579973
+    },
+    {
+      "tx": "0xb151adf611e301010d00e94af5a7fc9dfb0ec63986bb07b36be5c902fab3d747",
+      "block": 52504934,
+      "fromPeriod": 438,
+      "toPeriod": 439,
+      "participants": 512,
+      "attestedSlot": 3588162,
+      "signatureSlot": 3588163
+    },
+    {
+      "tx": "0xdfa5ac257568f60eed90a6f909c48094d2f1b0af356dd8cfaad33b0db67da27f",
+      "block": 52504937,
+      "fromPeriod": 439,
+      "toPeriod": 440,
+      "participants": 510,
+      "attestedSlot": 3597510,
+      "signatureSlot": 3597511
+    },
+    {
+      "tx": "0xa56565dc12d6930c9913e491c273745c9a3227064ec9429ce3ba34e55b5716c6",
+      "block": 52504941,
+      "fromPeriod": 440,
+      "toPeriod": 441,
+      "participants": 511,
+      "attestedSlot": 3604733,
+      "signatureSlot": 3604734
+    },
+    {
+      "tx": "0x74bffb3fbc4a78087d22b709c85b6f2714b66036e1e108f80c7d9434ea663468",
+      "block": 52504944,
+      "fromPeriod": 441,
+      "toPeriod": 442,
+      "participants": 510,
+      "attestedSlot": 3612763,
+      "signatureSlot": 3612764
+    },
+    {
+      "tx": "0x7896bb73582617880b63e3505a86417ea9a54bad6e65c9f770fa00b6edd9b97f",
+      "block": 52504948,
+      "fromPeriod": 442,
+      "toPeriod": 443,
+      "participants": 512,
+      "attestedSlot": 3620995,
+      "signatureSlot": 3620996
+    },
+    {
+      "tx": "0x012ef23d47cbbb3c7ddd9efe19834189487731d0c74e89390b505cbb350e5c41",
+      "block": 52504951,
+      "fromPeriod": 443,
+      "toPeriod": 444,
+      "participants": 511,
+      "attestedSlot": 3629424,
+      "signatureSlot": 3629425
+    },
+    {
+      "tx": "0x1298c8e5e9072eb408cc0cdc5c6ed6dcd2d0529095a5350507d9864d0139ac72",
+      "block": 52504955,
+      "fromPeriod": 444,
+      "toPeriod": 445,
+      "participants": 511,
+      "attestedSlot": 3644578,
+      "signatureSlot": 3644579
+    },
+    {
+      "tx": "0xece3705a216aba283d16c1ab146fde602afdf65b12ccff3a488a03c79404ad4d",
+      "block": 52504958,
+      "fromPeriod": 445,
+      "toPeriod": 446,
+      "participants": 511,
+      "attestedSlot": 3645818,
+      "signatureSlot": 3645819
+    },
+    {
+      "tx": "0x8373ac11cbcdbac3645bef7e08860d6fd749e30f88eed4a646a36ae1ba0ad401",
+      "block": 52504962,
+      "fromPeriod": 446,
+      "toPeriod": 447,
+      "participants": 512,
+      "attestedSlot": 3655149,
+      "signatureSlot": 3655150
+    },
+    {
+      "tx": "0x2da61c7dce41b30f67c9b096e28e9b3645468501446795638ab24cc12d7f94ea",
+      "block": 52504965,
+      "fromPeriod": 447,
+      "toPeriod": 448,
+      "participants": 512,
+      "attestedSlot": 3662844,
+      "signatureSlot": 3662845
+    },
+    {
+      "tx": "0xd7d900a76710f70c039b5dca5c7fd29a7f02899ed37b9b9481bcfde7a576ec75",
+      "block": 52505014,
+      "fromPeriod": 448,
+      "toPeriod": 449,
+      "participants": 512,
+      "attestedSlot": 3670092,
+      "signatureSlot": 3670093
+    },
+    {
+      "tx": "0xd8ea36de5b638e5e296b6258bdfacec0d0456269b24d47753e1c4dce106dae27",
+      "block": 52505017,
+      "fromPeriod": 449,
+      "toPeriod": 450,
+      "participants": 510,
+      "attestedSlot": 3678972,
+      "signatureSlot": 3678973
+    },
+    {
+      "tx": "0xd3726f577d55be4e16ede400ece4125638c3a78e0e4a3bf622cd7ba808fe9871",
+      "block": 52505021,
+      "fromPeriod": 450,
+      "toPeriod": 451,
+      "participants": 509,
+      "attestedSlot": 3687682,
+      "signatureSlot": 3687683
+    },
+    {
+      "tx": "0xebb7b33ab1964e1826da8d132fdebf658555c9379c2222b2aa092f9aef1666aa",
+      "block": 52505024,
+      "fromPeriod": 451,
+      "toPeriod": 452,
+      "participants": 512,
+      "attestedSlot": 3699294,
+      "signatureSlot": 3699295
+    },
+    {
+      "tx": "0xce8d5f289ac87c80cdad232ef7653a38f5f0775a630edfd5cbc1fd86d89865df",
+      "block": 52505028,
+      "fromPeriod": 452,
+      "toPeriod": 453,
+      "participants": 512,
+      "attestedSlot": 3703114,
+      "signatureSlot": 3703115
+    },
+    {
+      "tx": "0xbe828207c6a487686ade95b3808d243d1cc2f9cfbc2a0d558c91f73481799329",
+      "block": 52505032,
+      "fromPeriod": 453,
+      "toPeriod": 454,
+      "participants": 510,
+      "attestedSlot": 3711042,
+      "signatureSlot": 3711043
+    },
+    {
+      "tx": "0xc0e1ace0fc1e1be79bbc94338334bd61e7a8a9643d8fb1ffb9c957b19724282e",
+      "block": 52505035,
+      "fromPeriod": 454,
+      "toPeriod": 455,
+      "participants": 509,
+      "attestedSlot": 3719312,
+      "signatureSlot": 3719313
+    },
+    {
+      "tx": "0x8a473eb9e92dca4f70de2c58095c7d3417a482b0011d5d021682758195f1c794",
+      "block": 52505039,
+      "fromPeriod": 455,
+      "toPeriod": 456,
+      "participants": 509,
+      "attestedSlot": 3731849,
+      "signatureSlot": 3731850
+    },
+    {
+      "tx": "0xb41f75576c06fccb92ff6aae54b349b15e3ac6ef44cc2b68e58397f5efae7632",
+      "block": 52505042,
+      "fromPeriod": 456,
+      "toPeriod": 457,
+      "participants": 511,
+      "attestedSlot": 3737179,
+      "signatureSlot": 3737180
+    },
+    {
+      "tx": "0xf67dbafd9f6ca2413ef2816afd3c17865dd68ff8a9b674930f8807c412620b0e",
+      "block": 52505046,
+      "fromPeriod": 457,
+      "toPeriod": 458,
+      "participants": 512,
+      "attestedSlot": 3745052,
+      "signatureSlot": 3745053
+    },
+    {
+      "tx": "0xd6be6c1c26e50c5e120e439f6cf205ea8bd6ed94e339a1f9aae0c2cc9050dd2b",
+      "block": 52505049,
+      "fromPeriod": 458,
+      "toPeriod": 459,
+      "participants": 510,
+      "attestedSlot": 3760073,
+      "signatureSlot": 3760074
+    },
+    {
+      "tx": "0xc195c54c095b9ca0dcd53ea3f4a417318b6f7e9ab722065774886d86949d5cb2",
+      "block": 52505053,
+      "fromPeriod": 459,
+      "toPeriod": 460,
+      "participants": 511,
+      "attestedSlot": 3760218,
+      "signatureSlot": 3760219
+    },
+    {
+      "tx": "0x2637a6e3f45c33775707cfd9f3b3ece08611629334e693fa06ea6cb6f7882f69",
+      "block": 52505057,
+      "fromPeriod": 460,
+      "toPeriod": 461,
+      "participants": 512,
+      "attestedSlot": 3768558,
+      "signatureSlot": 3768559
+    },
+    {
+      "tx": "0x0c72f9f282b5f972858380b62ccb609665daef4bd80c074474ea66a041512819",
+      "block": 52505060,
+      "fromPeriod": 461,
+      "toPeriod": 462,
+      "participants": 509,
+      "attestedSlot": 3776911,
+      "signatureSlot": 3776912
+    },
+    {
+      "tx": "0x79fa7ee5cdcce0ba7477d0c45744292f78134a21a508ba4d3acb7d99423da1aa",
+      "block": 52505064,
+      "fromPeriod": 462,
+      "toPeriod": 463,
+      "participants": 511,
+      "attestedSlot": 3788036,
+      "signatureSlot": 3788037
+    },
+    {
+      "tx": "0xbebd2960c0fb09ec9c2921e1874543c839a952af9b54c64654df28ee69edab3f",
+      "block": 52505067,
+      "fromPeriod": 463,
+      "toPeriod": 464,
+      "participants": 512,
+      "attestedSlot": 3796277,
+      "signatureSlot": 3796278
+    },
+    {
+      "tx": "0xf527c748a105c26ff58c4d5dd546dee15340b47a27089526870c8133d3a6e254",
+      "block": 52505071,
+      "fromPeriod": 464,
+      "toPeriod": 465,
+      "participants": 511,
+      "attestedSlot": 3801627,
+      "signatureSlot": 3801628
+    },
+    {
+      "tx": "0x714ae7c690d32959b82e58949b3bb083e3fa3067a2cb36c97f25482bb3498a9c",
+      "block": 52505074,
+      "fromPeriod": 465,
+      "toPeriod": 466,
+      "participants": 511,
+      "attestedSlot": 3814254,
+      "signatureSlot": 3814255
+    },
+    {
+      "tx": "0x430ab9efc579c4296acfab1f31b365c0e2dc6c792785ff757306f9297692b13c",
+      "block": 52505078,
+      "fromPeriod": 466,
+      "toPeriod": 467,
+      "participants": 511,
+      "attestedSlot": 3821106,
+      "signatureSlot": 3821107
+    },
+    {
+      "tx": "0xd5238008b7a650033cc588b0613fb5641a580aebc4ab8eb9e5a914b13329d82b",
+      "block": 52505082,
+      "fromPeriod": 467,
+      "toPeriod": 468,
+      "participants": 511,
+      "attestedSlot": 3825739,
+      "signatureSlot": 3825740
+    },
+    {
+      "tx": "0xa36a637580d95035cc6bc49dd6b23da901aa0d5c8846d40339b9cb27533e5e75",
+      "block": 52505085,
+      "fromPeriod": 468,
+      "toPeriod": 469,
+      "participants": 511,
+      "attestedSlot": 3836744,
+      "signatureSlot": 3836745
+    },
+    {
+      "tx": "0xe934b5ae9c14821fd04b5ebbad599fc808c34dc641c3ce0a008d0678fcf186b6",
+      "block": 52505089,
+      "fromPeriod": 469,
+      "toPeriod": 470,
+      "participants": 511,
+      "attestedSlot": 3848251,
+      "signatureSlot": 3848252
+    },
+    {
+      "tx": "0xe81c0e13fc2d5175860a80b8d5ebd3dd5b03c3d793dc9cbd90134e1717807fa2",
+      "block": 52505092,
+      "fromPeriod": 470,
+      "toPeriod": 471,
+      "participants": 512,
+      "attestedSlot": 3850310,
+      "signatureSlot": 3850311
+    },
+    {
+      "tx": "0x4756f1e1b6aae421579b946abab66c4fc7060c9a928187f5c7d3d6e013586cc7",
+      "block": 52505096,
+      "fromPeriod": 471,
+      "toPeriod": 472,
+      "participants": 512,
+      "attestedSlot": 3863370,
+      "signatureSlot": 3863371
+    },
+    {
+      "tx": "0x0d5553a5223408178c14eb2e7087a3b38df0d2a3071f8702e9d7a9a59fc96a50",
+      "block": 52505100,
+      "fromPeriod": 472,
+      "toPeriod": 473,
+      "participants": 511,
+      "attestedSlot": 3867615,
+      "signatureSlot": 3867616
+    },
+    {
+      "tx": "0x2d5444dfe2abf8dd52f79dfad2d56d9847fe93c94ba16a49b8968f7bd7ad12cf",
+      "block": 52505103,
+      "fromPeriod": 473,
+      "toPeriod": 474,
+      "participants": 511,
+      "attestedSlot": 3874886,
+      "signatureSlot": 3874887
+    },
+    {
+      "tx": "0xea9781c1fee121a5ba96b538d3e4cee80b45db91294be7f4c1ff3c348b8dfec3",
+      "block": 52505107,
+      "fromPeriod": 474,
+      "toPeriod": 475,
+      "participants": 511,
+      "attestedSlot": 3888071,
+      "signatureSlot": 3888072
+    },
+    {
+      "tx": "0x6cf59053076eb9a0cd9e7dd9ef28b6c4af9dec420530f27eac3dc4f1e557c2ee",
+      "block": 52505110,
+      "fromPeriod": 475,
+      "toPeriod": 476,
+      "participants": 511,
+      "attestedSlot": 3897980,
+      "signatureSlot": 3897981
+    },
+    {
+      "tx": "0xd2200b141494503381258744b552ab6bc408ab2c76470e9d526ec7b09243802d",
+      "block": 52505114,
+      "fromPeriod": 476,
+      "toPeriod": 477,
+      "participants": 510,
+      "attestedSlot": 3900857,
+      "signatureSlot": 3900858
+    },
+    {
+      "tx": "0x7646e60d238c583ce90805e951e06a1e0c80cb6f75607f1a82807a7ec9762202",
+      "block": 52505118,
+      "fromPeriod": 477,
+      "toPeriod": 478,
+      "participants": 512,
+      "attestedSlot": 3908377,
+      "signatureSlot": 3908378
+    },
+    {
+      "tx": "0x6f445dbb64264954607cd2d720273c9bfd5a965533d7d1f2d2e2f769332429d3",
+      "block": 52505121,
+      "fromPeriod": 478,
+      "toPeriod": 479,
+      "participants": 511,
+      "attestedSlot": 3916390,
+      "signatureSlot": 3916391
+    },
+    {
+      "tx": "0xffe1b7fe4d07e94ea690e882ab564c975ad1ad260d27ca9ba13a22510ca23ae9",
+      "block": 52505125,
+      "fromPeriod": 479,
+      "toPeriod": 480,
+      "participants": 511,
+      "attestedSlot": 3928472,
+      "signatureSlot": 3928473
+    },
+    {
+      "tx": "0xafee20b218b146f6fce80353d0ea52eadbdcab458ad3042f8cdf9cd9519b3b66",
+      "block": 52505128,
+      "fromPeriod": 480,
+      "toPeriod": 481,
+      "participants": 511,
+      "attestedSlot": 3932861,
+      "signatureSlot": 3932862
+    },
+    {
+      "tx": "0x6890436eda4c8baeac4973e9a5e43fc44ec36da48a4007708580efe81f0fd80d",
+      "block": 52505132,
+      "fromPeriod": 481,
+      "toPeriod": 482,
+      "participants": 510,
+      "attestedSlot": 3941293,
+      "signatureSlot": 3941294
+    },
+    {
+      "tx": "0x019465a0c15136039ed4c1d90e5bcc273cad2343a635a0751f11d248ddd6186b",
+      "block": 52505136,
+      "fromPeriod": 482,
+      "toPeriod": 483,
+      "participants": 511,
+      "attestedSlot": 3950963,
+      "signatureSlot": 3950964
+    },
+    {
+      "tx": "0x54f220302fb526faa710714778a9e1cd854bcfc2f22401cb620ebe5a58e9c123",
+      "block": 52505139,
+      "fromPeriod": 483,
+      "toPeriod": 484,
+      "participants": 512,
+      "attestedSlot": 3957059,
+      "signatureSlot": 3957060
+    },
+    {
+      "tx": "0xb9cada97a8db8aa5a7898d764993b434717462768683648d1f9e23c8148f14cd",
+      "block": 52505143,
+      "fromPeriod": 484,
+      "toPeriod": 485,
+      "participants": 509,
+      "attestedSlot": 3966460,
+      "signatureSlot": 3966461
+    },
+    {
+      "tx": "0x9f4614b725715759641cbcb9993372691546750928e441be649f0c5501e3452f",
+      "block": 52505146,
+      "fromPeriod": 485,
+      "toPeriod": 486,
+      "participants": 511,
+      "attestedSlot": 3976415,
+      "signatureSlot": 3976416
+    },
+    {
+      "tx": "0xe36ea89ea68bbd0b1f9eccd8f601222cedd384fb6b7d8dc780cc2975cf4c10f3",
+      "block": 52505150,
+      "fromPeriod": 486,
+      "toPeriod": 487,
+      "participants": 511,
+      "attestedSlot": 3981424,
+      "signatureSlot": 3981425
+    },
+    {
+      "tx": "0x72fd160f4b80a773c1b40ef69e240a1b0f7a602ef64df266daab772340f50d50",
+      "block": 52505153,
+      "fromPeriod": 487,
+      "toPeriod": 488,
+      "participants": 511,
+      "attestedSlot": 3989578,
+      "signatureSlot": 3989579
+    },
+    {
+      "tx": "0x2125ff2faffd2f2faeb6899aa3de181eb714df75cf45a7b5273069a52e063494",
+      "block": 52505157,
+      "fromPeriod": 488,
+      "toPeriod": 489,
+      "participants": 510,
+      "attestedSlot": 3998060,
+      "signatureSlot": 3998061
+    },
+    {
+      "tx": "0xbaa237120695ff585fa381298f8ddef7d4ea8b49abec0b1ad3dd0c9059d7d5c9",
+      "block": 52505161,
+      "fromPeriod": 489,
+      "toPeriod": 490,
+      "participants": 511,
+      "attestedSlot": 4006297,
+      "signatureSlot": 4006298
+    },
+    {
+      "tx": "0x9c2916880a2961c9f82a798656febf4b2f80a1c9ad184d595a68f5e3b43db78d",
+      "block": 52505164,
+      "fromPeriod": 490,
+      "toPeriod": 491,
+      "participants": 511,
+      "attestedSlot": 4014254,
+      "signatureSlot": 4014255
+    },
+    {
+      "tx": "0xb1dc407aac4ca8aff601ec919b2eaedf13963b362fdd1b2e0d0333600fe5c031",
+      "block": 52505168,
+      "fromPeriod": 491,
+      "toPeriod": 492,
+      "participants": 511,
+      "attestedSlot": 4022514,
+      "signatureSlot": 4022515
+    },
+    {
+      "tx": "0x9b674c003cd0ec4fa07cb330f5796549212ff8a37f5d5ad7f983f312c8caf4a9",
+      "block": 52505171,
+      "fromPeriod": 492,
+      "toPeriod": 493,
+      "participants": 511,
+      "attestedSlot": 4031972,
+      "signatureSlot": 4031973
+    },
+    {
+      "tx": "0xa0b40a00b752361eb146f01e8faf0792b943b666e4b1f0df9976084e75e63934",
+      "block": 52505175,
+      "fromPeriod": 493,
+      "toPeriod": 494,
+      "participants": 511,
+      "attestedSlot": 4041724,
+      "signatureSlot": 4041725
+    },
+    {
+      "tx": "0x4b0b50a9498dbdacc39e0560be7660ee315d28894bde612a425d49a05f62fec0",
+      "block": 52505178,
+      "fromPeriod": 494,
+      "toPeriod": 495,
+      "participants": 512,
+      "attestedSlot": 4047826,
+      "signatureSlot": 4047827
+    },
+    {
+      "tx": "0x054d0c5af2a1bafe871f65cb0a2d3b4b2ee97f77fd5ebf785b65a96615d2148b",
+      "block": 52505182,
+      "fromPeriod": 495,
+      "toPeriod": 496,
+      "participants": 510,
+      "attestedSlot": 4056766,
+      "signatureSlot": 4056767
+    },
+    {
+      "tx": "0x42cc7ea37a48774f763cec91223e13d8697e2006020690af0b8e129a470d7b05",
+      "block": 52505185,
+      "fromPeriod": 496,
+      "toPeriod": 497,
+      "participants": 509,
+      "attestedSlot": 4068842,
+      "signatureSlot": 4068843
+    },
+    {
+      "tx": "0xf618e0a87c583db46c98d4f0ef493fdf468a74a442d303dcfddab5cb83f18eab",
+      "block": 52505189,
+      "fromPeriod": 497,
+      "toPeriod": 498,
+      "participants": 511,
+      "attestedSlot": 4071629,
+      "signatureSlot": 4071630
+    },
+    {
+      "tx": "0xef1c05bd7d0354b869167fca5c74c004664b9acb986eb520a8afe089d49b7073",
+      "block": 52505192,
+      "fromPeriod": 498,
+      "toPeriod": 499,
+      "participants": 511,
+      "attestedSlot": 4079708,
+      "signatureSlot": 4079709
+    },
+    {
+      "tx": "0x382dc71db2b0b0295d7d050a53b5267dd62bfea036a3693ee60818bc411c7d62",
+      "block": 52505196,
+      "fromPeriod": 499,
+      "toPeriod": 500,
+      "participants": 511,
+      "attestedSlot": 4088603,
+      "signatureSlot": 4088604
+    },
+    {
+      "tx": "0x7a75405d5c052d44c9ef994a556c59b11bee19af6d64216fd188e84336e23a7b",
+      "block": 52505200,
+      "fromPeriod": 500,
+      "toPeriod": 501,
+      "participants": 512,
+      "attestedSlot": 4096341,
+      "signatureSlot": 4096342
+    },
+    {
+      "tx": "0xf37d288e9d69c6df0d22b417777f177ef23978fb8fa698d1171094f564ba2d9b",
+      "block": 52505203,
+      "fromPeriod": 501,
+      "toPeriod": 502,
+      "participants": 512,
+      "attestedSlot": 4104261,
+      "signatureSlot": 4104262
+    },
+    {
+      "tx": "0xc38e84e84039e2cc7cdb1def589df0dd32f90daf3e77f94df84459b595be244b",
+      "block": 52505207,
+      "fromPeriod": 502,
+      "toPeriod": 503,
+      "participants": 512,
+      "attestedSlot": 4118060,
+      "signatureSlot": 4118061
+    },
+    {
+      "tx": "0x2d7e6a1a2bfac0b90c94b49515e85936d22d181eb485aa8abc78396948f1b70d",
+      "block": 52505210,
+      "fromPeriod": 503,
+      "toPeriod": 504,
+      "participants": 509,
+      "attestedSlot": 4121254,
+      "signatureSlot": 4121255
+    },
+    {
+      "tx": "0x5e768235c6c2ae1cd4912d42551df923e375a831ee4d3ae954467a64a4b7a643",
+      "block": 52505214,
+      "fromPeriod": 504,
+      "toPeriod": 505,
+      "participants": 511,
+      "attestedSlot": 4128841,
+      "signatureSlot": 4128842
+    },
+    {
+      "tx": "0xf0b94e47df03757be4e099538eac2f18666601bc27c7f8b59c7e94c5bce139fc",
+      "block": 52505217,
+      "fromPeriod": 505,
+      "toPeriod": 506,
+      "participants": 512,
+      "attestedSlot": 4142540,
+      "signatureSlot": 4142541
+    },
+    {
+      "tx": "0xb0dda4a4e73abe8d0ec41a7838227a647ec70c6fd1025cdd26b0966cb953ad93",
+      "block": 52505221,
+      "fromPeriod": 506,
+      "toPeriod": 507,
+      "participants": 511,
+      "attestedSlot": 4149801,
+      "signatureSlot": 4149802
+    },
+    {
+      "tx": "0x0274bddaaf5c8e1a6100437f1b3cd7ef86fc7f57cd0505949b77c79ad69dd588",
+      "block": 52505225,
+      "fromPeriod": 507,
+      "toPeriod": 508,
+      "participants": 511,
+      "attestedSlot": 4156433,
+      "signatureSlot": 4156434
+    },
+    {
+      "tx": "0xde468e1afa2b754dc1da0968d42236b395fe5e9c486fdd552d3bd22a5ad03543",
+      "block": 52505228,
+      "fromPeriod": 508,
+      "toPeriod": 509,
+      "participants": 509,
+      "attestedSlot": 4169583,
+      "signatureSlot": 4169584
+    },
+    {
+      "tx": "0x8badc44b5e40f38f56765d97a22288411b992e08d8e6ede5648791e7d96cb8fc",
+      "block": 52505232,
+      "fromPeriod": 509,
+      "toPeriod": 510,
+      "participants": 511,
+      "attestedSlot": 4170163,
+      "signatureSlot": 4170164
+    },
+    {
+      "tx": "0xd420e5c109617772bb2cf0410c74915f45f231176072cecb2f2a7bd54050ecfa",
+      "block": 52505235,
+      "fromPeriod": 510,
+      "toPeriod": 511,
+      "participants": 510,
+      "attestedSlot": 4183697,
+      "signatureSlot": 4183698
+    },
+    {
+      "tx": "0x7068b4e6f2f6779df4c958f4ac3240d6f92885d988ab9baa85103e5118c398a7",
+      "block": 52505239,
+      "fromPeriod": 511,
+      "toPeriod": 512,
+      "participants": 510,
+      "attestedSlot": 4192674,
+      "signatureSlot": 4192675
+    },
+    {
+      "tx": "0x3239601e3e53bd188cb479b3afefad6d855f1dab425fc7bc5eab0b09b8c59440",
+      "block": 52505242,
+      "fromPeriod": 512,
+      "toPeriod": 513,
+      "participants": 512,
+      "attestedSlot": 4198847,
+      "signatureSlot": 4198848
+    },
+    {
+      "tx": "0x22f3486f31bb5018674059526ca1f79eb000f234c9dc4fa2c844d9f5028ac00f",
+      "block": 52505246,
+      "fromPeriod": 513,
+      "toPeriod": 514,
+      "participants": 511,
+      "attestedSlot": 4202603,
+      "signatureSlot": 4202604
+    },
+    {
+      "tx": "0xca84200fcd982725c80ea4908a58af9816ab5decc39a3c00a60d14bd10e84f1e",
+      "block": 52505249,
+      "fromPeriod": 514,
+      "toPeriod": 515,
+      "participants": 511,
+      "attestedSlot": 4212699,
+      "signatureSlot": 4212700
+    },
+    {
+      "tx": "0xa5e51503bc5ff634296dd4acfb6c6bb8ab8e35a5b560815aa841698782b9c88d",
+      "block": 52505253,
+      "fromPeriod": 515,
+      "toPeriod": 516,
+      "participants": 510,
+      "attestedSlot": 4222833,
+      "signatureSlot": 4222834
+    },
+    {
+      "tx": "0x0a8f36aaa16847d36d490e1aa1cb938b64a6085e05349bcee22d7d0c3692533c",
+      "block": 52505256,
+      "fromPeriod": 516,
+      "toPeriod": 517,
+      "participants": 509,
+      "attestedSlot": 4232725,
+      "signatureSlot": 4232726
+    },
+    {
+      "tx": "0x2f3cf139cf1e4626f2e2043d76241cb266e0f79b575a4ff0139b15137f5a6009",
+      "block": 52505260,
+      "fromPeriod": 517,
+      "toPeriod": 518,
+      "participants": 509,
+      "attestedSlot": 4243201,
+      "signatureSlot": 4243203
+    },
+    {
+      "tx": "0x9026635f51a24ad1d80afbc1cd52dfcb3b8e6d8950a5f88c282ff627879c78fb",
+      "block": 52505263,
+      "fromPeriod": 518,
+      "toPeriod": 519,
+      "participants": 508,
+      "attestedSlot": 4243910,
+      "signatureSlot": 4243911
+    },
+    {
+      "tx": "0x607ac93202a877d85e6081bb153741407be903d2effe2ab5c63c013165d2b495",
+      "block": 52505267,
+      "fromPeriod": 519,
+      "toPeriod": 520,
+      "participants": 512,
+      "attestedSlot": 4252813,
+      "signatureSlot": 4252814
+    },
+    {
+      "tx": "0xff2d7b339e6643c28058145c4311beb549fed899c0ad44e0cbefafcf076602b8",
+      "block": 52505270,
+      "fromPeriod": 520,
+      "toPeriod": 521,
+      "participants": 511,
+      "attestedSlot": 4265802,
+      "signatureSlot": 4265804
+    },
+    {
+      "tx": "0x59a5f0e35d8283f116430cc63761db6be83050a926de0b1e6bce3c2b3b472071",
+      "block": 52505275,
+      "fromPeriod": 521,
+      "toPeriod": 522,
+      "participants": 512,
+      "attestedSlot": 4272729,
+      "signatureSlot": 4272730
+    },
+    {
+      "tx": "0x732554fe203d8996257bf824c25e26f8bb86741908809f04679574a654c80ab7",
+      "block": 52505278,
+      "fromPeriod": 522,
+      "toPeriod": 523,
+      "participants": 510,
+      "attestedSlot": 4276430,
+      "signatureSlot": 4276431
+    },
+    {
+      "tx": "0xd6fa087c7d554b9c665c279fa89ba0b70147cf18f256cea74cff6fc7a96110e4",
+      "block": 52505282,
+      "fromPeriod": 523,
+      "toPeriod": 524,
+      "participants": 512,
+      "attestedSlot": 4287099,
+      "signatureSlot": 4287100
+    },
+    {
+      "tx": "0xfeb4a21395039d7196e1d0df0812b881e25cdd75dc769d900d3ab94fdac37590",
+      "block": 52505286,
+      "fromPeriod": 524,
+      "toPeriod": 525,
+      "participants": 511,
+      "attestedSlot": 4300100,
+      "signatureSlot": 4300101
+    },
+    {
+      "tx": "0x0f6398296bbf73627d771beb181bcf7b4e554b513c85e772ac6635bfd14c7ae5",
+      "block": 52505290,
+      "fromPeriod": 525,
+      "toPeriod": 526,
+      "participants": 512,
+      "attestedSlot": 4302117,
+      "signatureSlot": 4302118
+    },
+    {
+      "tx": "0xf781642c2c7dcf6dd80bc14d84455bd03b4afbf949100f4f9ab7f7a6cead9111",
+      "block": 52505293,
+      "fromPeriod": 526,
+      "toPeriod": 527,
+      "participants": 511,
+      "attestedSlot": 4309170,
+      "signatureSlot": 4309171
+    },
+    {
+      "tx": "0x9283bfae3d01b928161a0bbb74cef33f7aef15a39b23d63f5a218af3403f3db3",
+      "block": 52505297,
+      "fromPeriod": 527,
+      "toPeriod": 528,
+      "participants": 511,
+      "attestedSlot": 4322015,
+      "signatureSlot": 4322016
+    },
+    {
+      "tx": "0x512a9498847db7198a2aa620444bf3701f5712b9e18a69abe2bd8560bd5221c4",
+      "block": 52505300,
+      "fromPeriod": 528,
+      "toPeriod": 529,
+      "participants": 512,
+      "attestedSlot": 4327622,
+      "signatureSlot": 4327623
+    },
+    {
+      "tx": "0xddbe1799765fbd588e482590fb06faabe18c3956fc293fe981a24badbce79e0d",
+      "block": 52505304,
+      "fromPeriod": 529,
+      "toPeriod": 530,
+      "participants": 511,
+      "attestedSlot": 4333702,
+      "signatureSlot": 4333703
+    },
+    {
+      "tx": "0x73bf537e177cc1599a6d71413cdecabbd160bc03a9c8515f5c0134855a457b71",
+      "block": 52505307,
+      "fromPeriod": 530,
+      "toPeriod": 531,
+      "participants": 511,
+      "attestedSlot": 4348147,
+      "signatureSlot": 4348148
+    },
+    {
+      "tx": "0xd30a1eed5ba046f083b1ad6253ec346c8ba426bec8cdc5ee34b813e22351a60b",
+      "block": 52505311,
+      "fromPeriod": 531,
+      "toPeriod": 532,
+      "participants": 511,
+      "attestedSlot": 4350123,
+      "signatureSlot": 4350124
+    },
+    {
+      "tx": "0x716f16529909b70dcd10f88cadee79dc4168a700eff02d44635294cfe6a512f9",
+      "block": 52505315,
+      "fromPeriod": 532,
+      "toPeriod": 533,
+      "participants": 510,
+      "attestedSlot": 4360661,
+      "signatureSlot": 4360662
+    },
+    {
+      "tx": "0x015e1873384796d6e0d96593ac5657db0afa44dc211398def70fcb01c3ad6872",
+      "block": 52505318,
+      "fromPeriod": 533,
+      "toPeriod": 534,
+      "participants": 512,
+      "attestedSlot": 4366574,
+      "signatureSlot": 4366575
+    },
+    {
+      "tx": "0x02b32d04906cf23ce58d6f79eddcd0aed9a876d91aa3c459d22c3b9887c8f6a2",
+      "block": 52505322,
+      "fromPeriod": 534,
+      "toPeriod": 535,
+      "participants": 511,
+      "attestedSlot": 4376327,
+      "signatureSlot": 4376328
+    },
+    {
+      "tx": "0xb05dde17895a8888b4aed0fb6aeb7ddc5f22fce1743b6fae63b3c26eff4b510a",
+      "block": 52505325,
+      "fromPeriod": 535,
+      "toPeriod": 536,
+      "participants": 512,
+      "attestedSlot": 4386772,
+      "signatureSlot": 4386773
+    },
+    {
+      "tx": "0x029d295471e415b65e1e57a2544b37bf480300874b598cfeb47ad8327470679d",
+      "block": 52505329,
+      "fromPeriod": 536,
+      "toPeriod": 537,
+      "participants": 511,
+      "attestedSlot": 4394773,
+      "signatureSlot": 4394774
+    },
+    {
+      "tx": "0xf6a36e58f834775667441ad91603e335d49bd311967cf54d0884755534a535a4",
+      "block": 52505332,
+      "fromPeriod": 537,
+      "toPeriod": 538,
+      "participants": 511,
+      "attestedSlot": 4405522,
+      "signatureSlot": 4405523
+    },
+    {
+      "tx": "0x9150f2a045479dc4a1292d36383891cc2dc72f78834601225cb307361f7944b9",
+      "block": 52505336,
+      "fromPeriod": 538,
+      "toPeriod": 539,
+      "participants": 511,
+      "attestedSlot": 4407430,
+      "signatureSlot": 4407431
+    },
+    {
+      "tx": "0x51ac6da91d3c77f51538f55b1db5eead47888e64fa4b24786ec17c3be2b995be",
+      "block": 52505340,
+      "fromPeriod": 539,
+      "toPeriod": 540,
+      "participants": 509,
+      "attestedSlot": 4417055,
+      "signatureSlot": 4417056
+    },
+    {
+      "tx": "0x25543432106a13ae342793cf94faf6b1c115410e8f38e9f9bac7e63f71a5122f",
+      "block": 52505343,
+      "fromPeriod": 540,
+      "toPeriod": 541,
+      "participants": 512,
+      "attestedSlot": 4423842,
+      "signatureSlot": 4423843
+    },
+    {
+      "tx": "0x936ef24fa615f5149189e972c585d0231e2a5b63c39674c0a6c64bc775eefacc",
+      "block": 52505347,
+      "fromPeriod": 541,
+      "toPeriod": 542,
+      "participants": 512,
+      "attestedSlot": 4435971,
+      "signatureSlot": 4435972
+    },
+    {
+      "tx": "0x9ebed0d40260e7cc0656fbe7d65fab2571bc26030f4be0e9fd9e30a63fca9776",
+      "block": 52505350,
+      "fromPeriod": 542,
+      "toPeriod": 543,
+      "participants": 512,
+      "attestedSlot": 4440890,
+      "signatureSlot": 4440891
+    },
+    {
+      "tx": "0x32f612b6e20787f2df312113413b4c95da0336adf81456b6eb25a4bb29fd894a",
+      "block": 52505354,
+      "fromPeriod": 543,
+      "toPeriod": 544,
+      "participants": 510,
+      "attestedSlot": 4455149,
+      "signatureSlot": 4455150
+    },
+    {
+      "tx": "0xc67ae99e41be1725668310c2f68f5c069a761d75f88a99a290e6b940fe1058d9",
+      "block": 52505357,
+      "fromPeriod": 544,
+      "toPeriod": 545,
+      "participants": 511,
+      "attestedSlot": 4461589,
+      "signatureSlot": 4461590
+    },
+    {
+      "tx": "0x00f84d914a8bafad9cee66637afc04a89d2fb75ac7465077c3f4a3b29956c205",
+      "block": 52505361,
+      "fromPeriod": 545,
+      "toPeriod": 546,
+      "participants": 511,
+      "attestedSlot": 4467105,
+      "signatureSlot": 4467106
+    },
+    {
+      "tx": "0x261c87d87f799793bd98e6bdc392995cdf477954c1a1f762b58c67a21ea01b18",
+      "block": 52505364,
+      "fromPeriod": 546,
+      "toPeriod": 547,
+      "participants": 511,
+      "attestedSlot": 4473084,
+      "signatureSlot": 4473085
+    },
+    {
+      "tx": "0xb171dc3f90209e9c10dd28729ce6da67402c104a8efa6b20296db111e9cc9a08",
+      "block": 52505368,
+      "fromPeriod": 547,
+      "toPeriod": 548,
+      "participants": 510,
+      "attestedSlot": 4482003,
+      "signatureSlot": 4482004
+    },
+    {
+      "tx": "0x30b0c5970845f01e0f13fd13d805b32e6de576c04a5daa3e4d5c64bc06c26ec2",
+      "block": 52505371,
+      "fromPeriod": 548,
+      "toPeriod": 549,
+      "participants": 511,
+      "attestedSlot": 4491163,
+      "signatureSlot": 4491164
+    },
+    {
+      "tx": "0xc1c54cfe54a8f838610b893f89bf4bb41a19095732e20641896fb86bd22917db",
+      "block": 52505375,
+      "fromPeriod": 549,
+      "toPeriod": 550,
+      "participants": 508,
+      "attestedSlot": 4503322,
+      "signatureSlot": 4503323
+    },
+    {
+      "tx": "0x9e6d2ed3ff20f884cec05c296457966057f3449f4f17f9487e418097cff0c74a",
+      "block": 52505378,
+      "fromPeriod": 550,
+      "toPeriod": 551,
+      "participants": 511,
+      "attestedSlot": 4505667,
+      "signatureSlot": 4505668
+    },
+    {
+      "tx": "0x8227d3ed743c26cf24b2e73310e049dd495c0ac5369655737278fd540975ba13",
+      "block": 52505382,
+      "fromPeriod": 551,
+      "toPeriod": 552,
+      "participants": 510,
+      "attestedSlot": 4515454,
+      "signatureSlot": 4515456
+    },
+    {
+      "tx": "0x07b6a40b4c59673a6d0a60654b4396272be53831fa96a44913524b13ba11d19d",
+      "block": 52505385,
+      "fromPeriod": 552,
+      "toPeriod": 553,
+      "participants": 511,
+      "attestedSlot": 4523027,
+      "signatureSlot": 4523028
+    },
+    {
+      "tx": "0x00b689fa94e59f450f87d18d619e6f8f7cac449cc8c8940af7f6677ba93055df",
+      "block": 52505389,
+      "fromPeriod": 553,
+      "toPeriod": 554,
+      "participants": 511,
+      "attestedSlot": 4531675,
+      "signatureSlot": 4531676
+    },
+    {
+      "tx": "0x94a25644f7c8c8e45710b5eeb9d74afa9fb7d83c55d5c1807977aac02536ff90",
+      "block": 52505393,
+      "fromPeriod": 554,
+      "toPeriod": 555,
+      "participants": 511,
+      "attestedSlot": 4538772,
+      "signatureSlot": 4538773
+    },
+    {
+      "tx": "0xabbdd53c5e67fb9c917f16ad469476802d2a4a6a19c48407a4446216bdb48a5b",
+      "block": 52505396,
+      "fromPeriod": 555,
+      "toPeriod": 556,
+      "participants": 511,
+      "attestedSlot": 4548629,
+      "signatureSlot": 4548630
+    },
+    {
+      "tx": "0x47f96625e29bf20aa0733cd47c3500aa1135445c2e15d1df7dbcd508cdcd5c3f",
+      "block": 52505400,
+      "fromPeriod": 556,
+      "toPeriod": 557,
+      "participants": 509,
+      "attestedSlot": 4560109,
+      "signatureSlot": 4560110
+    },
+    {
+      "tx": "0x3c5765865e8926e66ee453a434240a741831e330efab0d2147f7b25b5911f6ef",
+      "block": 52505403,
+      "fromPeriod": 557,
+      "toPeriod": 558,
+      "participants": 509,
+      "attestedSlot": 4570362,
+      "signatureSlot": 4570363
+    },
+    {
+      "tx": "0xb10e21190b2376439a8a01de8f19b363b3d007ecceac5185238739830ffaaf52",
+      "block": 52505407,
+      "fromPeriod": 558,
+      "toPeriod": 559,
+      "participants": 510,
+      "attestedSlot": 4574168,
+      "signatureSlot": 4574169
+    },
+    {
+      "tx": "0xbebecb19515fdcd7e257f2e2f436fa8cb8af282eb758813b13fa8813c38c9d28",
+      "block": 52505410,
+      "fromPeriod": 559,
+      "toPeriod": 560,
+      "participants": 511,
+      "attestedSlot": 4586686,
+      "signatureSlot": 4586687
+    },
+    {
+      "tx": "0x58463779bd020e9ffbb7e122381c4802ecda5ce99c5b130cf9e88e2704ad9c43",
+      "block": 52505414,
+      "fromPeriod": 560,
+      "toPeriod": 561,
+      "participants": 509,
+      "attestedSlot": 4589725,
+      "signatureSlot": 4589726
+    },
+    {
+      "tx": "0x76144f7094a4f64ef6f465e8802d529102c4558b33dba92838b8d20c0727470c",
+      "block": 52505418,
+      "fromPeriod": 561,
+      "toPeriod": 562,
+      "participants": 510,
+      "attestedSlot": 4595821,
+      "signatureSlot": 4595822
+    },
+    {
+      "tx": "0xba3ff8bfc3f570d9dad5c5ab989e73cd10c44b316056edec3b63d6e75ec30c0f",
+      "block": 52505421,
+      "fromPeriod": 562,
+      "toPeriod": 563,
+      "participants": 511,
+      "attestedSlot": 4604703,
+      "signatureSlot": 4604704
+    },
+    {
+      "tx": "0x8349d4a79daa259042a5bfab4cd5a8965b5d75182539ed465cd8c102321d4382",
+      "block": 52505425,
+      "fromPeriod": 563,
+      "toPeriod": 564,
+      "participants": 511,
+      "attestedSlot": 4612658,
+      "signatureSlot": 4612659
+    },
+    {
+      "tx": "0xc66960fdf482a1731661908fba868a4c58c084c758d61f5aac869549420e2175",
+      "block": 52505429,
+      "fromPeriod": 564,
+      "toPeriod": 565,
+      "participants": 512,
+      "attestedSlot": 4622949,
+      "signatureSlot": 4622950
+    },
+    {
+      "tx": "0x61d836f65a87223476e370b19c8e396ae802823f0aff0e6e0db2e32c6bce3240",
+      "block": 52505432,
+      "fromPeriod": 565,
+      "toPeriod": 566,
+      "participants": 511,
+      "attestedSlot": 4631450,
+      "signatureSlot": 4631451
+    },
+    {
+      "tx": "0xd9f6201300776e3280c738e5dd3765b347d34154214f3502b07b5472f69b638a",
+      "block": 52505436,
+      "fromPeriod": 566,
+      "toPeriod": 567,
+      "participants": 509,
+      "attestedSlot": 4639678,
+      "signatureSlot": 4639679
+    },
+    {
+      "tx": "0x7d671b7f32b0bcdab2231d3ee8119a5f463368ffe7037382706a8772523d721d",
+      "block": 52505439,
+      "fromPeriod": 567,
+      "toPeriod": 568,
+      "participants": 511,
+      "attestedSlot": 4645945,
+      "signatureSlot": 4645946
+    },
+    {
+      "tx": "0xea034bba814ad3d53326dd8ed6a5bf1377428932ab1526cc4315561fd6e16e20",
+      "block": 52505443,
+      "fromPeriod": 568,
+      "toPeriod": 569,
+      "participants": 508,
+      "attestedSlot": 4658059,
+      "signatureSlot": 4658060
+    },
+    {
+      "tx": "0xec00cccaf3e5dc76fc981bd923a310b0301c8cfd16faa33385fc749e398053f8",
+      "block": 52505446,
+      "fromPeriod": 569,
+      "toPeriod": 570,
+      "participants": 508,
+      "attestedSlot": 4667803,
+      "signatureSlot": 4667804
+    },
+    {
+      "tx": "0x007226765e484f6d60fbe5e61688bc3e692eac1d0b0d2cc71f7e7a023a85a893",
+      "block": 52505450,
+      "fromPeriod": 570,
+      "toPeriod": 571,
+      "participants": 511,
+      "attestedSlot": 4670200,
+      "signatureSlot": 4670201
+    },
+    {
+      "tx": "0x775cdddf78520286f029ddc92eb2edb7ff90ff7096da5ba0b976930e4e4f25cd",
+      "block": 52505454,
+      "fromPeriod": 571,
+      "toPeriod": 572,
+      "participants": 511,
+      "attestedSlot": 4677709,
+      "signatureSlot": 4677710
+    },
+    {
+      "tx": "0xcca43db0992638628ad36dc39bd19d7cc8ef3b7240fb428357f2975352412780",
+      "block": 52505457,
+      "fromPeriod": 572,
+      "toPeriod": 573,
+      "participants": 512,
+      "attestedSlot": 4686478,
+      "signatureSlot": 4686479
+    },
+    {
+      "tx": "0x0722237dc186a2152b95bad9b68642ba2b411cc570339ffbd4dc9c37243acf2d",
+      "block": 52505461,
+      "fromPeriod": 573,
+      "toPeriod": 574,
+      "participants": 511,
+      "attestedSlot": 4697196,
+      "signatureSlot": 4697197
+    },
+    {
+      "tx": "0x8c64df0dbed831896299088c160152c1521d776954ce96ac86114e842844b9c6",
+      "block": 52505464,
+      "fromPeriod": 574,
+      "toPeriod": 575,
+      "participants": 506,
+      "attestedSlot": 4703276,
+      "signatureSlot": 4703277
+    },
+    {
+      "tx": "0xf290a574f99ba8ddc20b6ac100369db96c6fa1f25c28ee9d67acaf1683e99e71",
+      "block": 52505468,
+      "fromPeriod": 575,
+      "toPeriod": 576,
+      "participants": 509,
+      "attestedSlot": 4713096,
+      "signatureSlot": 4713097
+    },
+    {
+      "tx": "0xd3b9dd3de8144ad700d4f9a4c361fbc639f5c1c1f10de1a95efb01bef5fd44a7",
+      "block": 52505471,
+      "fromPeriod": 576,
+      "toPeriod": 577,
+      "participants": 509,
+      "attestedSlot": 4718666,
+      "signatureSlot": 4718667
+    },
+    {
+      "tx": "0x44eceaa758ebacee117797cbbdd78ff342b75b3abeb17e8f8eb2eb7539c3344e",
+      "block": 52505475,
+      "fromPeriod": 577,
+      "toPeriod": 578,
+      "participants": 507,
+      "attestedSlot": 4727845,
+      "signatureSlot": 4727846
+    },
+    {
+      "tx": "0x306e09750ae32fab9e27a9605243a769102ae2b65acee2954859e0ef06b2ad35",
+      "block": 52505478,
+      "fromPeriod": 578,
+      "toPeriod": 579,
+      "participants": 510,
+      "attestedSlot": 4735078,
+      "signatureSlot": 4735079
+    },
+    {
+      "tx": "0x01cabdfd8a75c2f7cc1aa53cd815f069b7777f398b7cb9dd5fb86a1766e7b48c",
+      "block": 52505482,
+      "fromPeriod": 579,
+      "toPeriod": 580,
+      "participants": 511,
+      "attestedSlot": 4743806,
+      "signatureSlot": 4743807
+    },
+    {
+      "tx": "0x99504cbf67e72ce36cbee115af938e96f951b8a98ec9eaf63731a173caeafedb",
+      "block": 52505486,
+      "fromPeriod": 580,
+      "toPeriod": 581,
+      "participants": 509,
+      "attestedSlot": 4751626,
+      "signatureSlot": 4751627
+    },
+    {
+      "tx": "0xde22fe1e06625d403adb868a83aa185d2fae0e01a36e21e86b4c76e57435491a",
+      "block": 52505489,
+      "fromPeriod": 581,
+      "toPeriod": 582,
+      "participants": 510,
+      "attestedSlot": 4762290,
+      "signatureSlot": 4762291
+    },
+    {
+      "tx": "0x68204fb2671daf43070279e3a1b5d5bcdd493f52152509f441d23a7cf236a3d2",
+      "block": 52505493,
+      "fromPeriod": 582,
+      "toPeriod": 583,
+      "participants": 510,
+      "attestedSlot": 4775632,
+      "signatureSlot": 4775633
+    },
+    {
+      "tx": "0xc762058ca9c7785ba2b1dbbf03908a5130c533cd8ff3553a87dd892bca09b23d",
+      "block": 52505496,
+      "fromPeriod": 583,
+      "toPeriod": 584,
+      "participants": 510,
+      "attestedSlot": 4779847,
+      "signatureSlot": 4779848
+    },
+    {
+      "tx": "0xee103356a3d51335eb1bae7216faaaa735a187cbcb8e6f3974658138017bea8e",
+      "block": 52505500,
+      "fromPeriod": 584,
+      "toPeriod": 585,
+      "participants": 507,
+      "attestedSlot": 4789426,
+      "signatureSlot": 4789427
+    },
+    {
+      "tx": "0xb236c7a5987cac7d864d993f888db3de39472774c15452d2ac8c3be1de451b40",
+      "block": 52505503,
+      "fromPeriod": 585,
+      "toPeriod": 586,
+      "participants": 512,
+      "attestedSlot": 4793264,
+      "signatureSlot": 4793265
+    },
+    {
+      "tx": "0xbbd458947f9fb80d18e9857d9dde75fb01140f3f9c1e92f7ef46f17fa385cc39",
+      "block": 52505507,
+      "fromPeriod": 586,
+      "toPeriod": 587,
+      "participants": 509,
+      "attestedSlot": 4800837,
+      "signatureSlot": 4800838
+    },
+    {
+      "tx": "0x3168a6c7d7ff5998cef8a110962c5ff049fdc58edc002e65dc7ac28871bf9fa4",
+      "block": 52505510,
+      "fromPeriod": 587,
+      "toPeriod": 588,
+      "participants": 511,
+      "attestedSlot": 4812175,
+      "signatureSlot": 4812176
+    },
+    {
+      "tx": "0x4e9987b5a3716edadb6b05b6a38e1311742ec9b7ec14261d99ccd94ade5e6560",
+      "block": 52505514,
+      "fromPeriod": 588,
+      "toPeriod": 589,
+      "participants": 512,
+      "attestedSlot": 4820147,
+      "signatureSlot": 4820148
+    },
+    {
+      "tx": "0x1c27a76403f523a075797eee82821ae125916326ea034fa3424577e8deba8d54",
+      "block": 52505517,
+      "fromPeriod": 589,
+      "toPeriod": 590,
+      "participants": 510,
+      "attestedSlot": 4825163,
+      "signatureSlot": 4825164
+    },
+    {
+      "tx": "0x22ec3de48f2965065cacd7f1c6f5c9db00619d68cfa9bc74d12d41a78b84568e",
+      "block": 52505521,
+      "fromPeriod": 590,
+      "toPeriod": 591,
+      "participants": 511,
+      "attestedSlot": 4834665,
+      "signatureSlot": 4834666
+    },
+    {
+      "tx": "0x267467302f7f5a45bdfe2df670dcf539b08d0e124ba41a257b4efafff189ceeb",
+      "block": 52505525,
+      "fromPeriod": 591,
+      "toPeriod": 592,
+      "participants": 511,
+      "attestedSlot": 4845807,
+      "signatureSlot": 4845808
+    },
+    {
+      "tx": "0x47359e945d89016c1d8d9f5cb3c3e34a994b921be332b2dd0640aa5c34e40852",
+      "block": 52505528,
+      "fromPeriod": 592,
+      "toPeriod": 593,
+      "participants": 512,
+      "attestedSlot": 4852945,
+      "signatureSlot": 4852946
+    },
+    {
+      "tx": "0x5f1e2186a6aa2860025b3c8f8cc00ae06f616554ad08bbc1f3c5865b9e655f04",
+      "block": 52505532,
+      "fromPeriod": 593,
+      "toPeriod": 594,
+      "participants": 508,
+      "attestedSlot": 4858411,
+      "signatureSlot": 4858412
+    },
+    {
+      "tx": "0x411a3ca4b1203364bac049aabcfe7558212fe67c065e33de28aa1451acecf2b4",
+      "block": 52505535,
+      "fromPeriod": 594,
+      "toPeriod": 595,
+      "participants": 509,
+      "attestedSlot": 4866636,
+      "signatureSlot": 4866637
+    },
+    {
+      "tx": "0xe857f6009560bc127e11246a24d30e39b04e921844562866b0214776416f85ee",
+      "block": 52505539,
+      "fromPeriod": 595,
+      "toPeriod": 596,
+      "participants": 510,
+      "attestedSlot": 4876968,
+      "signatureSlot": 4876969
+    },
+    {
+      "tx": "0xb579409ca2c116815f6ef0f20057b636530c7323f4b7dead205844dc2465cab0",
+      "block": 52505542,
+      "fromPeriod": 596,
+      "toPeriod": 597,
+      "participants": 511,
+      "attestedSlot": 4882535,
+      "signatureSlot": 4882536
+    },
+    {
+      "tx": "0xe97717006b2a2f7980d3fd740d598ce354f8b9cfd2d4bc5f877a25bf63842695",
+      "block": 52505546,
+      "fromPeriod": 597,
+      "toPeriod": 598,
+      "participants": 510,
+      "attestedSlot": 4890719,
+      "signatureSlot": 4890720
+    },
+    {
+      "tx": "0xe6ad858c07809eb933853f9e5f7cb9fb41bd69107d7f4a9eb3794232f1ffa32a",
+      "block": 52505549,
+      "fromPeriod": 598,
+      "toPeriod": 599,
+      "participants": 512,
+      "attestedSlot": 4898900,
+      "signatureSlot": 4898901
+    },
+    {
+      "tx": "0xb1d8c3ee89e225f94eac62f6b50b71a5e95ab0a9afbd1c13198e3458d9008860",
+      "block": 52505553,
+      "fromPeriod": 599,
+      "toPeriod": 600,
+      "participants": 511,
+      "attestedSlot": 4908422,
+      "signatureSlot": 4908423
+    },
+    {
+      "tx": "0xea2d74866891a2b8b963a956b7598d5367ff014159c81614728a0eef1702b145",
+      "block": 52505557,
+      "fromPeriod": 600,
+      "toPeriod": 601,
+      "participants": 512,
+      "attestedSlot": 4915298,
+      "signatureSlot": 4915299
+    },
+    {
+      "tx": "0xa9b83195411ed6bcaed4922c4be0f51a621641ced7bb775a87920819c4ae2d08",
+      "block": 52505560,
+      "fromPeriod": 601,
+      "toPeriod": 602,
+      "participants": 511,
+      "attestedSlot": 4923597,
+      "signatureSlot": 4923598
+    },
+    {
+      "tx": "0xd5296eebe40c71db625f80802e281a4db7767f99afda128b7735f80338c57904",
+      "block": 52505564,
+      "fromPeriod": 602,
+      "toPeriod": 603,
+      "participants": 512,
+      "attestedSlot": 4932080,
+      "signatureSlot": 4932081
+    },
+    {
+      "tx": "0x48c717d91a045e3d08d4f535c2b0c03afa227eb90a2792be7597a36c813dc9c7",
+      "block": 52505568,
+      "fromPeriod": 603,
+      "toPeriod": 604,
+      "participants": 512,
+      "attestedSlot": 4941128,
+      "signatureSlot": 4941129
+    },
+    {
+      "tx": "0x3e886cb5b1e80c43ea5666e5581dc0da58d972940871d264ac9be357ce87e7dc",
+      "block": 52505571,
+      "fromPeriod": 604,
+      "toPeriod": 605,
+      "participants": 508,
+      "attestedSlot": 4951626,
+      "signatureSlot": 4951627
+    },
+    {
+      "tx": "0xa6fda2c768f4d413e1ffe04af1e07c5fdd4f0fba841be7463af14d76a35375ec",
+      "block": 52505575,
+      "fromPeriod": 605,
+      "toPeriod": 606,
+      "participants": 511,
+      "attestedSlot": 4956229,
+      "signatureSlot": 4956230
+    },
+    {
+      "tx": "0xa4abe95f8bf47cca4ef67fbb34a6a7b12b1e6f165ea58e5e358da2b2321dee71",
+      "block": 52505578,
+      "fromPeriod": 606,
+      "toPeriod": 607,
+      "participants": 510,
+      "attestedSlot": 4964466,
+      "signatureSlot": 4964467
+    },
+    {
+      "tx": "0x6815180492d349e10ee88c3998a74e5235ca15b85651209aa5d613a07d96bd9c",
+      "block": 52505582,
+      "fromPeriod": 607,
+      "toPeriod": 608,
+      "participants": 510,
+      "attestedSlot": 4972646,
+      "signatureSlot": 4972647
+    },
+    {
+      "tx": "0x47b4fecc8f8518b002fa5a892183806b65bbcca4646d444adf4e7c2cc33fb144",
+      "block": 52505586,
+      "fromPeriod": 608,
+      "toPeriod": 609,
+      "participants": 511,
+      "attestedSlot": 4986175,
+      "signatureSlot": 4986176
+    },
+    {
+      "tx": "0xff6492b8f2fed71920972c7937fba7e99d0506aed973c1a5d49c6b75104a04c0",
+      "block": 52505589,
+      "fromPeriod": 609,
+      "toPeriod": 610,
+      "participants": 512,
+      "attestedSlot": 4989213,
+      "signatureSlot": 4989214
+    },
+    {
+      "tx": "0xc839cce1752482c17cc5fa7dd37c84f342ef9d9bab6e20660b447e264387d962",
+      "block": 52505593,
+      "fromPeriod": 610,
+      "toPeriod": 611,
+      "participants": 511,
+      "attestedSlot": 4998878,
+      "signatureSlot": 4998879
+    },
+    {
+      "tx": "0x7769ada0ef2f9e9a34ca236ef24add6e9386f4eae3ad83321a855b14dec37ea8",
+      "block": 52505636,
+      "fromPeriod": 611,
+      "toPeriod": 612,
+      "participants": 511,
+      "attestedSlot": 5010270,
+      "signatureSlot": 5010272
+    },
+    {
+      "tx": "0xf835a939e3cb26f93c7ee84943a2ab24225f33d48c736e44a91d0494185d8ef3",
+      "block": 52505645,
+      "fromPeriod": 612,
+      "toPeriod": 613,
+      "participants": 511,
+      "attestedSlot": 5013724,
+      "signatureSlot": 5013725
+    },
+    {
+      "tx": "0x06d6055994c89fb9da284227cefca8d56a428bf87bc3bbb68ed563bd10124e01",
+      "block": 52505653,
+      "fromPeriod": 613,
+      "toPeriod": 614,
+      "participants": 509,
+      "attestedSlot": 5021803,
+      "signatureSlot": 5021804
+    },
+    {
+      "tx": "0xee950d7ae930643f4dfaee02e5a70443388a1fc7b80f98ae2831f375b69b8715",
+      "block": 52505661,
+      "fromPeriod": 614,
+      "toPeriod": 615,
+      "participants": 510,
+      "attestedSlot": 5031437,
+      "signatureSlot": 5031438
+    },
+    {
+      "tx": "0xde5b6c31446661b0f5bf1bcfa49a045454c705ab923b2ce8075212d5f9a00541",
+      "block": 52505669,
+      "fromPeriod": 615,
+      "toPeriod": 616,
+      "participants": 512,
+      "attestedSlot": 5040586,
+      "signatureSlot": 5040587
+    },
+    {
+      "tx": "0x72c20eb36ff68d7b2053d17ff00b7760b06add6ae2d9ba2755aba93c54700e49",
+      "block": 52505677,
+      "fromPeriod": 616,
+      "toPeriod": 617,
+      "participants": 511,
+      "attestedSlot": 5050826,
+      "signatureSlot": 5050827
+    },
+    {
+      "tx": "0xb3a378863f902538c9d153587ed8f5e3117b593fe578c5f55237fd764ec368e8",
+      "block": 52505685,
+      "fromPeriod": 617,
+      "toPeriod": 618,
+      "participants": 511,
+      "attestedSlot": 5054546,
+      "signatureSlot": 5054547
+    },
+    {
+      "tx": "0x241d09a544572638b7f8a5895263f97046267516feb040dc29b30f16eaf70638",
+      "block": 52505693,
+      "fromPeriod": 618,
+      "toPeriod": 619,
+      "participants": 511,
+      "attestedSlot": 5068033,
+      "signatureSlot": 5068034
+    },
+    {
+      "tx": "0x4a95e2c31ede30b108ee80afd97f9492a8136505dc883a04d9b20735d05800b5",
+      "block": 52505701,
+      "fromPeriod": 619,
+      "toPeriod": 620,
+      "participants": 511,
+      "attestedSlot": 5073076,
+      "signatureSlot": 5073077
+    },
+    {
+      "tx": "0x794660b27990b236933aa01d3bfcec499710d70b931ebabf03301708b13cbeec",
+      "block": 52505709,
+      "fromPeriod": 620,
+      "toPeriod": 621,
+      "participants": 511,
+      "attestedSlot": 5079167,
+      "signatureSlot": 5079168
+    },
+    {
+      "tx": "0xc4f4de90c4733cb26f40ba2411203671e7d50ce6eb837d7f65039aac1ec567e9",
+      "block": 52505718,
+      "fromPeriod": 621,
+      "toPeriod": 622,
+      "participants": 510,
+      "attestedSlot": 5087346,
+      "signatureSlot": 5087347
+    },
+    {
+      "tx": "0x529a074204b48e261eb7cc181298200a98ee772f9700375b7c36923a1140b89f",
+      "block": 52505726,
+      "fromPeriod": 622,
+      "toPeriod": 623,
+      "participants": 509,
+      "attestedSlot": 5097605,
+      "signatureSlot": 5097606
+    },
+    {
+      "tx": "0x033c51efc20b9580651a846b9cb5e9b2ac9141c16cfed5b2b8c44c0dd093799a",
+      "block": 52505734,
+      "fromPeriod": 623,
+      "toPeriod": 624,
+      "participants": 510,
+      "attestedSlot": 5105298,
+      "signatureSlot": 5105299
+    },
+    {
+      "tx": "0x70265dc48a2077da2480e1625c3eb87fc0731e9cbeba4a31c1cded8e90cc2582",
+      "block": 52505742,
+      "fromPeriod": 624,
+      "toPeriod": 625,
+      "participants": 512,
+      "attestedSlot": 5111916,
+      "signatureSlot": 5111917
+    },
+    {
+      "tx": "0x1ae10e97eb94882f57a9c703515c82af1e2654d56e662e0e1ee3cf8449e663e5",
+      "block": 52505750,
+      "fromPeriod": 625,
+      "toPeriod": 626,
+      "participants": 510,
+      "attestedSlot": 5120095,
+      "signatureSlot": 5120096
+    },
+    {
+      "tx": "0xa18bf1e9d27c71d16ce6c3ff06430e0b7bacb1b9ce74b393f500054d33620731",
+      "block": 52505758,
+      "fromPeriod": 626,
+      "toPeriod": 627,
+      "participants": 508,
+      "attestedSlot": 5128351,
+      "signatureSlot": 5128352
+    },
+    {
+      "tx": "0x1e4de6d95a1bacb62a41d5f442e0f5f489a7ddb7e8d77ab97886dee59ab4fc6f",
+      "block": 52505766,
+      "fromPeriod": 627,
+      "toPeriod": 628,
+      "participants": 511,
+      "attestedSlot": 5136937,
+      "signatureSlot": 5136938
+    },
+    {
+      "tx": "0xdc56bb9fc0d2679418848e357c2ecec341c8ae87969a58943a327ac73e766003",
+      "block": 52505774,
+      "fromPeriod": 628,
+      "toPeriod": 629,
+      "participants": 512,
+      "attestedSlot": 5144652,
+      "signatureSlot": 5144653
+    },
+    {
+      "tx": "0xdb90e6bb65d843dfd1a7e507db625b5d4ec877d2c8eef1dc87ae65fc2da6cdf7",
+      "block": 52505783,
+      "fromPeriod": 629,
+      "toPeriod": 630,
+      "participants": 510,
+      "attestedSlot": 5152878,
+      "signatureSlot": 5152879
     }
   ],
   "bridgeBeaconSlot": 15413404,
@@ -112,7 +3046,7 @@
   "headerFinal": false,
   "runtimeBytes": 8743,
   "metadataTail": "a164736f6c6343000823000a",
-  "meaning": "The store holds the period-304 committee. Eight supermajority updates advanced it from period 296. The bridge beacon slot remains in period 1881, so messageCovered stays false and headerFinal stays false.",
+  "meaning": "The store holds the period-630 committee after 336 supermajority updates from period 294. Ethereum head is still inside period 1881, past bridge slot 15413404, but this store has not reached the period-1881 committee. messageCovered stays false and headerFinal stays false.",
   "acceptance": {
     "pass": true,
     "tamperedNextCommittee": "0x09bde339",
@@ -121,7 +3055,8 @@
       "headerFinal": false,
       "custodyOpen": false,
       "settleData": "0x61839255"
-    }
+    },
+    "collectedAt": "2026-10-12T10:30:11.813Z"
   },
   "verification": {
     "implementation": {
@@ -137,5 +3072,5 @@
       "runtimeMatch": "match"
     }
   },
-  "compressedDigest": "0x5df8d589f12fcbbdcdb1137a9e21e8590367eed67fb01db696fdc0f1ca362875"
+  "compressedDigest": "0x4c4b47849fd2fa93f4540052f636e3cf5c54ea3a73590d8df70bf1a75dab0cb2"
 }
