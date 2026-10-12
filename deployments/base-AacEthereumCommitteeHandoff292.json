@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-12T08:51:30.950Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x34EF23A8F16F008097661bd7Ced70C20C6e03B6C",
+  "tx": "0x62d7fc1e5c6206ca289594516bc27da21ddb03d21201c27f38781ed107147c3d",
+  "blockNumber": 52502856,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "previous": "0x80F29F94c75eE07DFA8Eca33DFbEA2A3edA34DC2",
+  "fromPeriod": 292,
+  "toPeriod": 293,
+  "participants": 509,
+  "attestedSlot": 2399850,
+  "bridgeBeaconSlot": 15413404,
+  "bridgePeriod": 1881,
+  "messageCovered": false,
+  "headerFinal": false,
+  "runtimeBytes": 5897,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The period-292 committee, already authenticated by the Altair handoff, signed the period-293 committee. The bridge beacon slot 15413404 is in period 1881, so the 0.01 USDC message is not covered. headerFinal stays false.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "fromPeriod": "292",
+      "toPeriod": "293",
+      "participants": "509",
+      "aggregateVerified": true,
+      "messageCovered": false,
+      "headerFinal": false
+    },
+    "tamperedNextCommittee": "0x6d0b539d",
+    "gate": {
+      "implementation": "0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "b0bc8459-2fe3-4166-9ed4-0492678fa2fd",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumCommitteeHandoff292.sol:AacEthereumCommitteeHandoff292"
+  }
+}
