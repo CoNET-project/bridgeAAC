@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-10-12T09:19:00.925Z",
+  "network": "base",
+  "chainId": 8453,
+  "proxy": "0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a",
+  "implementation": "0x7c1345bEEFB2e4b081B5053B15536e50728aAD2c",
+  "implementationTx": "0xfa09c793b2154c767ba97591841b4458dd7f4f860276f798fdb2ba457f91b930",
+  "proxyTx": "0x97210c45a829001455e3bd26a547ce6612fab8d1556d93be0e09daa4c44bb0f2",
+  "upgradeTx": "0xc651c255d5fcc8479bc973710e4ba4dcc921648a59324e17b7a67fe8fc313d95",
+  "updateTx": "0x110395254935b5c376f814904f0078becbae99dc1acd21a209a39fa7da198cbb",
+  "updateBlock": 52503682,
+  "fromPeriod": 294,
+  "toPeriod": 295,
+  "participants": 511,
+  "attestedSlot": 2412805,
+  "signatureSlot": 2412806,
+  "bridgeBeaconSlot": 15413404,
+  "bridgePeriod": 1881,
+  "messageCovered": false,
+  "headerFinal": false,
+  "runtimeBytes": 8743,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The period-294 committee already proven by the previous handoff signed the period-295 committee. The bridge beacon slot remains in period 1881, so messageCovered stays false and headerFinal stays false.",
+  "acceptance": {
+    "pass": true,
+    "tamperedNextCommittee": "0x09bde339",
+    "gate": {
+      "implementation": "0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "implementation": {
+      "verificationId": "9a7caf40-50dc-46fe-8a17-84a103e0ddc9",
+      "match": "match",
+      "creationMatch": "match",
+      "runtimeMatch": "match"
+    },
+    "proxy": {
+      "verificationId": "a74ecca6-51a0-41d7-9575-9eff5fc9a7fc",
+      "match": "match",
+      "creationMatch": "match",
+      "runtimeMatch": "match"
+    }
+  }
+}

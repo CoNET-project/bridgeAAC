@@ -105,6 +105,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Committee handoff through period 293 acceptance](docs/M4-ETHEREUM-COMMITTEE-HANDOFF-292-ACCEPTANCE.md)
 - [Committee handoff through period 294](docs/M4-ETHEREUM-COMMITTEE-HANDOFF-293.md)
 - [Committee handoff through period 294 acceptance](docs/M4-ETHEREUM-COMMITTEE-HANDOFF-293-ACCEPTANCE.md)
+- [Ethereum committee store](docs/M4-ETHEREUM-COMMITTEE-STORE.md)
+- [Ethereum committee store acceptance](docs/M4-ETHEREUM-COMMITTEE-STORE-ACCEPTANCE.md)
 - [Base bridge operation inclusion](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION.md)
 - [Base bridge operation inclusion acceptance](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION-ACCEPTANCE.md)
 - [Base bridge beacon parent link](docs/M4-BASE-BRIDGE-BEACON-PARENT-LINK.md)
