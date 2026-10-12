@@ -95,6 +95,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Ethereum beacon header successor acceptance](docs/M4-ETHEREUM-BEACON-HEADER-SUCCESSOR-ACCEPTANCE.md)
 - [Ethereum beacon ancestry](docs/M4-ETHEREUM-BEACON-ANCESTRY.md)
 - [Ethereum beacon ancestry acceptance](docs/M4-ETHEREUM-BEACON-ANCESTRY-ACCEPTANCE.md)
+- [Ethereum sync aggregate proof](docs/M4-ETHEREUM-SYNC-AGGREGATE-PROOF.md)
+- [Ethereum sync aggregate proof acceptance](docs/M4-ETHEREUM-SYNC-AGGREGATE-PROOF-ACCEPTANCE.md)
 
 ## Build on Linux
 

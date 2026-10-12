@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-12T05:56:22.498Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341",
+  "tx": "0x595ee96d52012313d8485198b1ec272752a078c66564a5c97199a50b4e63a082",
+  "blockNumber": 52497614,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "finalizedSlot": 15413120,
+  "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+  "signingRoot": "0xcef166bab13cbbbe9ec443badd41cfecf6d94d01db7064b95ce1d4beb115ba49",
+  "participants": 505,
+  "committeeSize": 512,
+  "aggregateVerified": true,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 2737,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The sync committee pinned from the finalized block bootstrap signed slot 15413120. 505 of 512 members participated. headerFinal stays false because this committee is not an independent trust anchor. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+      "signingRoot": "0xcef166bab13cbbbe9ec443badd41cfecf6d94d01db7064b95ce1d4beb115ba49",
+      "participants": "505",
+      "aggregateVerified": true,
+      "headerFinal": false
+    },
+    "tamperedKey": "0x09bde339",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "7dd082e5-1257-42ee-ab63-9ce306a47af7",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumSyncAggregateProof.sol:AacEthereumSyncAggregateProof"
+  }
+}

@@ -28,6 +28,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Beacon header | `0xa9A07770335138A1c37a25bD1F0bb2A5BeC838dE` | That beacon block's parent root is `0xfa666216…a8a7` |
 | Beacon successor | `0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc` | Slot `15406751` extends that block and contains execution hash `0xcd01892c…e8ff` |
 | Beacon ancestry | `0x4E28D764151AD328d7c50a0fFB380935d07a26dF` | `6348` headers connect finalized slot `15413120` to slot `15406751` |
+| Sync aggregate | `0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341` | `505` of `512` committee keys signed that finalized block |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -54,7 +55,10 @@ inside that beacon block. The successor
 `0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc` extends that block by one slot.
 The ancestry contract
 `0x4E28D764151AD328d7c50a0fFB380935d07a26dF` walks `6348` headers from
-finalized slot `15413120` to that successor.
+finalized slot `15413120` to that successor. The sync-aggregate contract
+`0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341` checks that the committee inside
+that finalized block signed it. The committee is pinned from the same block's
+bootstrap, so the signature does not by itself set `headerFinal`.
 An execution `finalized` tag, a longer parent-hash walk, another EIP-4788
 storage proof, a beacon API `finalized` flag, or an `isGameClaimValid`
 eth_call does not finish gate 1.
