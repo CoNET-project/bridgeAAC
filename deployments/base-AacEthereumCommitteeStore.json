@@ -7,13 +7,13 @@
   "implementationTx": "0xfa09c793b2154c767ba97591841b4458dd7f4f860276f798fdb2ba457f91b930",
   "proxyTx": "0x97210c45a829001455e3bd26a547ce6612fab8d1556d93be0e09daa4c44bb0f2",
   "upgradeTx": "0xc651c255d5fcc8479bc973710e4ba4dcc921648a59324e17b7a67fe8fc313d95",
-  "updateTx": "0x956333d661cf6849b41757fa921e2fb8b308bc89bcb98b28f2c25950c6c7bca8",
-  "updateBlock": 52503805,
-  "fromPeriod": 295,
-  "toPeriod": 296,
-  "participants": 509,
-  "attestedSlot": 2422192,
-  "signatureSlot": 2422193,
+  "updateTx": "0x6610405c953bbb1f63b9ad0f63298963e769dbe3b00688586645b8adc704d735",
+  "updateBlock": 52503922,
+  "fromPeriod": 303,
+  "toPeriod": 304,
+  "participants": 510,
+  "attestedSlot": 2482801,
+  "signatureSlot": 2482802,
   "updates": [
     {
       "tx": "0x110395254935b5c376f814904f0078becbae99dc1acd21a209a39fa7da198cbb",
@@ -32,6 +32,78 @@
       "participants": 509,
       "attestedSlot": 2422192,
       "signatureSlot": 2422193
+    },
+    {
+      "tx": "0x9900f05422d30dcc096f15a96444e839d169824bb43123ba0b141f66ec742fe7",
+      "block": 52503897,
+      "fromPeriod": 296,
+      "toPeriod": 297,
+      "participants": 509,
+      "attestedSlot": 2428220,
+      "signatureSlot": 2428221
+    },
+    {
+      "tx": "0xc1bf26007048b37bb5c003a1d7a1762a0421e194bde7b3d25c993791871a1aa9",
+      "block": 52503901,
+      "fromPeriod": 297,
+      "toPeriod": 298,
+      "participants": 511,
+      "attestedSlot": 2436410,
+      "signatureSlot": 2436411
+    },
+    {
+      "tx": "0x7cd6f5d9e3b8c171d925b34c57a361b3464bbae3acc15f417077dccfad366a62",
+      "block": 52503904,
+      "fromPeriod": 298,
+      "toPeriod": 299,
+      "participants": 511,
+      "attestedSlot": 2443302,
+      "signatureSlot": 2443303
+    },
+    {
+      "tx": "0xbb5652f2902d7ef1b1ce7d1f0f122c3410191d69a4f9d2634f1fbe4b61a0b7e9",
+      "block": 52503908,
+      "fromPeriod": 299,
+      "toPeriod": 300,
+      "participants": 512,
+      "attestedSlot": 2450694,
+      "signatureSlot": 2450695
+    },
+    {
+      "tx": "0x4120197b3263c4ce9dbc08c0c4605662e6f58bd44013a314850e14917d7e9a23",
+      "block": 52503912,
+      "fromPeriod": 300,
+      "toPeriod": 301,
+      "participants": 511,
+      "attestedSlot": 2462172,
+      "signatureSlot": 2462173
+    },
+    {
+      "tx": "0xbbd682d774327719f6f25b851b0ecaff5a206148f584a779ff0c637dd56f705b",
+      "block": 52503915,
+      "fromPeriod": 301,
+      "toPeriod": 302,
+      "participants": 509,
+      "attestedSlot": 2469777,
+      "signatureSlot": 2469778
+    },
+    {
+      "tx": "0xc44ec1ddf6a420af0071c2de4a3dc98b0b8bca3c8a34db81b211d4ef237e18e5",
+      "block": 52503919,
+      "fromPeriod": 302,
+      "toPeriod": 303,
+      "participants": 509,
+      "attestedSlot": 2475236,
+      "signatureSlot": 2475237
+    },
+    {
+      "tx": "0x6610405c953bbb1f63b9ad0f63298963e769dbe3b00688586645b8adc704d735",
+      "block": 52503922,
+      "fromPeriod": 303,
+      "toPeriod": 304,
+      "participants": 510,
+      "attestedSlot": 2482801,
+      "signatureSlot": 2482802
     }
   ],
   "bridgeBeaconSlot": 15413404,
@@ -40,7 +112,7 @@
   "headerFinal": false,
   "runtimeBytes": 8743,
   "metadataTail": "a164736f6c6343000823000a",
-  "meaning": "The store holds the period-296 committee. The period-295 committee signed it with 509 of 512 keys. The bridge beacon slot remains in period 1881, so messageCovered stays false and headerFinal stays false.",
+  "meaning": "The store holds the period-304 committee. Eight supermajority updates advanced it from period 296. The bridge beacon slot remains in period 1881, so messageCovered stays false and headerFinal stays false.",
   "acceptance": {
     "pass": true,
     "tamperedNextCommittee": "0x09bde339",
@@ -64,5 +136,6 @@
       "creationMatch": "match",
       "runtimeMatch": "match"
     }
-  }
+  },
+  "compressedDigest": "0x5df8d589f12fcbbdcdb1137a9e21e8590367eed67fb01db696fdc0f1ca362875"
 }
