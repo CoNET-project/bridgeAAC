@@ -24,6 +24,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Combined link | `0x11b7f8cD851dD3f990686f86ABD2179E9bF413e2` | The log proof and the beacon-root proof use the same header |
 | Closed gate | proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`, implementation `0x7e90446e56A1D736842d252c8bc238f43861e91D` | Quotes those proofs and cannot settle |
 | Successor | `0x486BF16d9bDd87F12eb983C27905a1deBABb004c` | Execution block `26167827` extends `26167826` and stores its own beacon root |
+| Beacon payload | `0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` | Execution hash `0xbeeaebea…d725` is inside beacon block `15406750` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -36,15 +37,17 @@ deployments, not extra contracts.
 
 | Order | Deployment | Chain | Custody effect |
 |---|---|---|---|
-| 1 | Beacon finality verifier for Ethereum header `26167826` / `0xbeeaebea…d725` | Base | Still closed. `headerFinal` may become true only inside this proof |
+| 1 | Beacon finalized-checkpoint proof for slot `15406750` | Base | Still closed. The payload inclusion proof does not finish this gate. `headerFinal` may become true only inside the checkpoint proof |
 | 2 | AAC message inclusion proof | Base | Still closed. The proved object must be a bridge message, not the ordinary USDC transfer already quoted |
 | 3 | CoNET beacon finality verifier | CoNET | Still closed. The off-chain observer still has `trusted-committee no` |
 | 4 | Production consume-once destination consumer | Destination chain for that direction | Still closed. The existing consume-once specification proxy is not this consumer |
 | 5 | Upgrade the stable proxy to a settling implementation | Base | Deployed closed. `settle` stays reverted until the same call has passed gates 1 and 2 |
 
-Gate 1 is one contract unless the beacon proof exceeds the bytecode limit, in
-which case it splits into an SSZ/checkpoint verifier and a signature verifier.
-That split is still gate 1. An execution `finalized` tag, a longer parent-hash
+Gate 1 still needs a proof that beacon block `15406750` is an ancestor of the
+finalized checkpoint, with the checkpoint authenticated by a sync-committee
+signature. The payload contract
+`0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` only places the execution hash
+inside that beacon block. An execution `finalized` tag, a longer parent-hash
 walk, another EIP-4788 storage proof, or an `isGameClaimValid` eth_call does
 not finish gate 1.
 

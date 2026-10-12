@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-10-12T03:12:36.227Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55",
+  "tx": "0xd1ba451ce6293f5a1367b8a6df2420f7a3c35785963001b552db08c9bbc63e30",
+  "blockNumber": 52492702,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "executionHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "beaconBlockRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+  "beaconSlot": 15406750,
+  "parentBeaconRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+  "gindex": 6444,
+  "branchLength": 12,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 833,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "SSZ proof that execution hash 0xbeeaebea is inside beacon block 15406750, whose root is the beacon root committed by execution header 26167827. headerFinal stays false. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "executionHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+      "beaconBlockRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+      "beaconSlot": "15406750",
+      "headerFinal": false
+    },
+    "tamperedBranch": "0x09bde339"
+  },
+  "verification": {
+    "verificationId": "519c7ec8-f92f-4a19-9727-16166649218e",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumBeaconPayloadProof.sol:AacEthereumBeaconPayloadProof"
+  }
+}
