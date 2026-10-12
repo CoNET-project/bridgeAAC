@@ -1,0 +1,28 @@
+{
+  "collectedAt": "2026-10-12T02:38:58.318Z",
+  "address": "0x11b7f8cD851dD3f990686f86ABD2179E9bF413e2",
+  "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "beaconStorage": "0x599D2FF48177CBb38eed5FDcd61e681cD441C953",
+  "newestHashOnChain": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+  "quoted": {
+    "newestHash": "0xbeeaebea63023a336d15c612675ccc8de94b5b86700d4809ceda897d4638d725",
+    "outputRoot": "0x999dc682fc4314499686d62633c7a9f26038927dd4f1e93ae2f8fda3016bc80f",
+    "parentBeaconBlockRoot": "0xfa666216f53dc78986e48e6d44c2cc733c32ca163622a5dec4c17e230b39a8a7",
+    "from": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
+    "amount": "236185820404",
+    "links": "100",
+    "headerFinal": false
+  },
+  "shortenedChainReverted": true,
+  "shortenedChainData": "0x6d0b539d",
+  "runtimeBytes": 1947,
+  "metadataTail": "a164736f6c6343000823000a",
+  "sourcify": "match",
+  "gate": {
+    "implementation": "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD",
+    "headerFinal": false,
+    "custodyOpen": false,
+    "settleData": "0x61839255"
+  },
+  "pass": true
+}

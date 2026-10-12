@@ -31,7 +31,10 @@
       "headerFinal": false
     },
     "gateImplementation": "0xbe066f3CDD4D4c32F10c6fC31DFBd52b6f9a5bbD",
-    "gateSettle": "0x61839255"
+    "gateSettle": "0x61839255",
+    "replayedAt": "2026-10-12T02:38:58.318Z",
+    "sourcify": "match",
+    "runtimeBytes": 1947
   },
   "verification": {
     "verificationId": "ea8ec591-d268-4cc0-b980-2de6893eb351",

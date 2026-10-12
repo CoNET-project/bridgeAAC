@@ -23,4 +23,5 @@ Base block `52239960`. The beacon root remains an execution-state record.
 
 The production gate was not upgraded. Its `settle` path still reverts.
 
-Acceptance: [M4-BASE-ANCHOR-BEACON-ROOT-LINK-ACCEPTANCE.md](M4-BASE-ANCHOR-BEACON-ROOT-LINK-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-BASE-ANCHOR-BEACON-ROOT-LINK-ACCEPTANCE.md](M4-BASE-ANCHOR-BEACON-ROOT-LINK-ACCEPTANCE.md).
