@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-12T05:49:51.140Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x4E28D764151AD328d7c50a0fFB380935d07a26dF",
+  "tx": "0x0d9e2d03a813deaf62cac25820f8bd2a1466e531f2ccefc9ad72ca1f8a95740b",
+  "blockNumber": 52497417,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "finalizedSlot": 15413120,
+  "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+  "anchorSlot": 15406751,
+  "anchorRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+  "links": 6348,
+  "oldestSlot": 15406752,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 1384,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "6348 canonical beacon headers connect finalized slot 15413120 to the parent of slot 15406752, which is the accepted beacon block 15406751. No sync-committee signature is checked. headerFinal stays false. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+      "anchorRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+      "links": "6348",
+      "oldestSlot": "15406752",
+      "headerFinal": false
+    },
+    "tamperedProposer": "0xbabb01dd",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "70d88f7c-d6b5-4f1e-ba40-245f58f5c5db",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumBeaconAncestry.sol:AacEthereumBeaconAncestry"
+  }
+}

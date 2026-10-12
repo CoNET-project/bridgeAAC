@@ -27,6 +27,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Beacon payload | `0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` | Execution hash `0xbeeaebea…d725` is inside beacon block `15406750` |
 | Beacon header | `0xa9A07770335138A1c37a25bD1F0bb2A5BeC838dE` | That beacon block's parent root is `0xfa666216…a8a7` |
 | Beacon successor | `0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc` | Slot `15406751` extends that block and contains execution hash `0xcd01892c…e8ff` |
+| Beacon ancestry | `0x4E28D764151AD328d7c50a0fFB380935d07a26dF` | `6348` headers connect finalized slot `15413120` to slot `15406751` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -45,12 +46,15 @@ deployments, not extra contracts.
 | 4 | Production consume-once destination consumer | Destination chain for that direction | Still closed. The existing consume-once specification proxy is not this consumer |
 | 5 | Upgrade the stable proxy to a settling implementation | Base | Deployed closed. `settle` stays reverted until the same call has passed gates 1 and 2 |
 
-Gate 1 still needs a proof that beacon block `15406750` is an ancestor of the
-finalized checkpoint, with the checkpoint authenticated by a sync-committee
-signature. The payload contract
+Gate 1 still needs a sync-committee signature on finalized slot `15413120`.
+The ancestry contract walks from that slot to beacon block `15406750`, and
+that walk does not check the signature. The payload contract
 `0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` only places the execution hash
 inside that beacon block. The successor
 `0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc` extends that block by one slot.
+The ancestry contract
+`0x4E28D764151AD328d7c50a0fFB380935d07a26dF` walks `6348` headers from
+finalized slot `15413120` to that successor.
 An execution `finalized` tag, a longer parent-hash walk, another EIP-4788
 storage proof, a beacon API `finalized` flag, or an `isGameClaimValid`
 eth_call does not finish gate 1.
