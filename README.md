@@ -78,6 +78,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Production custody gate acceptance](docs/M4-PRODUCTION-CUSTODY-GATE-ACCEPTANCE.md)
 - [Ethereum header beacon root](docs/M4-ETHEREUM-HEADER-BEACON-ROOT.md)
 - [Ethereum header beacon root acceptance](docs/M4-ETHEREUM-HEADER-BEACON-ROOT-ACCEPTANCE.md)
+- [Ethereum beacon root storage](docs/M4-ETHEREUM-BEACON-ROOT-STORAGE.md)
+- [Ethereum beacon root storage acceptance](docs/M4-ETHEREUM-BEACON-ROOT-STORAGE-ACCEPTANCE.md)
 
 ## Build on Linux
 
