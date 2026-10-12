@@ -30,6 +30,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Beacon ancestry | `0x4E28D764151AD328d7c50a0fFB380935d07a26dF` | `6348` headers connect finalized slot `15413120` to slot `15406751` |
 | Sync aggregate | `0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341` | `505` of `512` committee keys signed that finalized block |
 | Checkpoint link | `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` | One call checks that ancestry and that aggregate together |
+| Bridge operation | `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` | 0.01 USDC `BridgeOperation` receipt is inside Base block `52497860` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -66,9 +67,11 @@ An execution `finalized` tag, a longer parent-hash walk, another EIP-4788
 storage proof, a beacon API `finalized` flag, or an `isGameClaimValid`
 eth_call does not finish gate 1.
 
-Gate 2 cannot reuse receipt `9` / log `13` of Base block `52239960`. That log
-is an ordinary USDC transfer. The anchored block has no message-passer or
-portal log.
+Gate 2 has a real lock receipt, and it is not yet under the beacon
+checkpoint. Contract `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` proves the
+0.01 USDC `BridgeOperation` is inside Base block `52497860`. That block is
+later than the accepted anchor, so the inclusion does not finish the gate.
+The ordinary USDC transfer in block `52239960` remains unused.
 
 Gate 3 is required for a CoNET mint or burn. A Base-only release still needs
 gates 1, 2, and 5. Both directions need gate 4 on the destination chain.

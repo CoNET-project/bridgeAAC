@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-12T06:09:00.928Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621",
+  "tx": "0xb62754c5cf37beb5f6585669d2c488fa1e5695ffa0e8b49d7591c3a2c37b4907",
+  "blockNumber": 52497994,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "baseBlockNumber": 52497860,
+  "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+  "receiptsRoot": "0x6b1c954169e8c09544fbc5ce2bffd6e558cbdcd09d46ea0e563af12d5654dca7",
+  "lockTx": "0x619c29aa8ead655863fecedf467cd186919968cfb59ec46bb62944913dc7fc1c",
+  "receiptIndex": 154,
+  "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+  "amount": 10000,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 3632,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The 0.01 USDC BridgeOperation receipt is inside Base block 52497860. That block is not covered by the accepted beacon checkpoint, so headerFinal stays false. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "blockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+      "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+      "amount": "10000",
+      "headerFinal": false
+    },
+    "tamperedProof": "0x09bde339",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "ea77fedc-b6af-4873-ade9-a5111accee60",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacBaseBridgeOperationInclusion.sol:AacBaseBridgeOperationInclusion"
+  }
+}
