@@ -27,7 +27,9 @@
       "childTimestamp": "1791705035",
       "headerFinal": false
     },
-    "swappedParentReverted": "0xbabb01dd"
+    "swappedParentReverted": "0xbabb01dd",
+    "replayedAt": "2026-10-12T03:05:29.660Z",
+    "sourcify": "match"
   },
   "verification": {
     "verificationId": "b06c99dc-13e7-42c2-af4e-1be8cd3d4d82",

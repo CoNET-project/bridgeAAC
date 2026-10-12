@@ -19,6 +19,11 @@ settled no
 custody closed
 ```
 
+The current on-chain threshold plan is
+[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). Five contract
+deployments remain before a custody cutover can be proposed. The closed Base
+proxy does not reduce that count.
+
 ## Final production Shadow evaluation — 2026-09-28
 
 **Verdict:** approve the production **read-only Shadow observer**. Do not activate AAC custody, mint, release, settlement broadcasting, or a miner-vote cutover.
@@ -207,15 +212,15 @@ The trial observer on `74.208.207.31` is read-only, both chains advance from a d
 
 ## Custody
 
-Custody activation is closed. This build does not mint, release, or broadcast a bridge transaction. Reports print `custody closed`, `registry paused`, and `consume denied`. The shadow decision path does not print `final true`.
+Custody activation is closed. The current threshold list and the five
+remaining deployments are in
+[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). This build does
+not mint, release, or broadcast a bridge transaction. Reports print
+`custody closed`, `registry paused`, and `consume denied`. The shadow
+decision path does not print `final true`.
 
-These items are still required before any custody cutover:
-
-- Base finality anchored to an Ethereum L1 output, not only an execution-client tag.
-- CONET finality that verifies consensus signatures.
-- An audited destination contract that consumes each AAC id once.
-- Closure of bare admin mint paths for paid GB.
-- Miner `voteBridgeOperation` and `voteBridgeMint` remain live until that cutover.
+Miner `voteBridgeOperation` and `voteBridgeMint` remain live until the
+cutover named in that plan.
 
 ## Shadow trial
 

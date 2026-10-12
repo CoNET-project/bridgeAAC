@@ -23,4 +23,5 @@ the child's own beacon root. Swapping the parent and child headers reverts
 
 The production gate was not upgraded. Its `settle` path still reverts.
 
-Acceptance: [M4-ETHEREUM-BEACON-ROOT-SUCCESSOR-ACCEPTANCE.md](M4-ETHEREUM-BEACON-ROOT-SUCCESSOR-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-ETHEREUM-BEACON-ROOT-SUCCESSOR-ACCEPTANCE.md](M4-ETHEREUM-BEACON-ROOT-SUCCESSOR-ACCEPTANCE.md).

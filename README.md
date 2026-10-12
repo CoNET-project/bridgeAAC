@@ -4,7 +4,7 @@ Linux reference gateway for the Beamio Atomic Asset Container (AAC).
 
 An AAC is a one-time destination-chain record. The source chain locks or burns an asset. The destination chain accepts that fact only after a state proof, marks the record reserved, and then mints or releases the matching asset once.
 
-This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md).
+This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md). The remaining custody deployments are [docs/PRODUCTION-CUSTODY-GATES.md](docs/PRODUCTION-CUSTODY-GATES.md).
 
 ## What this crate checks
 
@@ -48,6 +48,7 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 
 - [Whitepaper](docs/WHITEPAPER.md)
 - [MVP phases](docs/MVP.md)
+- [Production custody gates](docs/PRODUCTION-CUSTODY-GATES.md)
 - [Third-party acceptance guide](docs/THIRD-PARTY-ACCEPTANCE.md)
 - [M4 destination consumer interface package](docs/M4-DESTINATION-CONSUMER.md)
 - [M4 testnet acceptance record](docs/M4-TESTNET-ACCEPTANCE.md)
