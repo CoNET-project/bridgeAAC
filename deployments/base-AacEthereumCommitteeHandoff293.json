@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-12T09:00:35.678Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x61560D38FB6e27214c2530f212cA72d592da8628",
+  "tx": "0x465c746dd3fb0eec21aa7e79873d61823d82f1323c222672f3bfac2bb04d17be",
+  "blockNumber": 52503141,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "previous": "0x34EF23A8F16F008097661bd7Ced70C20C6e03B6C",
+  "fromPeriod": 293,
+  "toPeriod": 294,
+  "participants": 511,
+  "attestedSlot": 2405587,
+  "bridgeBeaconSlot": 15413404,
+  "bridgePeriod": 1881,
+  "messageCovered": false,
+  "headerFinal": false,
+  "runtimeBytes": 5464,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The period-293 committee identified by the previous handoff signed the period-294 committee. The bridge beacon slot remains in period 1881, so messageCovered stays false and headerFinal stays false.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "fromPeriod": "293",
+      "toPeriod": "294",
+      "participants": "511",
+      "aggregateVerified": true,
+      "messageCovered": false,
+      "headerFinal": false
+    },
+    "tamperedNextCommittee": "0x09bde339",
+    "gate": {
+      "implementation": "0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "e9b4e654-0a77-4cb5-8b82-946501fbbe0a",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumCommitteeHandoff293.sol:AacEthereumCommitteeHandoff293"
+  }
+}

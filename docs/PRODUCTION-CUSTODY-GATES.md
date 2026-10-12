@@ -59,9 +59,11 @@ the only committee on Base. Contract
 committee inside the Altair fork block and checks that `504` of `512` keys
 signed the first distinct next committee in period `291`. Contract
 `0x34EF23A8F16F008097661bd7Ced70C20C6e03B6C` continues that chain: the
-resulting committee signs period `293` with `509` of `512` keys. The bridge
+resulting committee signs period `293` with `509` of `512` keys. Contract
+`0x61560D38FB6e27214c2530f212cA72d592da8628` continues one more step: the
+period-`293` committee signs period `294` with `511` of `512` keys. The bridge
 beacon slot `15413404` is in period `1881`, and the call returns
-`messageCovered` false. The periods from `293` through `1881` are still
+`messageCovered` false. Signature periods `294` through `1880` are still
 required before slot `15406750` or the bridge message is finalized.
 The earlier checkpoint link
 `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` checks the `6348`-header ancestry
