@@ -22,7 +22,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | USDC log | `0x1815d6DA04DE7910A5438168E1642e0f4eA25D28` | One ordinary USDC transfer in that Base block |
 | Beacon root storage | `0x599D2FF48177CBb38eed5FDcd61e681cD441C953` | EIP-4788 stores the header's beacon root |
 | Combined link | `0x11b7f8cD851dD3f990686f86ABD2179E9bF413e2` | The log proof and the beacon-root proof use the same header |
-| Closed gate | proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`, implementation `0x7e90446e56A1D736842d252c8bc238f43861e91D` | Quotes those proofs and cannot settle |
+| Closed gate | proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`, implementation `0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2` | Quotes the old links and the 0.01 USDC bridge proof, and cannot settle |
 | Successor | `0x486BF16d9bDd87F12eb983C27905a1deBABb004c` | Execution block `26167827` extends `26167826` and stores its own beacon root |
 | Beacon payload | `0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` | Execution hash `0xbeeaebea…d725` is inside beacon block `15406750` |
 | Beacon header | `0xa9A07770335138A1c37a25bD1F0bb2A5BeC838dE` | That beacon block's parent root is `0xfa666216…a8a7` |
@@ -83,9 +83,11 @@ unused.
 Gate 3 is required for a CoNET mint or burn. A Base-only release still needs
 gates 1, 2, and 5. Both directions need gate 4 on the destination chain.
 
-Gate 5 keeps the proxy address. The new implementation may settle only when
-the beacon proof and the AAC message proof succeed together. Shipping that
-implementation early is allowed only while `settle` still reverts.
+Gate 5 keeps the proxy address. The proxy now quotes the bridge proof, and
+both `settle` and `settleBridge` still revert `CustodyClosed`. The new
+implementation may settle only when the beacon proof and the AAC message
+proof succeed together. That success path is not in this implementation.
+Shipping the quote early does not finish this deployment.
 
 ## Steps that are not deployments
 

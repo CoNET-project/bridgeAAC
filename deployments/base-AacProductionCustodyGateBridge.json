@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-10-12T08:20:54.633Z",
+  "network": "base",
+  "chainId": 8453,
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "implementation": "0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2",
+  "implementationTx": "0xc0f9446a0ad22e33e0aef89fb22089087dbefd97d64c3f978b8a1ff0d2e695da",
+  "implementationBlock": 52501866,
+  "upgradeTx": "0x2c647aceb13566dbb055418dcfb77dab8531902dc45b66458f8e8dd4c99a1131",
+  "upgradeBlock": 52501868,
+  "previousImplementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "settleReverts": "0x61839255",
+  "settleBridgeReverts": "0x61839255",
+  "implementationInitializeReverts": "0x0dc149f0",
+  "runtimeBytes": 4385,
+  "metadataTail": "a164736f6c6343000823000a",
+  "quoted": {
+    "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+    "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+    "bridgeBeaconRoot": "0x0fd49e9e9fcf2db840cbcd14744c84ada07605f71334d8eec6f5cc72684109d5",
+    "checkpointRoot": "0x480505bce46a8902cd88c95f6a2a3d9998c8cbdffd25f9c4aa7ef81d3a5e6453",
+    "links": "580",
+    "headerFinal": false
+  },
+  "meaning": "The stable proxy can quote the 0.01 USDC bridge proof. settle and settleBridge still revert CustodyClosed. headerFinal stays false. No asset role was granted. The five custody deployments remain.",
+  "verification": {
+    "verificationId": "5c90972d-0e89-41c2-9791-d6e4a76ba891",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacProductionCustodyGateBridge.sol:AacProductionCustodyGateBridge"
+  }
+}
