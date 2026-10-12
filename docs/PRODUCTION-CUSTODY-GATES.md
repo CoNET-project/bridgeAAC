@@ -25,6 +25,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Closed gate | proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`, implementation `0x7e90446e56A1D736842d252c8bc238f43861e91D` | Quotes those proofs and cannot settle |
 | Successor | `0x486BF16d9bDd87F12eb983C27905a1deBABb004c` | Execution block `26167827` extends `26167826` and stores its own beacon root |
 | Beacon payload | `0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` | Execution hash `0xbeeaebea…d725` is inside beacon block `15406750` |
+| Beacon header | `0xa9A07770335138A1c37a25bD1F0bb2A5BeC838dE` | That beacon block's parent root is `0xfa666216…a8a7` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.

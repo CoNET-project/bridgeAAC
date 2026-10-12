@@ -89,6 +89,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Ethereum beacon root successor acceptance](docs/M4-ETHEREUM-BEACON-ROOT-SUCCESSOR-ACCEPTANCE.md)
 - [Ethereum beacon payload proof](docs/M4-ETHEREUM-BEACON-PAYLOAD-PROOF.md)
 - [Ethereum beacon payload proof acceptance](docs/M4-ETHEREUM-BEACON-PAYLOAD-PROOF-ACCEPTANCE.md)
+- [Ethereum beacon header](docs/M4-ETHEREUM-BEACON-HEADER.md)
+- [Ethereum beacon header acceptance](docs/M4-ETHEREUM-BEACON-HEADER-ACCEPTANCE.md)
 
 ## Build on Linux
 
