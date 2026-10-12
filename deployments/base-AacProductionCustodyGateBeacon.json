@@ -29,7 +29,10 @@
       "headerFinal": false,
       "oldHeaderFinal": false,
       "oldAmount": "236185820404"
-    }
+    },
+    "replayedAt": "2026-10-12T02:52:27.166Z",
+    "sourcify": "match",
+    "runtimeBytes": 2961
   },
   "verification": {
     "verificationId": "365ba680-b6c7-424e-b7b3-721b55b02155",

@@ -24,4 +24,5 @@ implementation reverts. No Treasury, GB, or Peer role was granted. The
 deployer can still replace the implementation. This implementation has no
 settle path.
 
-Acceptance: [M4-PRODUCTION-CUSTODY-GATE-BEACON-ACCEPTANCE.md](M4-PRODUCTION-CUSTODY-GATE-BEACON-ACCEPTANCE.md).
+Acceptance, including the later replay:
+[M4-PRODUCTION-CUSTODY-GATE-BEACON-ACCEPTANCE.md](M4-PRODUCTION-CUSTODY-GATE-BEACON-ACCEPTANCE.md).
