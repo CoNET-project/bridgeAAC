@@ -32,6 +32,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Checkpoint link | `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` | One call checks that ancestry and that aggregate together |
 | Bridge operation | `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` | 0.01 USDC `BridgeOperation` receipt is inside Base block `52497860` |
 | Bridge beacon parent | `0x58F6560184EdD9912F2032060D56fc726a042960` | That Base header's beacon root walks 284 parents to finalized slot `15413120` |
+| Checkpoint extension | `0x1ffD76a3176AD6e91b123e567D9A7EeF5bC5AE2b` | Observed slot `15413984` walks 580 parents to that same bridge beacon root |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -73,8 +74,10 @@ Contract `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` proves the 0.01 USDC
 `BridgeOperation` is inside Base block `52497860`. Contract
 `0x58F6560184EdD9912F2032060D56fc726a042960` reads the beacon root stored in
 that same header and walks 284 parents from slot `15413404` to finalized slot
-`15413120`. Slot `15413404` is newer than the checkpoint, so the walk does
-not finish the gate. The ordinary USDC transfer in block `52239960` remains
+`15413120`. Contract `0x1ffD76a3176AD6e91b123e567D9A7EeF5bC5AE2b` walks 580
+parents from observed slot `15413984` to that bridge beacon root. The later
+slot has no sync-committee proof in this contract, so the walk does not
+finish the gate. The ordinary USDC transfer in block `52239960` remains
 unused.
 
 Gate 3 is required for a CoNET mint or burn. A Base-only release still needs

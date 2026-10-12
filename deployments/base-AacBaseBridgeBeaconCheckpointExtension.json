@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-10-12T08:13:33.345Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x1ffD76a3176AD6e91b123e567D9A7EeF5bC5AE2b",
+  "tx": "0x64e88feb41b3fa1494b6b9ed4a27a05293ec34c8a6745b2a8740a1a195ad8539",
+  "blockNumber": 52501729,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "baseBlockNumber": 52497860,
+  "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+  "bridgeBeaconSlot": 15413404,
+  "bridgeBeaconRoot": "0x0fd49e9e9fcf2db840cbcd14744c84ada07605f71334d8eec6f5cc72684109d5",
+  "checkpointSlot": 15413984,
+  "checkpointRoot": "0x480505bce46a8902cd88c95f6a2a3d9998c8cbdffd25f9c4aa7ef81d3a5e6453",
+  "links": 580,
+  "priorCheckpointSlot": 15413120,
+  "priorLinks": 284,
+  "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 2717,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "580 parent headers connect observed beacon slot 15413984 to the beacon root stored in Base block 52497860. The later slot is a pinned observation without a sync-committee proof, so headerFinal stays false. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+      "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+      "bridgeBeaconRoot": "0x0fd49e9e9fcf2db840cbcd14744c84ada07605f71334d8eec6f5cc72684109d5",
+      "checkpointRoot": "0x480505bce46a8902cd88c95f6a2a3d9998c8cbdffd25f9c4aa7ef81d3a5e6453",
+      "links": "580",
+      "headerFinal": false
+    },
+    "tamperedProof": "0x09bde339",
+    "shortenedHeaders": "0xbabb01dd",
+    "changedProposer": "0xbabb01dd",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "7b9483b9-b3ff-42d2-b0de-61ff3103d0e3",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacBaseBridgeBeaconCheckpointExtension.sol:AacBaseBridgeBeaconCheckpointExtension"
+  }
+}
