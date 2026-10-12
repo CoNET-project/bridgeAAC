@@ -31,6 +31,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Sync aggregate | `0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341` | `505` of `512` committee keys signed that finalized block |
 | Checkpoint link | `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` | One call checks that ancestry and that aggregate together |
 | Bridge operation | `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` | 0.01 USDC `BridgeOperation` receipt is inside Base block `52497860` |
+| Bridge beacon parent | `0x58F6560184EdD9912F2032060D56fc726a042960` | That Base header's beacon root walks 284 parents to finalized slot `15413120` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -44,7 +45,7 @@ deployments, not extra contracts.
 | Order | Deployment | Chain | Custody effect |
 |---|---|---|---|
 | 1 | Beacon finalized-checkpoint proof for slot `15406750` | Base | Still closed. The payload inclusion proof does not finish this gate. `headerFinal` may become true only inside the checkpoint proof |
-| 2 | AAC message inclusion proof | Base | Still closed. The proved object must be a bridge message, not the ordinary USDC transfer already quoted |
+| 2 | AAC message inclusion proof | Base | Still closed. The 0.01 USDC `BridgeOperation` is inside block `52497860`, and that block is not a finalized header |
 | 3 | CoNET beacon finality verifier | CoNET | Still closed. The off-chain observer still has `trusted-committee no` |
 | 4 | Production consume-once destination consumer | Destination chain for that direction | Still closed. The existing consume-once specification proxy is not this consumer |
 | 5 | Upgrade the stable proxy to a settling implementation | Base | Deployed closed. `settle` stays reverted until the same call has passed gates 1 and 2 |
@@ -67,11 +68,14 @@ An execution `finalized` tag, a longer parent-hash walk, another EIP-4788
 storage proof, a beacon API `finalized` flag, or an `isGameClaimValid`
 eth_call does not finish gate 1.
 
-Gate 2 has a real lock receipt, and it is not yet under the beacon
-checkpoint. Contract `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` proves the
-0.01 USDC `BridgeOperation` is inside Base block `52497860`. That block is
-later than the accepted anchor, so the inclusion does not finish the gate.
-The ordinary USDC transfer in block `52239960` remains unused.
+Gate 2 has a real lock receipt, and the Base block is still not finalized.
+Contract `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` proves the 0.01 USDC
+`BridgeOperation` is inside Base block `52497860`. Contract
+`0x58F6560184EdD9912F2032060D56fc726a042960` reads the beacon root stored in
+that same header and walks 284 parents from slot `15413404` to finalized slot
+`15413120`. Slot `15413404` is newer than the checkpoint, so the walk does
+not finish the gate. The ordinary USDC transfer in block `52239960` remains
+unused.
 
 Gate 3 is required for a CoNET mint or burn. A Base-only release still needs
 gates 1, 2, and 5. Both directions need gate 4 on the destination chain.

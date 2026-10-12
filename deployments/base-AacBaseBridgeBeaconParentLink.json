@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-10-12T08:10:28.022Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x58F6560184EdD9912F2032060D56fc726a042960",
+  "tx": "0x9957ab7165d3e9084b647434e19d1228d0be5736f21c35b251dc15a20837f93f",
+  "blockNumber": 52501629,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "baseBlockNumber": 52497860,
+  "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+  "beaconSlot": 15413404,
+  "beaconRoot": "0x0fd49e9e9fcf2db840cbcd14744c84ada07605f71334d8eec6f5cc72684109d5",
+  "finalizedSlot": 15413120,
+  "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+  "links": 284,
+  "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 3444,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "Base block 52497860 stores beacon root 0x0fd49e9e…09d5. 284 parent headers connect that root to the accepted finalized beacon root. This is not beacon finality of the Base block. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "baseBlockHash": "0xa3e839c0470a159f18b0efc873fbe56df0e5415a46a560c9b570fb387c7b7d08",
+      "operationId": "0xbd91f602e72f2e2facb4e1de3291577179d60f45cc65e386819fa219a4bd1654",
+      "beaconRoot": "0x0fd49e9e9fcf2db840cbcd14744c84ada07605f71334d8eec6f5cc72684109d5",
+      "finalizedRoot": "0x010febf9edfb97cbea1ac737e5e7e4fbdd49b5f1c1f91af877a8a26b38283a1e",
+      "links": "284",
+      "headerFinal": false
+    },
+    "tamperedProof": "0x09bde339",
+    "shortenedHeaders": "0xbabb01dd",
+    "changedProposer": "0xbabb01dd",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "613ceee0-a858-4945-a607-6facbd50d6c3",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacBaseBridgeBeaconParentLink.sol:AacBaseBridgeBeaconParentLink"
+  }
+}

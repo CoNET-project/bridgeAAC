@@ -101,6 +101,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Ethereum beacon checkpoint link acceptance](docs/M4-ETHEREUM-BEACON-CHECKPOINT-LINK-ACCEPTANCE.md)
 - [Base bridge operation inclusion](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION.md)
 - [Base bridge operation inclusion acceptance](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION-ACCEPTANCE.md)
+- [Base bridge beacon parent link](docs/M4-BASE-BRIDGE-BEACON-PARENT-LINK.md)
+- [Base bridge beacon parent link acceptance](docs/M4-BASE-BRIDGE-BEACON-PARENT-LINK-ACCEPTANCE.md)
 
 ## Build on Linux
 
