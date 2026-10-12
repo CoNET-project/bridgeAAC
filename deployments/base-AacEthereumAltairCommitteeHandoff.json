@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-10-12T08:47:05.729Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x80F29F94c75eE07DFA8Eca33DFbEA2A3edA34DC2",
+  "tx": "0xa5a1bf77f9ff42f0a75249b5f7de45bbe5e0fd52a2f8f1523956647d6d3d10ec",
+  "blockNumber": 52502736,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "fromPeriod": 290,
+  "toPeriod": 291,
+  "participants": 504,
+  "altairHeader": "0x4df61a042151aa94fe5412063bdc7357e7a0266348745fc741ea669487ce6553",
+  "altairSlot": 2375680,
+  "attestedSlot": 2389361,
+  "signingRoot": "0x47aae58f263b04db0e0378893f6c8d183fefd593462c6ad1d01ebfcc5240b86e",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 5821,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "The Altair period-290 sync committee is proven inside the Altair fork block and signed the first distinct next committee in period 291. This is not the committee from a later block bootstrap. headerFinal stays false. Slot 15406750 is not yet reached. The production gate was not changed.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "fromPeriod": "290",
+      "toPeriod": "291",
+      "participants": "504",
+      "aggregateVerified": true,
+      "headerFinal": false
+    },
+    "tamperedNextCommittee": "0x09bde339",
+    "gate": {
+      "implementation": "0x0C18AF212DA3AdD0e1023C1f7d3Ca8D0e0Cf4ef2",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "15ccd843-78c9-4e89-b896-94fd9c7602ff",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumAltairCommitteeHandoff.sol:AacEthereumAltairCommitteeHandoff"
+  }
+}

@@ -99,6 +99,8 @@ Until a production finality adapter is audited, miner votes on `voteBridgeOperat
 - [Ethereum sync aggregate proof acceptance](docs/M4-ETHEREUM-SYNC-AGGREGATE-PROOF-ACCEPTANCE.md)
 - [Ethereum beacon checkpoint link](docs/M4-ETHEREUM-BEACON-CHECKPOINT-LINK.md)
 - [Ethereum beacon checkpoint link acceptance](docs/M4-ETHEREUM-BEACON-CHECKPOINT-LINK-ACCEPTANCE.md)
+- [Altair committee handoff](docs/M4-ETHEREUM-ALTAIR-COMMITTEE-HANDOFF.md)
+- [Altair committee handoff acceptance](docs/M4-ETHEREUM-ALTAIR-COMMITTEE-HANDOFF-ACCEPTANCE.md)
 - [Base bridge operation inclusion](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION.md)
 - [Base bridge operation inclusion acceptance](docs/M4-BASE-BRIDGE-OPERATION-INCLUSION-ACCEPTANCE.md)
 - [Base bridge beacon parent link](docs/M4-BASE-BRIDGE-BEACON-PARENT-LINK.md)

@@ -33,6 +33,7 @@ beacon-finality proof, and none of them authorizes mint or release.
 | Bridge operation | `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` | 0.01 USDC `BridgeOperation` receipt is inside Base block `52497860` |
 | Bridge beacon parent | `0x58F6560184EdD9912F2032060D56fc726a042960` | That Base header's beacon root walks 284 parents to finalized slot `15413120` |
 | Checkpoint extension | `0x1ffD76a3176AD6e91b123e567D9A7EeF5bC5AE2b` | Observed slot `15413984` walks 580 parents to that same bridge beacon root |
+| Altair handoff | `0x80F29F94c75eE07DFA8Eca33DFbEA2A3edA34DC2` | Period `290` Altair committee signs the first distinct committee in period `291` |
 
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
@@ -51,7 +52,13 @@ deployments, not extra contracts.
 | 4 | Production consume-once destination consumer | Destination chain for that direction | Still closed. The existing consume-once specification proxy is not this consumer |
 | 5 | Upgrade the stable proxy to a settling implementation | Base | Deployed closed. `settle` stays reverted until the same call has passed gates 1 and 2 |
 
-Gate 1 still keeps `headerFinal` false. The checkpoint link
+Gate 1 still keeps `headerFinal` false. The same-block bootstrap is no longer
+the only committee on Base. Contract
+`0x80F29F94c75eE07DFA8Eca33DFbEA2A3edA34DC2` proves the Altair period-`290`
+committee inside the Altair fork block and checks that `504` of `512` keys
+signed the first distinct next committee in period `291`. The periods from
+`291` through `1880` are still required before slot `15406750` is finalized.
+The earlier checkpoint link
 `0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` checks the `6348`-header ancestry
 and the `505`-of-`512` sync aggregate in one call. The committee is pinned
 from that same block's bootstrap, so the combined call does not finish the
