@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-10-12T05:12:22.513Z",
+  "network": "base",
+  "chainId": 8453,
+  "address": "0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc",
+  "tx": "0x86579e471ff17ef8af706083777925fb1843291498f01608638863ba0719e93c",
+  "blockNumber": 52496295,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "parentSlot": 15406750,
+  "parentBeaconRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+  "childSlot": 15406751,
+  "proposerIndex": 2139912,
+  "stateRoot": "0xd99fef489b31389ab9b54cbd0d05329b05d803b89c98c726e9eeb952c0f0668a",
+  "bodyRoot": "0x3cfb34462c9b0976471c1eb8ebde156efff824a88400a61b9b40bd3e239d84b0",
+  "childBeaconRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+  "executionNumber": 26167827,
+  "executionHash": "0xcd01892c4bce87f301fde730d1792e755dac14b923038171afb3fc4f8b02e8ff",
+  "gindex": "6444",
+  "branchLength": 12,
+  "headerFinal": false,
+  "custodyOpen": false,
+  "runtimeBytes": 1728,
+  "metadataTail": "a164736f6c6343000823000a",
+  "meaning": "Beacon slot 15406751 has parent root 0x126db0df and contains execution hash 0xcd01892c of block 26167827. headerFinal stays false. One slot of beacon ancestry does not prove the finalized checkpoint. The production gate was not upgraded.",
+  "acceptance": {
+    "pass": true,
+    "quoted": {
+      "childBeaconRoot": "0x3f0e150dbeb2f069e1671d13178de3a1b747c4c462101c316ea480b40c9b06bf",
+      "parentBeaconRoot": "0x126db0df05bfed9cf62088da5fb708c9ceaf8096d0cd2231e0fd9d97b32c11f3",
+      "executionHash": "0xcd01892c4bce87f301fde730d1792e755dac14b923038171afb3fc4f8b02e8ff",
+      "childSlot": "15406751",
+      "headerFinal": false
+    },
+    "wrongProposer": "0xbabb01dd",
+    "tamperedBranch": "0x09bde339",
+    "gate": {
+      "implementation": "0x7e90446e56A1D736842d252c8bc238f43861e91D",
+      "headerFinal": false,
+      "custodyOpen": false,
+      "settleData": "0x61839255"
+    }
+  },
+  "verification": {
+    "verificationId": "0b299d23-e9cd-44b5-8b12-d1c4eb7e26e2",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "contractIdentifier": "AacEthereumBeaconHeaderSuccessor.sol:AacEthereumBeaconHeaderSuccessor"
+  }
+}
