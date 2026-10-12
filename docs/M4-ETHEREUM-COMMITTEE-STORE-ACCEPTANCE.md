@@ -1,9 +1,9 @@
 # Ethereum Committee Store Acceptance
 
-Status: **PASS as the first stored handoff after period 294. The bridge
-message is not covered. `headerFinal` stays false. Custody remains closed.**
+Status: **PASS through the period-296 committee. The bridge message is not
+covered. `headerFinal` stays false. Custody remains closed.**
 
-Collected at `2026-10-12T09:19:00Z`.
+Collected at `2026-10-12T09:22:00Z`.
 
 | Check | Result |
 |---|---|
@@ -11,8 +11,8 @@ Collected at `2026-10-12T09:19:00Z`.
 | Implementation | `0x7c1345bEEFB2e4b081B5053B15536e50728aAD2c` |
 | Runtime | 8743 bytes |
 | Metadata tail | `solc 0.8.35` (`000823`) |
-| Periods | `294` to `295` |
-| Participants | `511` |
+| Periods | `295` to `296` |
+| Participants | `509` |
 | `messageCovered` | false |
 | `headerFinal` | false |
 | Changed next committee | reverts `InvalidProof` (`0x09bde339`) |
