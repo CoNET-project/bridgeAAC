@@ -1,0 +1,42 @@
+{
+  "chainId": 8453,
+  "generatedAt": "2026-10-14T05:53:12Z",
+  "proxy": "0xcEE3D699df3df07a573f1aFf642888B97B7aA961",
+  "implementation": "0x99B0B90Fc73BFC59f5cCE0cc8C3Fa189eE313B98",
+  "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+  "lockTx": "0x28c9b472313f3a7b1196b0ec3a7a5b4613cdb3e1e1f5be112d12d045932b7190",
+  "baseBlock": 52583500,
+  "baseBlockHash": "0xa671c5ca4e44972a663f2c3d9ede7242f8c339b27ac0920567499f24a9a9be73",
+  "receiptIndex": 54,
+  "logIndex": 1,
+  "operationId": "0x365db5b664ff368928fbf362ba6905b63a16834e9693a9f2b11f58b094baa289",
+  "amount": "10000",
+  "messageBeaconSlot": 15427678,
+  "messageBeaconRoot": "0x705f46564b1eb8797d0c4893b3409032dbf7f36c41c401f6f60cced55bbbb990",
+  "finalizedSlot": 15427680,
+  "participants": 511,
+  "coverTx": "0xb08859189eb9e090a3db6a153c575375066af06788fdff1672b59405ebbe336d",
+  "coverGasUsed": 10713343,
+  "returned": {
+    "messageCovered": true,
+    "headerFinal": true
+  },
+  "storeViews": {
+    "headerFinal": false,
+    "messageCovered": false,
+    "rootReady": true,
+    "period": 1883
+  },
+  "sourcify": {
+    "implementation": {
+      "match": "match",
+      "matchId": "56090013"
+    },
+    "cover": {
+      "match": "match",
+      "matchId": "56089992"
+    }
+  },
+  "custody": "closed",
+  "obstacle": 2
+}

@@ -12,8 +12,9 @@ New Base finality proofs use the
 [sync committee checkpoint root](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
 That root is a recent finalized sync committee, not the Altair fork.
 Obstacle 1 is accepted at proxy
-`0xcEE3D699df3df07a573f1aFf642888B97B7aA961`. Obstacles 2 through 5 are
-still open. The historical 0.01 USDC lock is not a sample for it.
+`0xcEE3D699df3df07a573f1aFf642888B97B7aA961`. Obstacle 2 is accepted for
+one new lock. Obstacles 3 through 5 are still open. The historical 0.01
+USDC lock is not a sample for it.
 The Altair handoffs and the period-`630` store stay on Base as history. They
 are not extended by replaying periods `630` through `1880`.
 
@@ -146,6 +147,20 @@ fit in the committee-rotation transaction: one rotation already uses about
 **Reject** the old 0.01 USDC receipt, an inclusion proof without the
 checkpoint aggregate, and a finalized header from an earlier period than the
 stored signing committee.
+
+**Accepted** on 2026-10-14. New lock
+`0x28c9b472313f3a7b1196b0ec3a7a5b4613cdb3e1e1f5be112d12d045932b7190`
+in Base block `52583500`, receipt index `54`, log index `1`, operation
+`0x365db5b664ff368928fbf362ba6905b63a16834e9693a9f2b11f58b094baa289`,
+amount `10000` (0.01 USDC). Its beacon slot is `15427678`, inside period
+`1883`. One call,
+`0xb08859189eb9e090a3db6a153c575375066af06788fdff1672b59405ebbe336d`,
+on `0x01506527a4Dab14141038Db15f5341dcF4729233` verified a finalized beacon
+header at slot `15427680` with `511` of `512` signers and proved that
+receipt under the Base header whose parent beacon root is that message.
+The call returned message covered and `headerFinal` true together. The
+store views `headerFinal()` and `messageCovered()` remain false. This
+acceptance does not settle, mint, or release.
 
 ### Obstacle 3 — CoNET as source
 

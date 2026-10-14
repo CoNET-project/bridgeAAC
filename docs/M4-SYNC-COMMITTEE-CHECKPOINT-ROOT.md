@@ -116,10 +116,10 @@ message proved under that committee. The Altair store is neither obstacle.
 
 ## What stays closed
 
-This page does not install the checkpoint, does not set `headerFinal` true,
-and does not authorize `settle`. The production proxy
-`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` still reverts `CustodyClosed`.
-Miner votes remain the live bridge.
+The checkpoint is installed and obstacle 2 has one covered message. The
+store views stay false. This page does not authorize `settle`. The
+production proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` still reverts
+`CustodyClosed`. Miner votes remain the live bridge.
 
 The historical 0.01 USDC `BridgeOperation` in Base block `52497860`, beacon
 slot `15413404`, period `1881`, is outside this protocol. Covering it is not

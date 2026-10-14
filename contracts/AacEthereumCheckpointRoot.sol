@@ -13,6 +13,7 @@ contract AacEthereumCheckpointRoot {
     uint256 public constant COMMITTEE_SIZE = 512;
     uint256 public constant GINDEX = 86;
     uint256 public constant NEXT_GINDEX = 87;
+    uint256 public constant FINALIZED_GINDEX = 169;
     uint256 public constant BRANCH_LEN = 6;
     bytes32 public constant GENESIS_VALIDATORS_ROOT =
         0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95;
@@ -133,6 +134,37 @@ contract AacEthereumCheckpointRoot {
         rootReady = true;
         headerFinal_ = true;
         emit CheckpointProven(period, participants, input.attested.slot);
+    }
+
+    /// @notice Verify one later aggregate under the installed committee.
+    /// @dev Does not rotate the committee or change storage. `headerFinal`
+    /// is true only in this return value.
+    function verifyFinalized(Aggregate calldata input, Header calldata finalized, bytes32[7] calldata finalityBranch)
+        external
+        view
+        returns (uint256 participants, bool headerFinal_)
+    {
+        if (!rootReady || period == 0 || compressedDigest == bytes32(0)) revert InvalidProof();
+        if (
+            input.signerUncompressed.length != COMMITTEE_SIZE * 128 || input.bits.length != 64
+                || input.signaturePoint.length != 256 || input.signatureSlot / 8192 != period
+                || input.attested.slot / 8192 != period || input.signatureSlot <= input.attested.slot
+                || finalized.slot / 8192 != period || finalized.slot > input.attested.slot
+        ) revert InvalidProof();
+        if (_compressedDigest(input.signerUncompressed) != compressedDigest) revert InvalidProof();
+        participants = _count(input.bits);
+        if (participants * 3 < COMMITTEE_SIZE * 2) revert InvalidProof();
+        _pair(
+            input.signerUncompressed,
+            input.bits,
+            participants,
+            _hashToCurve(_signingRoot(input.attested)),
+            input.signaturePoint
+        );
+        if (_walk7(_header(finalized.slot, finalized.proposer, finalized.parentRoot, finalized.stateRoot, finalized.bodyRoot), finalityBranch, FINALIZED_GINDEX) != input.attested.stateRoot) {
+            revert InvalidProof();
+        }
+        headerFinal_ = true;
     }
 
     function headerFinal() external pure returns (bool) {
@@ -439,6 +471,16 @@ contract AacEthereumCheckpointRoot {
             right := shl(128, shr(128, calldataload(add(data.offset, 32))))
         }
         return sha256(abi.encodePacked(left, right));
+    }
+
+    function _walk7(bytes32 node, bytes32[7] calldata branch, uint256 index) private pure returns (bytes32) {
+        for (uint256 i; i < 7; i++) {
+            bytes32 sibling = branch[i];
+            node = (index & 1) == 1 ? sha256(abi.encodePacked(sibling, node)) : sha256(abi.encodePacked(node, sibling));
+            index >>= 1;
+        }
+        if (index != 1) revert InvalidProof();
+        return node;
     }
 
     function _walk(bytes32 node, bytes32[6] calldata branch, uint256 index) private pure returns (bytes32) {

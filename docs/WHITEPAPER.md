@@ -166,7 +166,9 @@ Base finality for a new AAC uses one Ethereum sync committee stored on Base.
 The first keys are a checkpoint, not the Altair fork committee. The historical
 0.01 USDC lock is not a sample. The checkpoint is installed on Base at
 `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` for beacon slot `15427520`,
-period `1883`. Obstacle 1 is accepted. Custody stays closed.
+period `1883`. Obstacle 1 is accepted. Obstacle 2 is accepted for one new
+0.01 USDC lock in Base block `52583500`, beacon slot `15427678`, covered
+by finalized beacon slot `15427680`. Custody stays closed.
 
 The full rule set is
 [M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
