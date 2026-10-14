@@ -1,6 +1,6 @@
 # Production custody gates
 
-Status on `2026-10-13`: **custody closed.** The stable Base proxy
+Status on `2026-10-14`: **custody closed.** The stable Base proxy
 `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote accepted execution
 proofs. `headerFinal()` is false. `settle()` reverts `CustodyClosed`.
 Miner votes remain the live bridge.
@@ -13,8 +13,9 @@ New Base finality proofs use the
 That root is a recent finalized sync committee, not the Altair fork.
 Obstacle 1 is accepted at proxy
 `0xcEE3D699df3df07a573f1aFf642888B97B7aA961`. Obstacle 2 is accepted for
-one new lock. Obstacles 3 through 5 are still open. The historical 0.01
-USDC lock is not a sample for it.
+one new lock. Obstacle 3 is accepted at CoNET-source adapter proxy
+`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`. Obstacles 4 and 5 are still
+open. The historical 0.01 USDC lock is not a sample for obstacle 2.
 The Altair handoffs and the period-`630` store stay on Base as history. They
 are not extended by replaying periods `630` through `1880`.
 
@@ -176,6 +177,33 @@ stays `no` for a same-beacon committee.
 
 **Reject** a CoNET contract that treats an empty precompile call as a
 pairing, and a report whose only committee source is that same beacon.
+
+**Accepted** on 2026-10-14 on Base. Proxy
+`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`, implementation
+`0x9C9AC8F5E3c3861DDfF3aF16b40C4131B59617f0`. Both Sourcify matches are
+`match` (verification ids `01af3569-2148-4594-9793-ddd75e4f4765` and
+`2021acde-5746-4c4a-bf4a-82a3cfd09f49`). The adapter uses Base EIP-2537
+precompiles `0x0c` / `0x0d` / `0x0f` / `0x11`. The installed CoNET
+committee snapshot is period `215`, snapshot slot `1763456`, state root
+`0xa180f47b9c93ed1bd9bfde0b93e6593b1002da27f9518e94bceea6b18c00dbb1`,
+compressed digest
+`0xe26808badfcbbc05761f47f5f1efa366bcc4aaef51bdf6b5bd030f146fae86f7`.
+That digest was recomputed from CoNET beacon host `38.102.126.30`
+(`127.0.0.1:4100`) and confirmed against the same committee material on
+`38.102.126.50` (Ethereum `:5052` is not the CoNET beacon). Install
+transaction
+`0x0cb74c4d152e2f0f4a47d7ca653e41cb3dccb9b9792e4e463e7758d0be53e9f7`
+stored the committee separately from the later aggregate. Prove
+transaction
+`0x59898d797735cd7e3f9b9dc9e271f25f00145f20627f204f935b2ff61c594bef`
+verified `494` of `512` participants for attested slot `1763463` and
+signature slot `1763464` (`494 * 3 >= 512 * 2`). The attested slot and
+state root differ from the installed snapshot, so the committee is not
+taken only from the same beacon response as the proven header.
+`trustedCommittee()` stays false. The `headerFinal()` view stays false.
+`messageCovered()` stays false. `rootReady` is true. This acceptance
+does not settle, mint, or release, and does not upgrade
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`.
 
 ### Obstacle 4 — consume once
 

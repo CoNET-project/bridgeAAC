@@ -1,0 +1,67 @@
+{
+  "chainId": 8453,
+  "generatedAt": "2026-10-14T06:20:00.000Z",
+  "proxy": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "implementation": "0x9C9AC8F5E3c3861DDfF3aF16b40C4131B59617f0",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "compiler": "0.8.35+commit.47b9dedd",
+  "settings": {
+    "viaIR": true,
+    "optimizerRuns": 2,
+    "bytecodeHash": "none",
+    "evmVersion": "cancun"
+  },
+  "period": 215,
+  "snapshotSlot": 1763456,
+  "snapshotStateRoot": "0xa180f47b9c93ed1bd9bfde0b93e6593b1002da27f9518e94bceea6b18c00dbb1",
+  "compressedDigest": "0xe26808badfcbbc05761f47f5f1efa366bcc4aaef51bdf6b5bd030f146fae86f7",
+  "beaconHosts": [
+    {
+      "host": "38.102.126.30",
+      "beacon": "http://127.0.0.1:4100"
+    },
+    {
+      "host": "38.102.126.50",
+      "note": "digest confirmation only; :5052 is Ethereum mainnet"
+    }
+  ],
+  "aggregate": {
+    "attestedSlot": 1763463,
+    "signatureSlot": 1763464,
+    "participants": 494,
+    "attestedStateRoot": "0xc2aad28674acf177dc1045c72f7a85670103b56265c91a39dd7ad2dfc70e527c",
+    "tx": "0x59898d797735cd7e3f9b9dc9e271f25f00145f20627f204f935b2ff61c594bef",
+    "gasUsed": 10296084
+  },
+  "views": {
+    "period": "215",
+    "snapshotSlot": "1763456",
+    "snapshotStateRoot": "0xa180f47b9c93ed1bd9bfde0b93e6593b1002da27f9518e94bceea6b18c00dbb1",
+    "compressedDigest": "0xe26808badfcbbc05761f47f5f1efa366bcc4aaef51bdf6b5bd030f146fae86f7",
+    "rootReady": true,
+    "trustedCommittee": false,
+    "headerFinal": false,
+    "messageCovered": false,
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1"
+  },
+  "transactions": {
+    "implementation": "0xd359539371a50963966b7cfce97616a4023a06aa4d6c9b6f4e0c2d742ba12529",
+    "proxy": "0xe202664ef318af96b480d188009a0e16b6d55be41f51001f2c8fd1785ef284b7",
+    "install": "0x0cb74c4d152e2f0f4a47d7ca653e41cb3dccb9b9792e4e463e7758d0be53e9f7",
+    "prove": "0x59898d797735cd7e3f9b9dc9e271f25f00145f20627f204f935b2ff61c594bef"
+  },
+  "custody": "closed",
+  "obstacle": 3,
+  "eip2537": {
+    "msm": "0x0c",
+    "g2Add": "0x0d",
+    "pairing": "0x0f",
+    "mapFpToG2": "0x11"
+  },
+  "sourcify": {
+    "implementation": "2021acde-5746-4c4a-bf4a-82a3cfd09f49",
+    "proxy": "01af3569-2148-4594-9793-ddd75e4f4765",
+    "match": "match"
+  },
+  "standardJson": "deployments/base-AacConetSourceFinality-standard-input.json"
+}
