@@ -166,9 +166,15 @@ Base finality for a new AAC uses one Ethereum sync committee stored on Base.
 The first keys are a checkpoint, not the Altair fork committee. The historical
 0.01 USDC lock is not a sample. The checkpoint is installed on Base at
 `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` for beacon slot `15427520`,
-period `1883`. Obstacle 1 is accepted. Obstacle 2 is accepted for one new
-0.01 USDC lock in Base block `52583500`, beacon slot `15427678`, covered
-by finalized beacon slot `15427680`. Custody stays closed.
+period `1883`. Obstacles **1–5 are Accepted** on 2026-10-14 (checkpoint
+root, one new lock cover, CoNET-source finality on Base, consume-once
+consumer, and production settler upgrade of
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`). Custody stays closed:
+`custodyOpen()` / `headerFinal()` remain false; no-arg `settle()` still
+reverts `CustodyClosed`. Independent audit and Treasury / GB role grants
+are outside those five gates. Engineering assurance:
+[PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover proposal
+(not executed): [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 The full rule set is
 [M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
@@ -207,9 +213,9 @@ Production deployment acceptance is the five obstacles in
 | 2 | One new message proof | Same call covers a new receipt and a finalized header at least as late as that receipt's beacon slot |
 | 3 | CoNET-source finality adapter | CoNET aggregate under a committee that is not taken only from the same beacon. No Ethereum pairing on CoNET |
 | 4 | New consume-once consumer | One AAC id, one consume. Not the paused canary and not the specification proxy |
-| 5 | Upgrade `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` | `settle` succeeds only when the required finality and inclusion checks succeed in that call |
+| 5 | Upgrade `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` → settler impl `0x3085216E8329eF7d10c914cB1C43Cd8168f53442` | Cover overloads accept the Obstacle 2 sample; no-arg `settle()` still reverts `CustodyClosed` |
 
-The Altair store and the historical 0.01 USDC lock do not pass these obstacles.
+**Status (2026-10-14):** all five rows Accepted. Addresses: (1) `0xcEE3…A961`; (2) cover `0x01506527…`; (3) `0xE4f6c834…`; (4) consumer `0xC6CBcC0c…`; (5) proxy `0x9051…` / impl `0x3085…`. The Altair store and the historical 0.01 USDC lock do not pass these obstacles. Custody, mint, release, and miner-vote cutover remain closed. Post-gate assurance and the cutover proposal (proposal only): [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md), [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 At the 2026-10-12 Base measurement, one rotation used about `11.5` million gas
 and about `0.000069` ETH at `0.006` gwei. A year of rotations is about `321`
@@ -230,8 +236,8 @@ A paused gateway rejects new submits, reserves, and consumes. Previously stored 
 
 ## 7. Non-goals of this draft
 
-- Deploying AAC consume contracts, or moving custody off miner votes.
-- Replacing the live miner quorum before a reviewed finality adapter exists.
+- Opening mint, release, settlement broadcasting, or a miner-vote cutover (Obstacles 1–5 Accepted does not open custody; see [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
+- Replacing the live miner quorum before independent audit and a separately approved cutover ([PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 remains PENDING).
 - Treating an event log, a relayer signature, or a message-bus delivery receipt as a source-chain proof.
-- Treating the sync-committee checkpoint as installed, or treating `headerFinal` relative to that checkpoint as finality from the Altair fork.
+- Treating `headerFinal` relative to the checkpoint as finality handed forward from the Altair fork.
 - Opening a cross-chain route for GB-priced developer tokens.

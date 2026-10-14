@@ -20,9 +20,10 @@ custody closed
 ```
 
 The current on-chain threshold plan is
-[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). Five contract
-deployments remain before a custody cutover can be proposed. The closed Base
-proxy does not reduce that count.
+[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). Obstacles **1–5
+are Accepted** (2026-10-14). Custody, mint, release, and the miner-vote cutover
+remain closed until independent audit and a separate cutover proposal. The
+closed Base proxy does not open custody by itself.
 
 ## Final production Shadow evaluation — 2026-09-28
 
@@ -214,13 +215,17 @@ The trial observer on `74.208.207.31` is read-only, both chains advance from a d
 
 Custody activation is closed. Obstacles 1–5 in
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) are Accepted.
-Independent audit, Treasury/GB role grants, and miner-vote cutover remain
-outside those gates. This build does not mint, release, or broadcast a
-bridge transaction. Reports print `custody closed`, `registry paused`, and
+Engineering assurance after those gates:
+[PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) (107 Rust tests + Base
+fail-closed smoke **PASS**; independent third-party audit **PENDING**).
+Treasury/GB role grants and miner-vote cutover remain outside those gates;
+see the proposal-only [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) (**NOT
+EXECUTED**). This build does not mint, release, or broadcast a bridge
+transaction. Reports print `custody closed`, `registry paused`, and
 `consume denied`. The shadow decision path does not print `final true`.
 
-Miner `voteBridgeOperation` and `voteBridgeMint` remain live until the
-cutover named in that plan.
+Miner `voteBridgeOperation` and `voteBridgeMint` remain live until a later
+authorized cutover completes Phase D of that proposal.
 
 ## Shadow trial
 

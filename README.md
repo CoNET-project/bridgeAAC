@@ -4,7 +4,7 @@ Linux reference gateway for the Beamio Atomic Asset Container (AAC).
 
 An AAC is a one-time destination-chain record. The source chain locks or burns an asset. The destination chain accepts that fact only after a state proof, marks the record reserved, and then mints or releases the matching asset once.
 
-This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md). The remaining custody deployments are [docs/PRODUCTION-CUSTODY-GATES.md](docs/PRODUCTION-CUSTODY-GATES.md).
+This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. The live miner vote path remains the production bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md). Obstacles 1–5 in [docs/PRODUCTION-CUSTODY-GATES.md](docs/PRODUCTION-CUSTODY-GATES.md) are **Accepted** (2026-10-14). Engineering assurance is recorded in [docs/PRODUCTION-ASSURANCE.md](docs/PRODUCTION-ASSURANCE.md) (tests + fail-closed smoke **PASS**; independent audit **PENDING**). The cutover proposal (role grants / miner-vote disable / canary — **not executed**) is [docs/CUTOVER-CUSTODY.md](docs/CUTOVER-CUSTODY.md). Custody stays closed.
 
 ## What this crate checks
 
