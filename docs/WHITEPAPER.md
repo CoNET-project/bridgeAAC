@@ -160,6 +160,60 @@ At the final 2026-09-28 evaluation, Base and CONET both reported `stable yes` an
 
 `base-l1-output` reads the Base OptimismPortal anchor on Ethereum L1 and checks `isGameClaimValid`. It reports whether a Base block is at or behind that anchor. It does not replay the fault proof, does not replace the execution-tag shadow, and does not print a custody-final result. `conet-consensus` reads the fork-choice finalized checkpoint from the beacon head state. The checkpoint stored in the already-finalized state lags that view by about two epochs and is not the comparison target. It compares that head checkpoint's execution payload with geth `finalized`, not Prysm `blocks/finalized` by itself. An alias that matches geth still prints `beacon-agreed no` when the checkpoint payload differs. It checks that checkpoint block's sync aggregate against the parent-slot committee. A matching FastAggregateVerify prints `signature-check yes`, `committee-state parent-slot`, and `trusted-committee no`. When the parent slot's beacon state hashes to that header's `state_root` and its sync committee verifies the aggregate, the report prints `state-root-binding yes`. When an earlier period's aggregate authenticates a state whose `next_sync_committee` is the committee of the next period, the report prints `committee-handoff yes` and `handoff-periods` for how many such links were read. Those states still come from the same beacon. It does not accept that tag into shadow. `destination-consumer` searches for PUSH4 encodings of `aacConsumeMint`, `aacConsumeRelease`, `aacConsumeMintPaid`, and `aacConsumeMintDeveloper`. `selector-observation present` is not consume-once. The live command always reports `semantic-proof no`, `consume-once no`, `consumer observation-only`, and `custody-gate no`. `gb-mint-authority` reads whether GBToken still dispatches `mint`, `mintPaid`, and `voteBridgeMint`. Those selectors are on the GB token, not on TreasuryBridgeV3. Missing selectors print `selectors-absent yes` and still print `upgrade-authority unread` and `mint-closed no`. Neither command sends a transaction. A later `FinalityVerifier` may check OP output roots or a CONET consensus proof. The AAC state machine does not change when that verifier is replaced. Production custody stays closed until that verifier, a destination contract that passes the semantic gate, mint-authority closure, and an independent review exist.
 
+## 4.2 Sync committee root for Base finality
+
+Base finality for a new AAC uses one Ethereum sync committee stored on Base.
+The first keys are a checkpoint, not the Altair fork committee. The historical
+0.01 USDC lock is not a sample. The checkpoint is installed on Base at
+`0xcEE3D699df3df07a573f1aFf642888B97B7aA961` for beacon slot `15427520`,
+period `1883`. Obstacle 1 is accepted. Custody stays closed.
+
+The full rule set is
+[M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
+In short:
+
+1. Select a finalized beacon block. The root keys are `current_sync_committee`
+   in that block, the committee that signs its period. A period is `8192`
+   slots, about `27.3` hours.
+2. Bind those keys to the beacon `state_root` with a Merkle proof, and store
+   `keccak256` of the compressed keys.
+3. Show the same beacon root in the Ethereum EIP-4788 beacon-roots contract.
+   That record does not by itself prove beacon finality.
+4. Require more than one CoNET observer to recompute the same digest. One
+   beacon endpoint is not enough. Observers agree only on this first root.
+5. After the digest is stored, verify one two-thirds sync aggregate from that
+   same period under those keys. Failure rejects the root.
+
+A Base output root does not contain these keys. Base follows Ethereum, so an
+L2 origin match does not elect the committee. Later rotations are one period
+at a time, with a two-thirds quorum, verified by Base EIP-2537 precompiles.
+CoNET does not execute those precompiles. A new lock is eligible only for a
+slot the stored committee can sign, and only after a finalized beacon header
+covers that slot. Receipts under one finalized header share that BLS check.
+Each receipt keeps its own inclusion proof and can be consumed once.
+
+`headerFinal` in that proof means final relative to the installed checkpoint.
+It does not mean the keys were handed forward from Altair. Until installation
+and the aggregate check both exist, `headerFinal` stays false.
+
+Production deployment acceptance is the five obstacles in
+[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md):
+
+| Obstacle | Deployment | Acceptance |
+| --- | --- | --- |
+| 1 | New Base checkpoint store | Finalized-block committee, state-root branch, EIP-4788 root, two observers, then one two-thirds aggregate |
+| 2 | One new message proof | Same call covers a new receipt and a finalized header at least as late as that receipt's beacon slot |
+| 3 | CoNET-source finality adapter | CoNET aggregate under a committee that is not taken only from the same beacon. No Ethereum pairing on CoNET |
+| 4 | New consume-once consumer | One AAC id, one consume. Not the paused canary and not the specification proxy |
+| 5 | Upgrade `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` | `settle` succeeds only when the required finality and inclusion checks succeed in that call |
+
+The Altair store and the historical 0.01 USDC lock do not pass these obstacles.
+
+At the 2026-10-12 Base measurement, one rotation used about `11.5` million gas
+and about `0.000069` ETH at `0.006` gwei. A year of rotations is about `321`
+transactions, about `0.022` ETH at that price. The Altair-to-present replay is
+not part of this cost.
+
 ## 5. Live path until the adapter exists
 
 On mainnet, USDC still settles through miner `voteBridgeOperation` on TreasuryBridgeV3. GB still settles through `voteBridgeMint`. Peer v5 is specified and not yet the live developer bridge.
@@ -177,4 +231,5 @@ A paused gateway rejects new submits, reserves, and consumes. Previously stored 
 - Deploying AAC consume contracts, or moving custody off miner votes.
 - Replacing the live miner quorum before a reviewed finality adapter exists.
 - Treating an event log, a relayer signature, or a message-bus delivery receipt as a source-chain proof.
+- Treating the sync-committee checkpoint as installed, or treating `headerFinal` relative to that checkpoint as finality from the Altair fork.
 - Opening a cross-chain route for GB-priced developer tokens.

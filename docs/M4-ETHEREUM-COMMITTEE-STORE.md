@@ -1,8 +1,10 @@
 # Ethereum Committee Store
 
-Status: **deployed on Base. The store holds the period-630 committee. The
-0.01 USDC bridge beacon slot is still outside this range, so `messageCovered`
-and `headerFinal` stay false.**
+Status: **historical deployment on Base. The store holds the period-630
+committee. It is not the forward sync-committee root.** New proofs use the
+[checkpoint root](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md), which is not
+installed. This store keeps `messageCovered` and `headerFinal` false and is
+not extended by replaying later periods.
 
 | Item | Value |
 |---|---|
@@ -29,10 +31,8 @@ the implementation. It cannot grant an asset role or mark the bridge message
 covered.
 
 Three hundred thirty-six supermajority updates advanced the store from period
-`294` to period `630`. Ethereum head slot `15414746` is still inside period
-`1881`, and it is already later than bridge slot `15413404`. Period `1882`
-has not started. The committee that can sign a finalized header at that bridge
-slot is the period-`1881` committee, which this store does not hold yet.
-Signature periods `630` through `1880` are still required before that call.
+`294` to period `630`. Those updates stay as history. New Base finality proofs
+do not continue this replay. They use the
+[checkpoint root](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
 
 Acceptance: [M4-ETHEREUM-COMMITTEE-STORE-ACCEPTANCE.md](M4-ETHEREUM-COMMITTEE-STORE-ACCEPTANCE.md).

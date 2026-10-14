@@ -1,0 +1,66 @@
+{
+  "chainId": 8453,
+  "generatedAt": "2026-10-14T05:32:17Z",
+  "proxy": "0xcEE3D699df3df07a573f1aFf642888B97B7aA961",
+  "implementation": "0x5D92bC7d8b87BC84142C396417f26b55b7B11863",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "compiler": "0.8.35+commit.47b9dedd",
+  "settings": {
+    "viaIR": true,
+    "optimizerRuns": 2,
+    "bytecodeHash": "none",
+    "evmVersion": "cancun"
+  },
+  "period": 1883,
+  "checkpointSlot": 15427520,
+  "beaconRoot": "0xbfd339bc85988b6c6c44decccb7de54564ea1fe5f7d0e754c4fb20917a0e939a",
+  "stateRoot": "0x7679d4ef04323293643c34c94eb6b81bb2823a4486006063164d0a1deb0d4c57",
+  "compressedDigest": "0xb5e26546712793699378679bbfe918ce15ea3a230259d05113189599b634db94",
+  "gindex": 86,
+  "nextGindex": 87,
+  "observers": [
+    {
+      "host": "38.102.126.30",
+      "beacon": "https://lodestar-mainnet.chainsafe.io"
+    },
+    {
+      "host": "216.225.202.82",
+      "beacon": "https://ethereum-beacon-api.publicnode.com"
+    }
+  ],
+  "eip4788": {
+    "contract": "0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02",
+    "executionBlock": 26188529,
+    "executionHash": "0x61ae802d9c0b7412c6c0715eea34b77ce53ca6702ccfd74c19dde7e6faff8f4f",
+    "timestamp": 1791954275,
+    "timestampSlot": 1014,
+    "rootSlot": 9205
+  },
+  "aggregate": {
+    "attestedSlot": 15425644,
+    "signatureSlot": 15425645,
+    "participants": 512,
+    "tx": "0xa2c193ee67a86f35d5e48abe092496659c3c615f1c56591cbbdbdc7857e971c5",
+    "gasUsed": 10197656,
+    "returnedHeaderFinal": true
+  },
+  "views": {
+    "headerFinal": false,
+    "messageCovered": false,
+    "rootReady": true
+  },
+  "transactions": {
+    "implementation": "0xa5214f66a4a438c702c2b447f762ef0bb1d56589dbea925578c20971e21b0493",
+    "proxy": "0x43d45fe411fd0b632a98545f8f75a2e9dea183475f9ee20feb4b2ab21db78166",
+    "install": "0x4fdc6436f049941591ae9e409d0d982ead2b6a5261a48a4ed0534e4f7f742a91",
+    "prove": "0xa2c193ee67a86f35d5e48abe092496659c3c615f1c56591cbbdbdc7857e971c5"
+  },
+  "sourcify": {
+    "implementation": "640eb4cb-bd6f-447e-96de-00a2d155988f",
+    "proxy": "5275499e-5632-4407-991b-a40e5fa06a23",
+    "match": "match"
+  },
+  "standardJson": "deployments/base-AacEthereumCheckpointRoot-standard-input.json",
+  "custody": "closed",
+  "obstacle": 1
+}

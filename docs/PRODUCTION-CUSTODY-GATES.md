@@ -1,6 +1,6 @@
 # Production custody gates
 
-Status on `2026-10-12`: **custody closed.** The stable Base proxy
+Status on `2026-10-13`: **custody closed.** The stable Base proxy
 `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote accepted execution
 proofs. `headerFinal()` is false. `settle()` reverts `CustodyClosed`.
 Miner votes remain the live bridge.
@@ -8,10 +8,21 @@ Miner votes remain the live bridge.
 This page is the current threshold plan. Historical Shadow approvals in
 [PRODUCTION-EVALUATION.md](PRODUCTION-EVALUATION.md) do not open custody.
 
+New Base finality proofs use the
+[sync committee checkpoint root](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
+That root is a recent finalized sync committee, not the Altair fork.
+Obstacle 1 is accepted at proxy
+`0xcEE3D699df3df07a573f1aFf642888B97B7aA961`. Obstacles 2 through 5 are
+still open. The historical 0.01 USDC lock is not a sample for it.
+The Altair handoffs and the period-`630` store stay on Base as history. They
+are not extended by replaying periods `630` through `1880`.
+
 ## What is already deployed
 
-These Base contracts are accepted and stay fail-closed. None of them is a
-beacon-finality proof, and none of them authorizes mint or release.
+These Base contracts stay fail-closed. They are evidence of earlier proof
+shapes. None of them is the checkpoint root, none of them sets `headerFinal`,
+and none of them authorizes mint or release. Replaying them, or extending the
+Altair store from period `630`, does not pass an obstacle below.
 
 | Step | Contract | What it shows |
 |---|---|---|
@@ -39,74 +50,147 @@ beacon-finality proof, and none of them authorizes mint or release.
 The paused canary is not this proxy. No Treasury, GB, or Peer role has been
 granted to the proxy.
 
-## Remaining deployments
+## Production obstacles
 
-Five contract deployments remain before a custody cutover can be proposed.
-Role grants and the miner-vote cutover are transactions after those
-deployments, not extra contracts.
+Five deployments remain before a custody cutover can be proposed. Role grants
+and the miner-vote cutover come after these five, in separate transactions.
+The rule for the committee root is
+[M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
 
-| Order | Deployment | Chain | Custody effect |
+| Order | Deployment | Chain | Passes only when |
 |---|---|---|---|
-| 1 | Beacon finalized-checkpoint proof for slot `15406750` | Base | Still closed. The payload inclusion proof does not finish this gate. `headerFinal` may become true only inside the checkpoint proof |
-| 2 | AAC message inclusion proof | Base | Still closed. The 0.01 USDC `BridgeOperation` is inside block `52497860`, and that block is not a finalized header |
-| 3 | CoNET beacon finality verifier | CoNET | Still closed. The off-chain observer still has `trusted-committee no` |
-| 4 | Production consume-once destination consumer | Destination chain for that direction | Still closed. The existing consume-once specification proxy is not this consumer |
-| 5 | Upgrade the stable proxy to a settling implementation | Base | Deployed closed. `settle` stays reverted until the same call has passed gates 1 and 2 |
+| 1 | Checkpoint-root committee store | Base | The installed keys are the signing committee of one finalized beacon block, and one two-thirds aggregate in that period verifies under those keys |
+| 2 | One new AAC message under that committee | Base | The same call proves a finalized header at least as late as the message's beacon slot and proves that message's receipt |
+| 3 | CoNET-source finality adapter | Destination of a CoNET-origin message | A CoNET header is final under a committee that was not taken from that same beacon response alone |
+| 4 | Consume-once production consumer | Destination chain | One new consumer consumes one AAC id once and reverts on a second consume. It is not the paused canary and not the specification proxy |
+| 5 | Settling implementation of the stable proxy | Base | `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` settles only when obstacles 1 and 2 succeed in that same call |
 
-Gate 1 still keeps `headerFinal` false. The same-block bootstrap is no longer
-the only committee on Base. Contract
-`0x80F29F94c75eE07DFA8Eca33DFbEA2A3edA34DC2` proves the Altair period-`290`
-committee inside the Altair fork block and checks that `504` of `512` keys
-signed the first distinct next committee in period `291`. Contract
-`0x34EF23A8F16F008097661bd7Ced70C20C6e03B6C` continues that chain: the
-resulting committee signs period `293` with `509` of `512` keys. Contract
-`0x61560D38FB6e27214c2530f212cA72d592da8628` continues one more step: the
-period-`293` committee signs period `294` with `511` of `512` keys. The
-stateful store `0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a` starts from that
-period-`294` committee and has accepted the next supermajority update, so it
-now holds the period-`630` committee after `336` supermajority updates from
-period `294`. The bridge beacon slot `15413404` is in period `1881`. Ethereum
-head slot `15414746` is already past that slot and still inside period `1881`.
-The store returns `messageCovered` false. Signature periods `630` through
-`1880` are still required before the period-`1881` committee can verify a
-finalized header at the bridge slot.
-The earlier checkpoint link
-`0xeA57144daa0d02A90794bC0FbE1dA92050f4f59E` checks the `6348`-header ancestry
-and the `505`-of-`512` sync aggregate in one call. The committee is pinned
-from that same block's bootstrap, so the combined call does not finish the
-gate. The payload contract
-`0x302ab591Fd8e46a3c482dA60EFE0bAC4Cf64dE55` only places the execution hash
-inside that beacon block. The successor
-`0x532080e752ddebd0DD9b2c3611Ee9307513BfBdc` extends that block by one slot.
-The ancestry contract
-`0x4E28D764151AD328d7c50a0fFB380935d07a26dF` walks `6348` headers from
-finalized slot `15413120` to that successor. The sync-aggregate contract
-`0x6ADD8D931b622C8FFd4B3bd41Dc23C478b09e341` checks that the committee inside
-that finalized block signed it. The committee is pinned from the same block's
-bootstrap, so the signature does not by itself set `headerFinal`.
-An execution `finalized` tag, a longer parent-hash walk, another EIP-4788
-storage proof, a beacon API `finalized` flag, or an `isGameClaimValid`
-eth_call does not finish gate 1.
+A Base-origin release uses obstacles 1, 2, 4, and 5. A CoNET-origin message
+also uses obstacle 3. Obstacle 3 does not move Ethereum committee pairing onto
+CoNET.
 
-Gate 2 has a real lock receipt, and the Base block is still not finalized.
-Contract `0x80Eb248985Ef0B6a5cF6C84A83a6A872666d1621` proves the 0.01 USDC
-`BridgeOperation` is inside Base block `52497860`. Contract
-`0x58F6560184EdD9912F2032060D56fc726a042960` reads the beacon root stored in
-that same header and walks 284 parents from slot `15413404` to finalized slot
-`15413120`. Contract `0x1ffD76a3176AD6e91b123e567D9A7EeF5bC5AE2b` walks 580
-parents from observed slot `15413984` to that bridge beacon root. The later
-slot has no sync-committee proof in this contract, so the walk does not
-finish the gate. The ordinary USDC transfer in block `52239960` remains
-unused.
+### Obstacle 1 — checkpoint root
 
-Gate 3 is required for a CoNET mint or burn. A Base-only release still needs
-gates 1, 2, and 5. Both directions need gate 4 on the destination chain.
+**Deploy** a new Base store. Do not continue
+`0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a`, and do not upgrade
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` in this step. Initialize it with
+the `current_sync_committee` of a finalized beacon block chosen at
+installation. Record the slot, the period, the beacon `state_root`, the Merkle
+branch, the compressed-key digest, the EIP-4788 account proof, and the
+observer names with that same digest.
 
-Gate 5 keeps the proxy address. The proxy now quotes the bridge proof, and
-both `settle` and `settleBridge` still revert `CustodyClosed`. The new
-implementation may settle only when the beacon proof and the AAC message
-proof succeed together. That success path is not in this implementation.
-Shipping the quote early does not finish this deployment.
+**Accept** when all of the following are true on that store:
+
+- the stored digest equals `keccak256` of the compressed keys;
+- the Merkle branch binds those keys to the beacon `state_root`;
+- the same beacon root is in EIP-4788 contract
+  `0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02`;
+- at least two named CoNET observers recomputed that digest;
+- one later call verifies a sync aggregate in the same period with
+  `participants * 3 >= 512 * 2`;
+- `headerFinal` is true only inside that successful proof, and means final
+  relative to this checkpoint.
+
+**Reject** an Altair replay, the period-`630` store, a same-block bootstrap,
+a beacon API `finalized` flag, a single observer, an aggregate below two
+thirds, a parent-hash walk, an output root, and a store that returns
+`headerFinal == true` as a constant.
+
+**Accepted** on 2026-10-14. Proxy
+`0xcEE3D699df3df07a573f1aFf642888B97B7aA961`, implementation
+`0x5D92bC7d8b87BC84142C396417f26b55b7B11863`. Both Sourcify matches are
+`match` (verification ids `640eb4cb-bd6f-447e-96de-00a2d155988f` and
+`5275499e-5632-4407-991b-a40e5fa06a23`). Finalized beacon slot `15427520`,
+period `1883`, beacon root
+`0xbfd339bc85988b6c6c44decccb7de54564ea1fe5f7d0e754c4fb20917a0e939a`,
+state root
+`0x7679d4ef04323293643c34c94eb6b81bb2823a4486006063164d0a1deb0d4c57`,
+digest
+`0xb5e26546712793699378679bbfe918ce15ea3a230259d05113189599b634db94`.
+The Merkle branch is the bootstrap `current_sync_committee` branch at
+generalized index `86`. EIP-4788 contract
+`0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02` stores that beacon root at
+timestamp slot `1014` and root slot `9205` for Ethereum execution block
+`26188529`
+(`0x61ae802d9c0b7412c6c0715eea34b77ce53ca6702ccfd74c19dde7e6faff8f4f`),
+whose `parentBeaconBlockRoot` is the same root. CoNET observers
+`38.102.126.30` and `216.225.202.82` recomputed the same digest from
+different beacon endpoints. `proveAggregate` transaction
+`0xa2c193ee67a86f35d5e48abe092496659c3c615f1c56591cbbdbdc7857e971c5`
+verified `512` of `512` participants for attested slot `15425644` and
+signature slot `15425645`, and that call returned `headerFinal = true`.
+The `headerFinal()` view remains false. `messageCovered()` remains false.
+`rootReady` is true. This acceptance does not settle, mint, or release.
+
+### Obstacle 2 — one new message
+
+**Deploy** one function on the obstacle-1 store, or one contract that calls
+it. Create a new lock or burn only after the stored committee can sign that
+message's beacon slot. The historical 0.01 USDC `BridgeOperation` in Base
+block `52497860` is not this message.
+
+**Accept** when one call does all of the following:
+
+- verifies a finalized beacon header with the stored committee and a
+  two-thirds aggregate;
+- the finalized slot is at least as late as the message's beacon slot;
+- the receipt for that new lock or burn is included under the execution
+  payload committed by that header;
+- the call reports the message covered and `headerFinal` true together.
+
+Receipts under that same finalized header may share the BLS verification.
+Each receipt still needs its own inclusion proof. A second pairing does not
+fit in the committee-rotation transaction: one rotation already uses about
+`11.5` million gas, and the Base per-transaction cap is `16,777,216`.
+
+**Reject** the old 0.01 USDC receipt, an inclusion proof without the
+checkpoint aggregate, and a finalized header from an earlier period than the
+stored signing committee.
+
+### Obstacle 3 — CoNET as source
+
+**Deploy** a destination adapter that checks a CoNET beacon header. Do not
+deploy an Ethereum sync-committee verifier on CoNET. CoNET calls to
+`0x0b`–`0x11` return empty results, so those addresses are not the Base
+precompiles.
+
+**Accept** when the adapter verifies the CoNET sync aggregate under a
+committee that is not supplied only by the same beacon response that supplied
+the header, the participation is at least two thirds, and `trusted-committee`
+stays `no` for a same-beacon committee.
+
+**Reject** a CoNET contract that treats an empty precompile call as a
+pairing, and a report whose only committee source is that same beacon.
+
+### Obstacle 4 — consume once
+
+**Deploy** a new destination consumer. Do not unpause the old canary. Do not
+treat specification proxy `0xA13843C75f68F726e1DC4dbA75d07597EE18d999` as this
+consumer: it records consume ids and does not mint or release.
+
+**Accept** when a mainnet or Base transaction consumes one AAC id, a second
+consume of that id reverts, and a failed effect does not leave the id
+consumed. The consumer mints or releases only after obstacles 1 and 2, or
+obstacle 3 for a CoNET-origin message, have succeeded for that id.
+
+**Reject** selector presence, a PUSH4 scan, and an upgrade that reorders
+storage so a consumed id is forgotten.
+
+### Obstacle 5 — stable proxy can settle
+
+**Deploy** a new implementation and upgrade
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` to it. The upgrade does not grant
+Treasury, GB, or Peer roles.
+
+**Accept** when `settle` and `settleBridge` succeed only if the same call has
+passed obstacle 1 and obstacle 2 for a Base-origin message, or obstacle 3
+plus that message's inclusion proof for a CoNET-origin message. Either check
+failing reverts. The upgrade does not itself consume the AAC; obstacle 4 does
+that on the destination. Before this implementation is deployed, both
+functions revert `CustodyClosed` (`0x61839255`).
+
+**Reject** a quote-only implementation, a success path that skips the
+checkpoint aggregate, and an upgrade of the paused canary.
 
 ## Steps that are not deployments
 
