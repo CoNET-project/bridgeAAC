@@ -261,6 +261,32 @@ functions revert `CustodyClosed` (`0x61839255`).
 **Reject** a quote-only implementation, a success path that skips the
 checkpoint aggregate, and an upgrade of the paused canary.
 
+**Accepted** on 2026-10-14 on Base. Proxy
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` upgraded to implementation
+`0x3085216E8329eF7d10c914cB1C43Cd8168f53442` (previous settler impl
+`0x6c5b1E857Dc2807D5383Eb8001783258FFC3645F`). Sourcify match is `match`
+(verification id `ac4868ae-7dd3-4f51-aecd-9ddaa40fcdef`; creation and
+runtime both `match`). Upgrade transaction
+`0x5bfc2c41e460a66cf63f1fbe8206ec6b664cee13a2d71df480c892a13b535f7b`
+(block `52585579`) preserved `owner`
+`0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` and `proofLink`
+`0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b`. `COVER()` is
+`0x01506527a4Dab14141038Db15f5341dcF4729233`. `CONET_FINALITY()` is
+`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`. No-arg `settle()` still
+reverts `CustodyClosed` (`0x61839255`). Cover-gated `settle` transaction
+`0x12026474cb3774ffb841c870164e2ef27a1e1b9ce60117708ddc66b7e2c73ea9` and
+`settleBridge` transaction
+`0x0c944ff2ad3f414a9eb611138d093284e132ca31ddc692388a60fae3210461c0`
+both status `1`, each reusing the same cover calldata body as cover smoke
+`0xb08859189eb9e090a3db6a153c575375066af06788fdff1672b59405ebbe336d`
+with selectors `0x50b1cadb` / `0x4e83f2d2` so obstacle 1 and 2 run in the
+same call. CoNET-origin `settleFromConet` transaction
+`0xf21b03cb49acbdbacda131224d3c61d544fe08f0bc360e9d7d0663bfe42696e3`
+succeeded with `rootReady` true; a bad inclusion binding reverts.
+`custodyOpen()` and `headerFinal()` remain false. This acceptance does not
+consume AAC, mint, release, unpause the canary, or grant Treasury / GB /
+Peer roles.
+
 ## Steps that are not deployments
 
 | Step | When |

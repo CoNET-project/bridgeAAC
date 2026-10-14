@@ -212,12 +212,12 @@ The trial observer on `74.208.207.31` is read-only, both chains advance from a d
 
 ## Custody
 
-Custody activation is closed. The current threshold list and the five
-remaining deployments are in
-[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). This build does
-not mint, release, or broadcast a bridge transaction. Reports print
-`custody closed`, `registry paused`, and `consume denied`. The shadow
-decision path does not print `final true`.
+Custody activation is closed. Obstacles 1–5 in
+[PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) are Accepted.
+Independent audit, Treasury/GB role grants, and miner-vote cutover remain
+outside those gates. This build does not mint, release, or broadcast a
+bridge transaction. Reports print `custody closed`, `registry paused`, and
+`consume denied`. The shadow decision path does not print `final true`.
 
 Miner `voteBridgeOperation` and `voteBridgeMint` remain live until the
 cutover named in that plan.

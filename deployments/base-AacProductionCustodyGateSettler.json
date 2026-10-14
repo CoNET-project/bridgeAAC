@@ -1,0 +1,63 @@
+{
+  "chainId": 8453,
+  "generatedAt": "2026-10-14T06:48:52.665Z",
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "implementation": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+  "previousImplementation": "0x6c5b1E857Dc2807D5383Eb8001783258FFC3645F",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+  "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+  "conetFinality": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "headerFinal": false,
+  "custodyOpen": false,
+  "compiler": "0.8.35+commit.47b9dedd",
+  "settings": {
+    "viaIR": true,
+    "optimizerRuns": 2,
+    "bytecodeHash": "none",
+    "evmVersion": "cancun"
+  },
+  "smoke": {
+    "coverSmokeTx": "0xb08859189eb9e090a3db6a153c575375066af06788fdff1672b59405ebbe336d",
+    "settleTx": "0x12026474cb3774ffb841c870164e2ef27a1e1b9ce60117708ddc66b7e2c73ea9",
+    "settleGasUsed": 10774394,
+    "settleBridgeTx": "0x0c944ff2ad3f414a9eb611138d093284e132ca31ddc692388a60fae3210461c0",
+    "settleBridgeGasUsed": 10774350,
+    "settleFromConetTx": "0xf21b03cb49acbdbacda131224d3c61d544fe08f0bc360e9d7d0663bfe42696e3",
+    "settleFromConetGasUsed": 41101,
+    "noArgSettleReverts": "0x61839255",
+    "badInclusionReverted": true,
+    "rootReady": true
+  },
+  "views": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "COVER": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "CONET_FINALITY": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9"
+  },
+  "transactions": {
+    "implementation": "0xa4d5cd3abbbafc55ff411097371ba5cf44187ff3621fd5f09357c679e8102559",
+    "upgrade": "0x5bfc2c41e460a66cf63f1fbe8206ec6b664cee13a2d71df480c892a13b535f7b",
+    "settle": "0x12026474cb3774ffb841c870164e2ef27a1e1b9ce60117708ddc66b7e2c73ea9",
+    "settleBridge": "0x0c944ff2ad3f414a9eb611138d093284e132ca31ddc692388a60fae3210461c0",
+    "settleFromConet": "0xf21b03cb49acbdbacda131224d3c61d544fe08f0bc360e9d7d0663bfe42696e3"
+  },
+  "implementationBlock": 52585576,
+  "upgradeBlock": 52585579,
+  "custody": "closed",
+  "obstacle": 5,
+  "standardJson": "deployments/base-AacProductionCustodyGateSettler-standard-input.json",
+  "sourcify": {
+    "implementation": {
+      "verificationId": "ac4868ae-7dd3-4f51-aecd-9ddaa40fcdef",
+      "match": "match",
+      "creationMatch": "match",
+      "runtimeMatch": "match",
+      "verifiedAt": "2026-10-14T06:48:50Z"
+    },
+    "match": "match"
+  },
+  "meaning": "Production proxy upgraded to settler. settle/settleBridge succeed only via COVER.cover in the same call. settleFromConet requires rootReady + inclusion binding. No-arg settle still CustodyClosed. custodyOpen and headerFinal remain false. No AAC consume and no Treasury/GB/Peer roles."
+}
