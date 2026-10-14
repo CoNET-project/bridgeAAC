@@ -1,0 +1,83 @@
+{
+  "chainId": 8453,
+  "generatedAt": "2026-10-14T06:34:20.582Z",
+  "proxy": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+  "implementation": "0xcb197f3B8c277D3e507993C35F086Ab9Eb41a94F",
+  "gateway": "0xcE30DdFFB7B2C75c6615D441c232ac9D60b6344B",
+  "okEffect": "0x8Cdb0DB088c67A70a5db45dB8A4B2e1b9E4BCbAF",
+  "revertEffect": "0x6A4469c7337185c60f311f9B6f2958aB3dDb2480",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+  "conetFinality": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "compiler": "0.8.35+commit.47b9dedd",
+  "settings": {
+    "viaIR": true,
+    "optimizerRuns": 2,
+    "bytecodeHash": "none",
+    "evmVersion": "cancun"
+  },
+  "proofPath": "conet-origin-rootReady",
+  "smoke": {
+    "id1": "0xdabc77240008d32f4c58b1fec6f526931b4f205de9adcdedb9fd501cc8ea213f",
+    "id2": "0x9b50428038b88a635bf03a20eaf2a72d968951d1adaad2ec0ec42c4009e1a314",
+    "amount": "1000000",
+    "action": "mint",
+    "consumeOkTx": "0xba05c5ed6e7903255fb97d9153fbc9d401c6320e5bfff6209dce90ceb1e3f0f6",
+    "consumeOkGasUsed": 186158,
+    "doubleConsumeReverted": true,
+    "failedEffectReverted": true,
+    "failedEffectLeftUnconsumed": true
+  },
+  "views": {
+    "admin": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "gateway": "0xcE30DdFFB7B2C75c6615D441c232ac9D60b6344B",
+    "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "conetFinality": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+    "rootReady": true,
+    "consumedId1": true,
+    "mintedId1": "1000000",
+    "consumedId2": false,
+    "mintedId2": "0"
+  },
+  "transactions": {
+    "gateway": "0x1713c1bcb7d53a5064e6fed104b33b5c24d4a3bd38cd713a5a2ba1f0b3c3dcf1",
+    "okEffect": "0x1dfb9eade2c0017b92d52a129e92efc37fe93779f3a8da2da450671abb6bc387",
+    "revertEffect": "0x661b5b262d49be8ef4cc32f2419be63dcdf2d4e47ec66b5a8be850807c1fa562",
+    "implementation": "0x124a012f653e7bee968aa13311d183a3b0677e2628129faae741892f8268c34c",
+    "proxy": "0x6a2b32440db4393c9c984e71b12cb448d8e48b87942cf0a80af3c981abee6002",
+    "consumeOk": "0xba05c5ed6e7903255fb97d9153fbc9d401c6320e5bfff6209dce90ceb1e3f0f6"
+  },
+  "custody": "closed",
+  "obstacle": 4,
+  "standardJson": "deployments/base-AacProductionConsumeOnce-standard-input.json",
+  "excluded": {
+    "specificationConsumeOnce": "0xA13843C75f68F726e1DC4dbA75d07597EE18d999",
+    "pausedCanaryBase": "0x04e07edd…",
+    "pausedCanaryConet": "0xc9a4BCc0…",
+    "settleProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd"
+  },
+  "sourcify": {
+    "implementation": {
+      "verificationId": "014d6c95-ad38-4c96-9c4c-4b2e65b32a6f",
+      "match": "match"
+    },
+    "proxy": {
+      "verificationId": "cc4e6b37-7609-4126-a843-568bf5d04555",
+      "match": "match"
+    },
+    "gateway": {
+      "verificationId": "3f3fcef4-ce22-4212-8be3-373a27f26af3",
+      "match": "match"
+    },
+    "okEffect": {
+      "verificationId": "9eba4078-da05-426d-90c3-6ae234826037",
+      "match": "match"
+    },
+    "revertEffect": {
+      "verificationId": "5f8b3aee-87b1-4d12-a387-e31df93a9e60",
+      "match": "match"
+    },
+    "match": "match"
+  }
+}

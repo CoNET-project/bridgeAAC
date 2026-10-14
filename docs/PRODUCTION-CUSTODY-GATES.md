@@ -219,6 +219,32 @@ obstacle 3 for a CoNET-origin message, have succeeded for that id.
 **Reject** selector presence, a PUSH4 scan, and an upgrade that reorders
 storage so a consumed id is forgotten.
 
+**Accepted** on 2026-10-14 on Base. Proxy
+`0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F`, implementation
+`0xcb197f3B8c277D3e507993C35F086Ab9Eb41a94F`, gateway
+`0xcE30DdFFB7B2C75c6615D441c232ac9D60b6344B`, ok effect
+`0x8Cdb0DB088c67A70a5db45dB8A4B2e1b9E4BCbAF`, revert effect
+`0x6A4469c7337185c60f311f9B6f2958aB3dDb2480`. All five Sourcify matches are
+`match` (verification ids `cc4e6b37-7609-4126-a843-568bf5d04555`,
+`014d6c95-ad38-4c96-9c4c-4b2e65b32a6f`, `3f3fcef4-ce22-4212-8be3-373a27f26af3`,
+`9eba4078-da05-426d-90c3-6ae234826037`, and
+`5f8b3aee-87b1-4d12-a387-e31df93a9e60`). The consumer gates CoNET-origin
+mint/release on `rootReady` of
+`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9` and Base-origin mint/release on
+a same-transaction cover call to
+`0x01506527a4Dab14141038Db15f5341dcF4729233`. Smoke used the CoNET-origin
+path with `rootReady` already true. Consume transaction
+`0xba05c5ed6e7903255fb97d9153fbc9d401c6320e5bfff6209dce90ceb1e3f0f6`
+minted `1000000` for id
+`0xdabc77240008d32f4c58b1fec6f526931b4f205de9adcdedb9fd501cc8ea213f`
+and left `isConsumed` true. A second consume of that id reverted. A
+consume through the revert effect for id
+`0x9b50428038b88a635bf03a20eaf2a72d968951d1adaad2ec0ec42c4009e1a314`
+reverted and left `isConsumed` false with minted amount `0`. This
+acceptance does not settle, unpause the old canary, grant Treasury / GB /
+Peer roles, or upgrade
+`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`.
+
 ### Obstacle 5 — stable proxy can settle
 
 **Deploy** a new implementation and upgrade
