@@ -1,0 +1,100 @@
+{
+  "phase": "E",
+  "action": "monitor-baseline-read-only",
+  "status": "HEALTHY",
+  "executedAt": "2026-10-15T02:37:41.766Z",
+  "note": "No on-chain writes. Rollback rows are runbook only until a symptom is Accepted for action.",
+  "addresses": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "aac": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+    "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+    "settlerCanary": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+    "settlerClosedObstacle5": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442"
+  },
+  "aacBase": {
+    "chain": "base",
+    "chainId": 8453,
+    "rpc": "https://base-rpc.conet.network",
+    "blockNumber": 52621257,
+    "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "implementation": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+    "expectedImplementation": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+    "closedSettlerReference": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+    "canaryMintCompleted": true,
+    "canaryRecord": {
+      "aacId": "0x166dca2560308688f371222e4b7ef51ed2ae1ac427671ec95b537314d547da56",
+      "to": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "amount": "10000000",
+      "done": true
+    },
+    "settle": {
+      "reverts": true,
+      "selector": "0x61839255",
+      "custodyClosed": true,
+      "error": "execution reverted (unknown custom error)"
+    },
+    "healthyBaseline": true
+  },
+  "gb": {
+    "conet": {
+      "chain": "conet",
+      "chainId": 224422,
+      "rpc": "https://rpc1.conet.network",
+      "blockNumber": 1717725,
+      "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "adminsOwner": true,
+      "adminsAac": true,
+      "bridgePaused": true,
+      "validatorCount": "0",
+      "requiredVotes": "0",
+      "healthyBaseline": true
+    },
+    "base": {
+      "chain": "base",
+      "chainId": 8453,
+      "rpc": "https://base-rpc.conet.network",
+      "blockNumber": 52621257,
+      "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "adminsOwner": true,
+      "adminsAac": true,
+      "bridgePaused": true,
+      "validatorCount": "0",
+      "requiredVotes": "0",
+      "healthyBaseline": true
+    }
+  },
+  "healthyBaseline": true,
+  "symptomFlags": [],
+  "rollbackCriteria": {
+    "canaryMismatchOrDoubleSpend": {
+      "symptom": "Canary mismatch / double-spend attempt (unexpected mint, wrong canaryRecord, or second mint succeeds)",
+      "actions": [
+        "Owner: pause AAC gateway path (do not open settle; upgradeTo closed Settler 0x3085…3442 if needed)",
+        "Owner/GB admin: revoke Phase B GB admins(AAC) via removeAdmin(AAC) on CoNET + Base if selector present",
+        "Leave miner votes as-is for USDC (Treasury untouched); paid-GB already bridgePaused"
+      ]
+    },
+    "settlerUnexpectedlyOpen": {
+      "symptom": "settle() succeeds or custodyOpen/headerFinal become true without Accepted open",
+      "actions": [
+        "Owner: upgradeTo(closed Obstacle-5 Settler 0x3085216E8329eF7d10c914cB1C43Cd8168f53442)",
+        "Do not grant further Treasury/GB/Peer roles",
+        "Re-run this monitor until settle reverts CustodyClosed and custody flags false"
+      ]
+    },
+    "postWaiveGateDefect": {
+      "symptom": "Post-waive gate defect / bad grant after Phases B–D",
+      "actions": [
+        "Freeze cutover: no further role grants or settle-open",
+        "Revoke Phase B GB admins(AAC) on CoNET + Base if granted",
+        "Keep GB.setBridgePaused(true) unless emergency re-enable of voteBridgeMint is Accepted",
+        "Re-open gates document before any new Accepted phase"
+      ]
+    }
+  },
+  "emergencyReEnablePaidGbVote": "GB.setBridgePaused(false) by same GB admin/owner (Accepted only)",
+  "treasuryVoteBridgeOperation": "NOT MONITORED AS AAC PATH — USDC still miner-vote; not Phase E scope"
+}

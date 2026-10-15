@@ -1,11 +1,12 @@
 # Custody cutover
 
-**Date:** 2026-10-14 (updated 2026-10-15 Phase B + Phase C + Phase D executed)  
+**Date:** 2026-10-14 (updated 2026-10-15 Phase B–E)  
 **Status:** Phase A **RECORDED**; Phase B GB `addAdmin(AAC)` **EXECUTED**
 (2026-10-15). Phase C bounded paid-GB canary **EXECUTED** (2026-10-15;
 C0/C1/C2 — 0.01 GB to OWNER). Phase D **EXECUTED** (2026-10-15) —
 `GB.setBridgePaused(true)` on CoNET + Base for paid-GB `voteBridgeMint`;
-Treasury `voteBridgeOperation` **not** touched (USDC). No historical canary
+Treasury `voteBridgeOperation` **not** touched (USDC). Phase E monitor
+baseline **RECORDED HEALTHY** (2026-10-15; read-only). No historical canary
 unpause.  
 **Precondition:** [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 Obstacles 1–5 **Accepted**; [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
@@ -40,15 +41,19 @@ Do **not** execute any phase below until:
 
 Unpause of historical canaries is **out of scope** for this proposal.
 
-**Next production obstacle:** **Phase E** monitor / rollback ops (and any
-future settle-open gate). Phase D was named and broadcast 2026-10-15 (owner:
-「请push,然后执行 Phase D」). Phase C C1/C2 were named 2026-10-15 (owner:
+**Next production obstacle:** any future **settle-open** gate and/or Treasury
+USDC `voteBridgeOperation` cutover (requires new Accepted owner auth). Phase E
+monitor baseline was recorded HEALTHY 2026-10-15 (owner: 「请 继续 Phase E」).
+Phase D was named and broadcast 2026-10-15 (owner: 「请push,然后执行 Phase D」).
+Phase C C1/C2 were named 2026-10-15 (owner:
 「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
 
 Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-addAdmin-aac.json),
 [deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json)
 (`status: EXECUTED`),
-[deployments/phase-D-gb-setBridgePaused.json](../deployments/phase-D-gb-setBridgePaused.json).
+[deployments/phase-D-gb-setBridgePaused.json](../deployments/phase-D-gb-setBridgePaused.json),
+[deployments/phase-E-monitor-baseline.json](../deployments/phase-E-monitor-baseline.json)
+(`status: HEALTHY`).
 
 ---
 
@@ -60,7 +65,7 @@ Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-a
 | **B** | Grant AAC proxy the **minimum** GB `admins` (and later Treasury if a live setter is named) for AAC mint/release only | **EXECUTED** (GB only; 2026-10-15) |
 | **C** | Bounded AAC paid-GB canary (amount ceiling, known aacId) | **EXECUTED** (2026-10-15; 0.01 GB) |
 | **D** | Pause paid-GB miner `voteBridgeMint` (`GB.setBridgePaused(true)`); leave Treasury USDC vote live | **EXECUTED** (2026-10-15; CoNET + Base) |
-| **E** | Monitor + rollback criteria | Post-cutover ops |
+| **E** | Monitor + rollback criteria (read-only baseline) | **RECORDED HEALTHY** (2026-10-15) |
 
 Miner GB votes stayed **live** through Phases A–C. Phase D paused only paid-GB
 `voteBridgeMint`. USDC `TreasuryBridgeV3.voteBridgeOperation` remains live.
@@ -245,17 +250,39 @@ explicitly for cutover).
 
 ---
 
-## Phase E — Rollback
+## Phase E — Monitor + rollback (RECORDED HEALTHY 2026-10-15)
+
+**Status:** **RECORDED HEALTHY**. Read-only post-D baseline. No on-chain writes.
+Script: `node scripts/monitorPhaseE.mjs` →
+[deployments/phase-E-monitor-baseline.json](../deployments/phase-E-monitor-baseline.json).
+
+### Healthy baseline (must all hold)
+
+| Check | Live expectation |
+| --- | --- |
+| AAC `custodyOpen` / `headerFinal` | Both `false` |
+| AAC EIP-1967 impl | SettlerCanary `0x9b8D…9864` |
+| AAC `canaryMintCompleted` + `canaryRecord` | Spent; `aacId` / `to` / `amount=10000000` match Phase C |
+| AAC `settle()` | Reverts `CustodyClosed` (`0x61839255`) |
+| GB `admins(OWNER)` + `admins(AAC)` | `true` on CoNET + Base |
+| GB `bridgePaused` | `true` on CoNET + Base (paid-GB `voteBridgeMint`) |
+
+### Rollback criteria (runbook only until symptom Accepted)
 
 | Symptom | Action |
 | --- | --- |
-| Canary mismatch / double spend attempt | Pause AAC gateway / revoke Phase B roles; leave miner votes live |
-| Settler unexpectedly opens | Owner upgrade to closed impl; do not grant further roles |
+| Canary mismatch / double-spend attempt | Pause AAC gateway / revoke Phase B GB `admins(AAC)`; leave USDC miner votes live |
+| Settler unexpectedly opens | Owner `upgradeTo` closed Settler `0x3085…3442`; do not grant further roles |
 | Post-waive gate defect / bad grant | Freeze cutover; revoke Phase B GB `admins` if granted; re-open gates document |
+
+Emergency re-enable paid-GB miner vote: `GB.setBridgePaused(false)` by same GB
+admin/owner — **Accepted only**. Treasury USDC is **not** Phase E scope.
+
+Re-run: `node scripts/monitorPhaseE.mjs` (exit `0` = HEALTHY; exit `2` = SYMPTOM).
 
 ---
 
-## Explicit non-execution / execution record (updated 2026-10-15 Phase D)
+## Explicit non-execution / execution record (updated 2026-10-15 Phase E)
 
 | Action | Status |
 | --- | --- |
@@ -265,6 +292,7 @@ explicitly for cutover).
 | Paid-GB miner `voteBridgeMint` pause (`setBridgePaused(true)`) | **EXECUTED** (Phase D — CoNET + Base; see above) |
 | Treasury USDC `voteBridgeOperation` disable | **Not sent** (USDC not served by AAC) |
 | Phase C canary mint / release / proxy upgrade | **EXECUTED** (C0/C1/C2 — 0.01 paid GB; see above) |
+| Phase E monitor baseline | **RECORDED HEALTHY** (read-only; see above) |
 | Historical canary unpause | **Not sent** |
 
 Custody remains closed for production settle. Production **USDC** continues on

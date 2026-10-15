@@ -174,10 +174,11 @@ consumer, and production settler upgrade of
 reverts `CustodyClosed`. Independent audit and third-party acceptance were
 **waived by owner 2026-10-14**. Phase B GB `addAdmin(AAC)`, Phase C canary
 (0.01 paid GB), and Phase D paid-GB `setBridgePaused(true)` (CoNET + Base)
-were **executed** 2026-10-15 (next: Phase E monitor / rollback). Engineering
-assurance: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover
-(Phase A recorded; Phase B GB **executed**; Phase C canary **EXECUTED**;
-Phase D **EXECUTED** 2026-10-15 — Treasury USDC vote untouched):
+were **executed** 2026-10-15. Phase E monitor baseline **RECORDED HEALTHY**
+2026-10-15. Engineering assurance:
+[PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover (Phase A
+recorded; Phase B–D **EXECUTED**; Phase E **RECORDED HEALTHY** 2026-10-15 —
+Treasury USDC vote untouched):
 [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 The full rule set is

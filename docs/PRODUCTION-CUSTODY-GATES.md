@@ -1,10 +1,11 @@
 # Production custody gates
 
-Status on `2026-10-14` (Phase D updated `2026-10-15`): **custody closed.** The
+Status on `2026-10-14` (Phase E updated `2026-10-15`): **custody closed.** The
 stable Base proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote
 accepted execution proofs. `headerFinal()` is false. `settle()` reverts
 `CustodyClosed`. Paid-GB miner `voteBridgeMint` is **paused** (Phase D);
-USDC `voteBridgeOperation` remains the live USDC bridge.
+Phase E monitor baseline is **HEALTHY**. USDC `voteBridgeOperation` remains
+the live USDC bridge.
 
 This page is the current threshold plan. Historical Shadow approvals in
 [PRODUCTION-EVALUATION.md](PRODUCTION-EVALUATION.md) do not open custody.
@@ -19,7 +20,8 @@ reverts `CustodyClosed`. Independent audit and third-party acceptance were
 [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover (Phase A
 recorded; Phase B GB `addAdmin(AAC)` **EXECUTED** 2026-10-15; Phase C canary
 **EXECUTED** 2026-10-15 — 0.01 paid GB; Phase D paid-GB `setBridgePaused(true)`
-**EXECUTED** 2026-10-15 — CoNET + Base; Treasury USDC vote untouched):
+**EXECUTED** 2026-10-15 — CoNET + Base; Phase E monitor **RECORDED HEALTHY**
+2026-10-15; Treasury USDC vote untouched):
 [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 | Obstacle | Accepted deployment (Base) |

@@ -25,8 +25,8 @@ are Accepted** (2026-10-14). Custody and production settle remain closed
 (independent audit and third-party acceptance **waived by owner 2026-10-14**;
 Phase B GB **executed** 2026-10-15; Phase C canary **EXECUTED** 2026-10-15 —
 0.01 paid GB; Phase D paid-GB `setBridgePaused(true)` **EXECUTED** 2026-10-15 —
-CoNET + Base; USDC miner vote untouched; next Phase E). The closed Base proxy
-does not open production settle by itself.
+CoNET + Base; Phase E monitor **RECORDED HEALTHY** 2026-10-15; USDC miner vote
+untouched). The closed Base proxy does not open production settle by itself.
 
 ## Final production Shadow evaluation — 2026-09-28
 
@@ -223,8 +223,9 @@ Engineering assurance after those gates:
 fail-closed smoke **PASS**; independent audit + third-party acceptance
 **WAIVED BY OWNER 2026-10-14**). Phase B–D are **EXECUTED** (2026-10-15):
 GB `addAdmin(AAC)`, 0.01 paid-GB canary, paid-GB `setBridgePaused(true)` on
-CoNET + Base. Treasury USDC `voteBridgeOperation` remains live. Next:
-[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase E. Shadow reports still print
+CoNET + Base. Phase E monitor baseline **RECORDED HEALTHY**
+([CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)). Treasury USDC
+`voteBridgeOperation` remains live. Shadow reports still print
 `custody closed`, `registry paused`, and `consume denied`. The shadow
 decision path does not print `final true`.
 

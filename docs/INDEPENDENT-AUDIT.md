@@ -11,8 +11,9 @@ or invent third-party sign-off.
 This document remains the runbook **if** an optional independent third-party
 security audit is still commissioned. It no longer blocks cutover.
 Phase B GB `addAdmin(AAC)`, Phase C canary (0.01 paid GB), and Phase D
-paid-GB `setBridgePaused(true)` were **executed** 2026-10-15. Next:
-[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase E (monitor / rollback).
+paid-GB `setBridgePaused(true)` were **executed** 2026-10-15. Phase E
+monitor baseline **RECORDED HEALTHY** 2026-10-15
+([CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
 
 Related:
 
@@ -216,7 +217,7 @@ Remote: `git@github.com:CoNET-project/bridgeAAC.git`.
 ### 6.4 Mirror GitBook (same task if public book cites AAC)
 
 Update English pages that still say audit **PENDING** (production pages should
-already say **WAIVED** / Phase B–D **EXECUTED** / next = Phase E):
+already say **WAIVED** / Phase B–D **EXECUTED** / Phase E **RECORDED HEALTHY**):
 
 - `src/docs/gitbook/l1/aac-cross-chain.md`
 - `src/docs/gitbook/developers/l1-erc20-bridge.md` (if it cites the gate)

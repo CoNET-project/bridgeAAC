@@ -1,19 +1,22 @@
 # Production assurance (post Obstacles 1–5)
 
 **Date:** 2026-10-14 (initial); Phase A re-run **2026-10-15**; Phase C
-**EXECUTED 2026-10-15**; Phase D **EXECUTED 2026-10-15**  
+**EXECUTED 2026-10-15**; Phase D **EXECUTED 2026-10-15**; Phase E
+**RECORDED HEALTHY 2026-10-15**  
 **Repo HEAD (evidence):** `83bb39b` (initial); Phase A re-run at `a44b907`  
 **Scope:** Independent assurance package after
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) Obstacles 1–5 Accepted.  
 **Custody:** remains **closed** for production settle. Phase C proved
 one-shot AAC-proxy `mintPaid` for **0.01 paid GB** only. Phase D paused
-paid-GB `voteBridgeMint` (`setBridgePaused(true)` CoNET + Base). This
-document does **not** authorize Treasury USDC vote disable, Treasury grants
-to AAC, or unpause of any historical canary.
+paid-GB `voteBridgeMint` (`setBridgePaused(true)` CoNET + Base). Phase E
+monitor baseline is **HEALTHY** (read-only). This document does **not**
+authorize Treasury USDC vote disable, Treasury grants to AAC, or unpause of
+any historical canary.
 
 Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**;
 Phase B GB **executed** (2026-10-15); Phase C canary **EXECUTED** (2026-10-15;
-0.01 GB); Phase D **EXECUTED** (2026-10-15; paid-GB pause).
+0.01 GB); Phase D **EXECUTED** (2026-10-15; paid-GB pause); Phase E
+**RECORDED HEALTHY** (2026-10-15).
 
 ---
 
@@ -27,14 +30,15 @@ Phase B GB **executed** (2026-10-15); Phase C canary **EXECUTED** (2026-10-15;
 | Small canary mint (paid GB) | **EXECUTED** — Phase C C0/C1/C2 (0.01 GB to OWNER); see §5 |
 | Independent third-party security audit | **WAIVED BY OWNER 2026-10-14** (checklist retained below for optional use) |
 | Third-party / Shadow acceptance as cutover hard stop | **WAIVED BY OWNER 2026-10-14** (same message) |
-| Role grant / miner-vote cutover | Phase B GB `addAdmin(AAC)` **EXECUTED**; Phase C canary **EXECUTED**; Phase D paid-GB `setBridgePaused(true)` **EXECUTED** (Treasury USDC vote untouched) |
+| Role grant / miner-vote cutover | Phase B GB `addAdmin(AAC)` **EXECUTED**; Phase C canary **EXECUTED**; Phase D paid-GB `setBridgePaused(true)` **EXECUTED** (Treasury USDC vote untouched); Phase E monitor **RECORDED HEALTHY** |
 
 **Independent audit / third-party acceptance are no longer hard stops** (owner
 waive 2026-10-14: 「请跳过 第三方验收与独立审计 步骤，不在需要独立审计，直接进入下一个生产部署的阻碍」).
 Engineering assurance evidence remains recorded. **Custody stays closed**
 for settle (still reverts). Phase C one-shot `canaryMintPaid` is spent.
-Paid-GB miner `voteBridgeMint` is paused. **Next production obstacle:**
-Phase E monitor / rollback ops (and any future settle-open / USDC cutover).
+Paid-GB miner `voteBridgeMint` is paused. Phase E monitor baseline is
+**HEALTHY**. **Next production obstacle:** any future settle-open / USDC
+cutover (new Accepted owner auth).
 
 ---
 
@@ -136,9 +140,9 @@ If an auditor is engaged anyway, they should confirm at least:
 
 **Status:** **WAIVED BY OWNER 2026-10-14** as a production hard stop. Phase B
 B1/B2, Phase C C1/C2, and Phase D paid-GB pause were later **named and
-executed** (2026-10-15). Next blocker: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)
-**Phase E** (monitor / rollback) and any future settle-open or USDC vote
-cutover.
+executed** (2026-10-15). Phase E monitor baseline **RECORDED HEALTHY**
+(2026-10-15). Next blocker: any future settle-open or USDC vote cutover
+([CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
 
 ---
 
