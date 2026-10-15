@@ -1,10 +1,12 @@
 # Custody cutover
 
-**Date:** 2026-10-14 (updated 2026-10-15 Phase B + Phase C executed)  
+**Date:** 2026-10-14 (updated 2026-10-15 Phase B + Phase C + Phase D executed)  
 **Status:** Phase A **RECORDED**; Phase B GB `addAdmin(AAC)` **EXECUTED**
 (2026-10-15). Phase C bounded paid-GB canary **EXECUTED** (2026-10-15;
-C0/C1/C2 — 0.01 GB to OWNER). Phase D **NOT EXECUTED** — no miner-vote
-disable, no unpause.  
+C0/C1/C2 — 0.01 GB to OWNER). Phase D **EXECUTED** (2026-10-15) —
+`GB.setBridgePaused(true)` on CoNET + Base for paid-GB `voteBridgeMint`;
+Treasury `voteBridgeOperation` **not** touched (USDC). No historical canary
+unpause.  
 **Precondition:** [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 Obstacles 1–5 **Accepted**; [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
 engineering smoke **PASS**; **independent audit + third-party acceptance
@@ -38,13 +40,15 @@ Do **not** execute any phase below until:
 
 Unpause of historical canaries is **out of scope** for this proposal.
 
-**Next production obstacle:** **Phase D** miner-vote cutover — requires a
-separate owner message naming disable / drain transactions. Phase C C1/C2 were
-named and broadcast 2026-10-15 (owner: 「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
+**Next production obstacle:** **Phase E** monitor / rollback ops (and any
+future settle-open gate). Phase D was named and broadcast 2026-10-15 (owner:
+「请push,然后执行 Phase D」). Phase C C1/C2 were named 2026-10-15 (owner:
+「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
 
 Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-addAdmin-aac.json),
 [deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json)
-(`status: EXECUTED`).
+(`status: EXECUTED`),
+[deployments/phase-D-gb-setBridgePaused.json](../deployments/phase-D-gb-setBridgePaused.json).
 
 ---
 
@@ -55,11 +59,11 @@ Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-a
 | **A** | Read-only preflight (roles, pause, bindings) | **RECORDED** (2026-10-15) |
 | **B** | Grant AAC proxy the **minimum** GB `admins` (and later Treasury if a live setter is named) for AAC mint/release only | **EXECUTED** (GB only; 2026-10-15) |
 | **C** | Bounded AAC paid-GB canary (amount ceiling, known aacId) | **EXECUTED** (2026-10-15; 0.01 GB) |
-| **D** | Disable or drain miner `voteBridgeOperation` / `voteBridgeMint` paths | **No** — only after separate written approval |
+| **D** | Pause paid-GB miner `voteBridgeMint` (`GB.setBridgePaused(true)`); leave Treasury USDC vote live | **EXECUTED** (2026-10-15; CoNET + Base) |
 | **E** | Monitor + rollback criteria | Post-cutover ops |
 
-Miner votes stay **live** through Phases A–C. Do not disable miner votes before
-a successful AAC canary.
+Miner GB votes stayed **live** through Phases A–C. Phase D paused only paid-GB
+`voteBridgeMint`. USDC `TreasuryBridgeV3.voteBridgeOperation` remains live.
 
 ---
 
@@ -212,16 +216,32 @@ paths were not touched.
 
 ---
 
-## Phase D — Miner-vote cutover (NOT EXECUTED)
+## Phase D — Miner-vote cutover (EXECUTED 2026-10-15)
 
-Only after Phase C success and a separate written approval:
+**Scope decision:** Phase C served **paid GB only**. Phase D therefore pauses
+**GB** `voteBridgeMint` via `setBridgePaused(true)` on CoNET and Base. It does
+**not** disable Treasury `voteBridgeOperation` (USDC still miner-vote).
 
-1. Disable or route away `voteBridgeOperation` / `voteBridgeMint` for the
-   assets now served by AAC.
-2. Keep a documented emergency re-enable path owned by the same owner /
-   multisig.
-3. Update GitBook + `PRODUCTION-CUSTODY-GATES.md` cutover Accepted section in
-   the **same** task as the on-chain change.
+### Phase D evidence (2026-10-15) — EXECUTED
+
+Script: [scripts/pauseGbVoteBridgeMintPhaseD.mjs](../scripts/pauseGbVoteBridgeMintPhaseD.mjs)  
+JSON: [deployments/phase-D-gb-setBridgePaused.json](../deployments/phase-D-gb-setBridgePaused.json)
+
+| Chain | Tx | Block | `bridgePaused()` |
+| --- | --- | --- | --- |
+| CoNET `224422` | `0x3a0c47577076fe65ab42ed3759be8aca9992fba4ef04568a12ba2aa537968040` | `1717104` | `true` |
+| Base `8453` | `0xd0732bdebadd70b83a116b71937020ba50a75df2ed135cd8ab0c20097e5ac4f0` | `52619394` | `true` |
+
+Preflight on both chains: `admins(OWNER)=true`, `admins(AAC)=true`,
+`validatorCount=0`, `requiredVotes=0` (votes already inert; pause still set
+explicitly for cutover).
+
+| Item | Status |
+| --- | --- |
+| Emergency re-enable | `GB.setBridgePaused(false)` by same GB admin / owner |
+| Treasury `voteBridgeOperation` | **NOT TOUCHED** |
+| AAC `settle` / custody | Still closed (`CustodyClosed`) |
+| AAC `mintPaid` (admin path) | Still available to AAC proxy (pause does not block admin mint) |
 
 ---
 
@@ -235,20 +255,21 @@ Only after Phase C success and a separate written approval:
 
 ---
 
-## Explicit non-execution / execution record (updated 2026-10-15)
+## Explicit non-execution / execution record (updated 2026-10-15 Phase D)
 
 | Action | Status |
 | --- | --- |
 | Treasury role grant to AAC proxy | **Not sent** |
 | GB role grant to AAC proxy | **EXECUTED** (Phase B B1/B2 — see above) |
 | Peer role grant | **Not sent** |
-| Miner vote disable | **Not sent** |
+| Paid-GB miner `voteBridgeMint` pause (`setBridgePaused(true)`) | **EXECUTED** (Phase D — CoNET + Base; see above) |
+| Treasury USDC `voteBridgeOperation` disable | **Not sent** (USDC not served by AAC) |
 | Phase C canary mint / release / proxy upgrade | **EXECUTED** (C0/C1/C2 — 0.01 paid GB; see above) |
 | Historical canary unpause | **Not sent** |
 
-Custody remains closed for production settle / USDC. Production USDC continue
-on the miner-vote bridge until Phase D is authorized and completed. Phase C
-proved AAC-proxy `mintPaid` for paid GB only; settle still reverts.
+Custody remains closed for production settle. Production **USDC** continues on
+the miner-vote Treasury bridge. Paid-GB miner `voteBridgeMint` is **paused**;
+AAC-proxy admin `mintPaid` remains the AAC canary path. Settle still reverts.
 
 ---
 

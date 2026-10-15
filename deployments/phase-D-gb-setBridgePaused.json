@@ -1,0 +1,33 @@
+{
+  "phase": "D",
+  "action": "setBridgePaused(true)",
+  "asset": "paid-GB",
+  "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+  "aac": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "emergencyReEnable": "GB.setBridgePaused(false) by same GB admin/owner",
+  "treasuryVoteBridgeOperation": "NOT TOUCHED — USDC not served by AAC",
+  "executedAt": "2026-10-15T01:35:37.974Z",
+  "results": [
+    {
+      "chain": "conet",
+      "chainId": 224422,
+      "skipped": false,
+      "txHash": "0x3a0c47577076fe65ab42ed3759be8aca9992fba4ef04568a12ba2aa537968040",
+      "blockNumber": 1717104,
+      "bridgePaused": true,
+      "validatorCount": "0",
+      "requiredVotes": "0"
+    },
+    {
+      "chain": "base",
+      "chainId": 8453,
+      "skipped": false,
+      "txHash": "0xd0732bdebadd70b83a116b71937020ba50a75df2ed135cd8ab0c20097e5ac4f0",
+      "blockNumber": 52619394,
+      "bridgePaused": true,
+      "validatorCount": "0",
+      "requiredVotes": "0"
+    }
+  ]
+}

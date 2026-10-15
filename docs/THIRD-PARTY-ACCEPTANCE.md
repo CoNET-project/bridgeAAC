@@ -3,9 +3,9 @@
 **Cutover hard-stop status (2026-10-14):** **WAIVED BY OWNER** for production
 deployment sequencing (same message waived independent audit). Shadow
 acceptance evidence in this guide remains useful for observer ops; it is **not**
-required before cutover. Phase B GB `addAdmin(AAC)` and Phase C canary
-(0.01 paid GB) **executed** 2026-10-15. Next obstacle:
-[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D (miner-vote cutover).
+required before cutover. Phase B GB `addAdmin(AAC)`, Phase C canary
+(0.01 paid GB), and Phase D paid-GB `setBridgePaused(true)` **executed**
+2026-10-15. Next: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase E.
 
 This guide defines the acceptance evidence for `bridge-aac-v0.33.10`.
 Use the [v0.33.10 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.10)

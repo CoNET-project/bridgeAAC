@@ -1,18 +1,19 @@
 # Production assurance (post Obstacles 1–5)
 
 **Date:** 2026-10-14 (initial); Phase A re-run **2026-10-15**; Phase C
-**EXECUTED 2026-10-15**  
+**EXECUTED 2026-10-15**; Phase D **EXECUTED 2026-10-15**  
 **Repo HEAD (evidence):** `83bb39b` (initial); Phase A re-run at `a44b907`  
 **Scope:** Independent assurance package after
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) Obstacles 1–5 Accepted.  
-**Custody:** remains **closed** for production settle / USDC. Phase C proved
-one-shot AAC-proxy `mintPaid` for **0.01 paid GB** only. This document does
-**not** authorize miner-vote cutover, Treasury grants, or unpause of any
-historical canary.
+**Custody:** remains **closed** for production settle. Phase C proved
+one-shot AAC-proxy `mintPaid` for **0.01 paid GB** only. Phase D paused
+paid-GB `voteBridgeMint` (`setBridgePaused(true)` CoNET + Base). This
+document does **not** authorize Treasury USDC vote disable, Treasury grants
+to AAC, or unpause of any historical canary.
 
 Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**;
 Phase B GB **executed** (2026-10-15); Phase C canary **EXECUTED** (2026-10-15;
-0.01 GB); Phase D **not executed**.
+0.01 GB); Phase D **EXECUTED** (2026-10-15; paid-GB pause).
 
 ---
 
@@ -26,13 +27,14 @@ Phase B GB **executed** (2026-10-15); Phase C canary **EXECUTED** (2026-10-15;
 | Small canary mint (paid GB) | **EXECUTED** — Phase C C0/C1/C2 (0.01 GB to OWNER); see §5 |
 | Independent third-party security audit | **WAIVED BY OWNER 2026-10-14** (checklist retained below for optional use) |
 | Third-party / Shadow acceptance as cutover hard stop | **WAIVED BY OWNER 2026-10-14** (same message) |
-| Role grant / miner-vote cutover | Phase B GB `addAdmin(AAC)` **EXECUTED**; Phase C canary **EXECUTED**; Phase D miner-vote **NOT EXECUTED** |
+| Role grant / miner-vote cutover | Phase B GB `addAdmin(AAC)` **EXECUTED**; Phase C canary **EXECUTED**; Phase D paid-GB `setBridgePaused(true)` **EXECUTED** (Treasury USDC vote untouched) |
 
 **Independent audit / third-party acceptance are no longer hard stops** (owner
 waive 2026-10-14: 「请跳过 第三方验收与独立审计 步骤，不在需要独立审计，直接进入下一个生产部署的阻碍」).
 Engineering assurance evidence remains recorded. **Custody stays closed**
 for settle (still reverts). Phase C one-shot `canaryMintPaid` is spent.
-**Next production obstacle:** Phase D miner-vote cutover.
+Paid-GB miner `voteBridgeMint` is paused. **Next production obstacle:**
+Phase E monitor / rollback ops (and any future settle-open / USDC cutover).
 
 ---
 
@@ -99,7 +101,7 @@ recorded in that Phase A evidence table — not a role grant.
 | UUPS proxy `0x9051…` | Owner may `upgradeTo` a closed implementation; storage layout must stay append-only (Obstacle 5). |
 | Settler | `custodyOpen` / `headerFinal` pure `false`; `settle` reverts `CustodyClosed` until a **future** accepted cutover changes that contract under a new gate. |
 | Consume-once | Second consume / reentrancy / failed effect already rejected on-chain under Obstacle 4 evidence. |
-| Miner votes | Remain the **live** bridge until cutover; no need to roll back AAC for production USDC/GB today. |
+| Miner votes | Paid-GB `voteBridgeMint` **paused** (Phase D); USDC `voteBridgeOperation` still live. No need to roll back AAC for production USDC today. |
 | Shadow | Read-only observer; stop/restart does not affect custody. |
 
 No production rollback tx was sent as part of this assurance run.
@@ -133,9 +135,10 @@ If an auditor is engaged anyway, they should confirm at least:
    scope for this cutover proposal.
 
 **Status:** **WAIVED BY OWNER 2026-10-14** as a production hard stop. Phase B
-B1/B2 and Phase C C1/C2 were later **named and executed** (2026-10-15). Next
-blocker: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) **Phase D** (miner-vote
-cutover — needs separate owner auth).
+B1/B2, Phase C C1/C2, and Phase D paid-GB pause were later **named and
+executed** (2026-10-15). Next blocker: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)
+**Phase E** (monitor / rollback) and any future settle-open or USDC vote
+cutover.
 
 ---
 
@@ -161,12 +164,13 @@ unpause was **not** sent.
 ## 6. Explicit non-claims
 
 - Obstacles 1–5 Accepted ≠ custody open.
-- Phase B GB `admins(AAC)` ≠ open settle / miner-vote cutover.
-- Phase C 0.01 paid-GB canary ≠ open settle / USDC mint / Phase D.
-- Owner waive of audit ≠ Phase D.
+- Phase B GB `admins(AAC)` ≠ open settle.
+- Phase C 0.01 paid-GB canary ≠ open settle / USDC mint.
+- Phase D paid-GB `setBridgePaused(true)` ≠ Treasury USDC vote disable / open settle.
+- Owner waive of audit ≠ open settle.
 - 107 local tests ≠ permission to open custody.
 - Fail-closed smoke ≠ permission to open settle.
-- GitBook / whitepaper sync ≠ cutover Phase D.
+- GitBook / whitepaper sync ≠ open settle.
 
 ---
 

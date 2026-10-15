@@ -1,9 +1,10 @@
 # Production custody gates
 
-Status on `2026-10-14`: **custody closed.** The stable Base proxy
-`0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote accepted execution
-proofs. `headerFinal()` is false. `settle()` reverts `CustodyClosed`.
-Miner votes remain the live bridge.
+Status on `2026-10-14` (Phase D updated `2026-10-15`): **custody closed.** The
+stable Base proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote
+accepted execution proofs. `headerFinal()` is false. `settle()` reverts
+`CustodyClosed`. Paid-GB miner `voteBridgeMint` is **paused** (Phase D);
+USDC `voteBridgeOperation` remains the live USDC bridge.
 
 This page is the current threshold plan. Historical Shadow approvals in
 [PRODUCTION-EVALUATION.md](PRODUCTION-EVALUATION.md) do not open custody.
@@ -13,13 +14,13 @@ New Base finality proofs use the
 That root is a recent finalized sync committee, not the Altair fork.
 Obstacles **1–5 are Accepted** on 2026-10-14. Custody stays closed:
 `custodyOpen()` and `headerFinal()` remain false; no-arg `settle()` still
-reverts `CustodyClosed`. Miner votes remain the live bridge until a separate
-cutover grants GB / Treasury roles. Independent audit and third-party
-acceptance were **waived by owner 2026-10-14**. Post-gate engineering
-assurance: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover
-(Phase A recorded; Phase B GB `addAdmin(AAC)` **EXECUTED** 2026-10-15;
-Phase C canary **EXECUTED** 2026-10-15 — 0.01 paid GB; Phase D **not
-executed**): [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
+reverts `CustodyClosed`. Independent audit and third-party acceptance were
+**waived by owner 2026-10-14**. Post-gate engineering assurance:
+[PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover (Phase A
+recorded; Phase B GB `addAdmin(AAC)` **EXECUTED** 2026-10-15; Phase C canary
+**EXECUTED** 2026-10-15 — 0.01 paid GB; Phase D paid-GB `setBridgePaused(true)`
+**EXECUTED** 2026-10-15 — CoNET + Base; Treasury USDC vote untouched):
+[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 | Obstacle | Accepted deployment (Base) |
 |---|---|
@@ -311,7 +312,7 @@ Peer roles.
 | Cutover Phase A read-only preflight | After assurance smoke; before Phase B | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase A evidence — **RECORDED** (2026-10-15) |
 | Grant GB `admins` (and later Treasury if named) to the AAC proxy | Owner named B1/B2 | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase B — GB **EXECUTED** 2026-10-15; Treasury still **NOT EXECUTED** |
 | Bounded AAC canary (Phase C) | Owner named C1/C2 + amount 0.01 | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase C — **EXECUTED** 2026-10-15 (0.01 paid GB) |
-| Leave miner `voteBridgeOperation` and `voteBridgeMint` live | Until Phase D after canary | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D — **NOT EXECUTED** |
+| Pause paid-GB `voteBridgeMint`; leave USDC `voteBridgeOperation` live | Phase D after canary | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D — **EXECUTED** 2026-10-15 (`setBridgePaused(true)` CoNET + Base) |
 | Unpause the old canary, or point it at these proofs | Not part of this plan | Explicitly excluded |
 
 ## Optional proof, not a threshold

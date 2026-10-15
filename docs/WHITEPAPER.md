@@ -172,11 +172,12 @@ consumer, and production settler upgrade of
 `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`). Custody stays closed:
 `custodyOpen()` / `headerFinal()` remain false; no-arg `settle()` still
 reverts `CustodyClosed`. Independent audit and third-party acceptance were
-**waived by owner 2026-10-14**. Phase B GB `addAdmin(AAC)` and Phase C canary
-(0.01 paid GB) were **executed** 2026-10-15 (next obstacle: Cutover Phase D).
-Engineering assurance: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md).
-Cutover proposal (Phase A recorded; Phase B GB **executed**; Phase C canary
-**EXECUTED** 2026-10-15; Phase D **not executed**):
+**waived by owner 2026-10-14**. Phase B GB `addAdmin(AAC)`, Phase C canary
+(0.01 paid GB), and Phase D paid-GB `setBridgePaused(true)` (CoNET + Base)
+were **executed** 2026-10-15 (next: Phase E monitor / rollback). Engineering
+assurance: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover
+(Phase A recorded; Phase B GB **executed**; Phase C canary **EXECUTED**;
+Phase D **EXECUTED** 2026-10-15 — Treasury USDC vote untouched):
 [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 The full rule set is
@@ -218,7 +219,7 @@ Production deployment acceptance is the five obstacles in
 | 4 | New consume-once consumer | One AAC id, one consume. Not the paused canary and not the specification proxy |
 | 5 | Upgrade `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` → settler impl `0x3085216E8329eF7d10c914cB1C43Cd8168f53442` | Cover overloads accept the Obstacle 2 sample; no-arg `settle()` still reverts `CustodyClosed` |
 
-**Status (2026-10-14):** all five rows Accepted. Addresses: (1) `0xcEE3…A961`; (2) cover `0x01506527…`; (3) `0xE4f6c834…`; (4) consumer `0xC6CBcC0c…`; (5) proxy `0x9051…` / impl `0x3085…`. The Altair store and the historical 0.01 USDC lock do not pass these obstacles. Custody, mint, release, and miner-vote cutover remain closed. Post-gate assurance and the cutover proposal (proposal only): [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md), [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
+**Status (2026-10-14; Phase D updated 2026-10-15):** all five rows Accepted. Addresses: (1) `0xcEE3…A961`; (2) cover `0x01506527…`; (3) `0xE4f6c834…`; (4) consumer `0xC6CBcC0c…`; (5) proxy `0x9051…` / Obstacle 5 impl `0x3085…` (live after Phase C → SettlerCanary `0x9b8D…`). The Altair store and the historical 0.01 USDC lock do not pass these obstacles. Custody and production settle remain closed. Paid-GB `voteBridgeMint` is paused (Phase D); USDC miner vote remains live. Post-gate assurance and cutover: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md), [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 At the 2026-10-12 Base measurement, one rotation used about `11.5` million gas
 and about `0.000069` ETH at `0.006` gwei. A year of rotations is about `321`
@@ -227,7 +228,7 @@ not part of this cost.
 
 ## 5. Live path until the adapter exists
 
-On mainnet, USDC still settles through miner `voteBridgeOperation` on TreasuryBridgeV3. GB still settles through `voteBridgeMint`. Peer v5 is specified and not yet the live developer bridge.
+On mainnet, USDC still settles through miner `voteBridgeOperation` on TreasuryBridgeV3. Paid-GB miner `voteBridgeMint` is **paused** (`GB.setBridgePaused(true)`, Phase D 2026-10-15). Peer v5 is specified and not yet the live developer bridge.
 
 Those votes must not be labeled as Merkle proofs or as reserved AACs. The Rust gateway is the reference state machine for the replacement, not a switch that turns the live vote off.
 
@@ -240,7 +241,7 @@ A paused gateway rejects new submits, reserves, and consumes. Previously stored 
 ## 7. Non-goals of this draft
 
 - Opening mint, release, settlement broadcasting, or a miner-vote cutover (Obstacles 1–5 Accepted does not open custody; see [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
-- Replacing the live miner quorum before a separately approved cutover ([PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 **WAIVED BY OWNER 2026-10-14**; Phase B GB grants **EXECUTED** 2026-10-15; Phase C canary **EXECUTED** 2026-10-15 (0.01 GB); Phase D still **NOT EXECUTED**).
+- Disabling Treasury USDC miner `voteBridgeOperation` or opening production settle without a separately approved gate ([PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 **WAIVED BY OWNER 2026-10-14**; Phase B–D **EXECUTED** 2026-10-15 — paid-GB pause only; USDC vote untouched).
 - Treating an event log, a relayer signature, or a message-bus delivery receipt as a source-chain proof.
 - Treating `headerFinal` relative to the checkpoint as finality handed forward from the Altair fork.
 - Opening a cross-chain route for GB-priced developer tokens.
