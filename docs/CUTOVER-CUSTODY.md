@@ -5,7 +5,8 @@
 unpause, no canary mint/release in this task.  
 **Precondition:** [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 Obstacles 1–5 **Accepted**; [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
-engineering smoke **PASS**; **independent audit still PENDING**.
+engineering smoke **PASS**; **independent audit still PENDING** — completion
+runbook: [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md).
 
 Owner (canonical): `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1`  
 AAC production proxy (Base): `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`  
@@ -23,7 +24,8 @@ GB ERC-20: `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8`
 Do **not** execute any phase below until:
 
 1. Independent audit of gates 1–5 is **Accepted** in writing (attach link or
-   hash to this file in a later commit).
+   hash via [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) →
+   `INDEPENDENT-AUDIT-ACCEPTANCE.md` in a later commit).
 2. The same user message that authorizes cutover **names** the phase(s) and
    the exact role-grant / disable transactions.
 3. `critical-chain-infra-restart-requires-approval.mdc` — no EL/CL restart as
@@ -89,7 +91,8 @@ admin map used for this preflight; AAC proxy is **not** an admin on CoNET or
 Base. Exact Phase B role selectors remain TBD from live ABI at grant time.
 
 **Next hard stop:** Independent audit of Obstacles 1–5 must be **Accepted** in
-writing before Phase B. Do not invent third-party sign-off in-repo.
+writing before Phase B ([INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md)). Do not
+invent third-party sign-off in-repo.
 
 ---
 

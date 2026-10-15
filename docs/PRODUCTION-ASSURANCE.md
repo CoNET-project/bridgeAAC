@@ -102,6 +102,11 @@ No production rollback tx was sent as part of this assurance run.
 
 ## 4. Independent audit checklist (external — PENDING)
 
+**How to complete and publish Accepted on GitHub:** follow
+[INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) (process draft). That runbook
+covers engagement, evidence pack, acceptance artifact shape, and the PR that
+flips this section — without inventing Passed status here.
+
 An independent auditor should confirm at least:
 
 1. **Gate evidence integrity** — Obstacles 1–5 in `PRODUCTION-CUSTODY-GATES.md`
@@ -122,7 +127,8 @@ An independent auditor should confirm at least:
    scope for this cutover proposal.
 
 **Status:** PENDING external written acceptance. Do not mark this row Passed
-in-repo without that artifact.
+in-repo without that artifact (create `INDEPENDENT-AUDIT-ACCEPTANCE.md` per the
+runbook when the auditor Accepts).
 
 ---
 
