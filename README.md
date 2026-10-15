@@ -4,7 +4,29 @@ Linux reference gateway for the Beamio Atomic Asset Container (AAC).
 
 An AAC is a one-time destination-chain record. The source chain locks or burns an asset. The destination chain accepts that fact only after a state proof, marks the record reserved, and then mints or releases the matching asset once.
 
-This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. Paid-GB miner `voteBridgeMint` is **paused** (Phase D, 2026-10-15); USDC remains on the Treasury miner-vote bridge. The current production-readiness decision is [docs/PRODUCTION-EVALUATION.md](docs/PRODUCTION-EVALUATION.md). Obstacles 1–5 in [docs/PRODUCTION-CUSTODY-GATES.md](docs/PRODUCTION-CUSTODY-GATES.md) are **Accepted** (2026-10-14). Engineering assurance is recorded in [docs/PRODUCTION-ASSURANCE.md](docs/PRODUCTION-ASSURANCE.md) (tests + fail-closed smoke **PASS**; independent audit + third-party acceptance **WAIVED BY OWNER 2026-10-14**). Optional audit runbook: [docs/INDEPENDENT-AUDIT.md](docs/INDEPENDENT-AUDIT.md). Phase B GB `addAdmin(AAC)` **executed** 2026-10-15. Phase C bounded paid-GB canary **EXECUTED** 2026-10-15 (0.01 GB). Phase D paid-GB `setBridgePaused(true)` **EXECUTED** 2026-10-15 (CoNET + Base; see [docs/CUTOVER-CUSTODY.md](docs/CUTOVER-CUSTODY.md)). Phase E monitor baseline **RECORDED HEALTHY** 2026-10-15 (read-only). Production settle stays closed.
+This repository is phase 6 of that gateway. The shadow command reads public execution clients and writes a decision. The paused registry cannot mint or release. Production settle stays closed. The milestone list below is the current cutover record.
+
+## Milestones
+
+Recorded on 2026-10-15. Custody views stay closed.
+
+| Milestone | State |
+| --- | --- |
+| Obstacles 1–5 | **Accepted** (2026-10-14). Evidence: [docs/PRODUCTION-CUSTODY-GATES.md](docs/PRODUCTION-CUSTODY-GATES.md) |
+| Assurance | Rust tests and fail-closed smoke **PASS**. Independent audit and third-party acceptance **WAIVED BY OWNER 2026-10-14**. [docs/PRODUCTION-ASSURANCE.md](docs/PRODUCTION-ASSURANCE.md) |
+| Phase B | GB `addAdmin(AAC)` **executed** on CoNET and Base |
+| Phase C | Bounded paid-GB canary **executed** (0.01 GB) |
+| Phase D | Paid-GB `setBridgePaused(true)` **executed** on CoNET and Base |
+| Phase E | Monitor baseline **recorded healthy** (read-only). [docs/CUTOVER-CUSTODY.md](docs/CUTOVER-CUSTODY.md) |
+| F4 committee | CheckpointRoot `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` rotated period **1883 → 1884** |
+| Miner completion | `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBridgeClosed` on Base and CoNET |
+| Destination allowlist | `aacDestinationOpen(8453)` is true on both treasuries. `aacDestinationOpen(224422)` is false. `sourceInitiateOpen` is false on both. Later chains use `setAacDestinationOpen` without another treasury upgrade |
+| SettlerF7c | Pending implementation `0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44`. `upgradeTo` is allowed only after **2026-10-17T13:25:41Z**. The live AAC implementation is still F7 `0x29e10621fF159422237d2a0B9F020303F9BDdD12` |
+| wCNET | CoNET `0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5` (native wrap on). Base `0x0E01ca7a99B38a4E021C25B7BE01356E71158B66` (wrap off). CoNET completion of wCNET must release locked tokens, not mint |
+| Base → CoNET proof | CoNET has no Ethereum BLS precompile on stock Geth. Probe `0x864896C7dD5CA603AA11C3dC0BA329EB78Cc5F78` reports `available() == false`. The receipt settler `0x1C302DE6a6c4d9BE30193A6Bcd65A522C9b9898D` is deployed and Blockscout-verified, and it is **not** installed on `AacChainEffect`. The CoNET checkpoint proxy `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` does not have a committee installed |
+| Execution client | [patch-geth](https://github.com/CoNET-project/patch-geth) builds a Geth that registers EIP-2537 (`0x0b`–`0x11`) on the Cancun table. Prague stays off. That binary is **not** installed on the CoNET execution fleet |
+
+Do not schedule another AAC upgrade. A second `scheduleUpgrade` resets the 48-hour clock. Do not open `sourceInitiateOpen` before the destination completer exists. Do not call `setSettler` while the BLS probe is false.
 
 ## What this crate checks
 
@@ -42,10 +64,11 @@ Intended addresses, same bytecode address on both chains, separate storage:
 
 Chain ids: CONET `224422`, Base `8453`.
 
-Until a production finality adapter is audited, miner votes on `voteBridgeOperation` and GB `voteBridgeMint` remain the live path. This crate does not replace them.
+Miner `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBridgeClosed`. Paid-GB `voteBridgeMint` is paused. This crate still does not mint or release. Base → CoNET completion waits on the patch-geth execution client and on a settler that is not installed yet.
 
 ## Documents
 
+- [patch-geth](https://github.com/CoNET-project/patch-geth) — Cancun-only EIP-2537 build for the CoNET execution client
 - [Whitepaper](docs/WHITEPAPER.md)
 - [MVP phases](docs/MVP.md)
 - [Production custody gates](docs/PRODUCTION-CUSTODY-GATES.md)
