@@ -1,0 +1,29 @@
+{
+  "phase": "B",
+  "executedAt": "2026-10-15T00:58:57.583Z",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "gbToken": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+  "grants": [
+    {
+      "chain": "B1-CoNET",
+      "chainId": 224422,
+      "skipped": false,
+      "txHash": "0x0cea02390f02594a722f9ff90d1e45219332fd509dca6f104996608d32603604",
+      "blockNumber": 1716737,
+      "adminsAac": true
+    },
+    {
+      "chain": "B2-Base",
+      "chainId": 8453,
+      "skipped": false,
+      "txHash": "0xc41287df1815ed9b8bd88fa4bdf3639823c2a674dc5def65d19941f78eca336a",
+      "blockNumber": 52618294,
+      "adminsAac": true
+    }
+  ],
+  "postGrant": {
+    "settleStillClosed": true,
+    "note": "consume-once still records marks only; no mintPaid called in this task"
+  }
+}

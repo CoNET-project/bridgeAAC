@@ -171,10 +171,13 @@ root, one new lock cover, CoNET-source finality on Base, consume-once
 consumer, and production settler upgrade of
 `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`). Custody stays closed:
 `custodyOpen()` / `headerFinal()` remain false; no-arg `settle()` still
-reverts `CustodyClosed`. Independent audit and Treasury / GB role grants
-are outside those five gates. Engineering assurance:
-[PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md). Cutover proposal
-(not executed): [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
+reverts `CustodyClosed`. Independent audit and third-party acceptance were
+**waived by owner 2026-10-14**. Phase B GB `addAdmin(AAC)` and Phase C canary
+(0.01 paid GB) were **executed** 2026-10-15 (next obstacle: Cutover Phase D).
+Engineering assurance: [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md).
+Cutover proposal (Phase A recorded; Phase B GB **executed**; Phase C canary
+**EXECUTED** 2026-10-15; Phase D **not executed**):
+[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 The full rule set is
 [M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md).
@@ -237,7 +240,7 @@ A paused gateway rejects new submits, reserves, and consumes. Previously stored 
 ## 7. Non-goals of this draft
 
 - Opening mint, release, settlement broadcasting, or a miner-vote cutover (Obstacles 1–5 Accepted does not open custody; see [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
-- Replacing the live miner quorum before independent audit and a separately approved cutover ([PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 remains PENDING).
+- Replacing the live miner quorum before a separately approved cutover ([PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 **WAIVED BY OWNER 2026-10-14**; Phase B GB grants **EXECUTED** 2026-10-15; Phase C canary **EXECUTED** 2026-10-15 (0.01 GB); Phase D still **NOT EXECUTED**).
 - Treating an event log, a relayer signature, or a message-bus delivery receipt as a source-chain proof.
 - Treating `headerFinal` relative to the checkpoint as finality handed forward from the Altair fork.
 - Opening a cross-chain route for GB-priced developer tokens.

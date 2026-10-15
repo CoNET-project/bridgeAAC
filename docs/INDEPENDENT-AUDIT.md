@@ -1,24 +1,25 @@
 # Independent audit — how to complete and publish to GitHub
 
-**Status:** **PROCESS DRAFT** — audit itself remains **PENDING**.  
-**Date:** 2026-10-15  
+**Status:** **OPTIONAL PROCESS DRAFT** — as a production hard stop, independent
+audit was **WAIVED BY OWNER 2026-10-14** (same message also waived third-party /
+Shadow acceptance). Quote: 「请跳过 第三方验收与独立审计 步骤，不在需要独立审计，直接进入下一个生产部署的阻碍」.  
+**Date:** 2026-10-15 (waive noted 2026-10-14)  
 **Repo:** [CoNET-project/bridgeAAC](https://github.com/CoNET-project/bridgeAAC)  
 **Does not:** open custody, grant Treasury / GB / Peer roles, unpause canaries,
 execute Cutover Phases B–D, or invent third-party sign-off.
 
-This document is the runbook for finishing the **independent third-party
-security audit** that blocks production cutover after Obstacles 1–5 Accepted
-and engineering assurance PASS. When the auditor Accepts in writing, the
-acceptance artifact is published **on GitHub in this repository** (and mirrored
-from GitBook pointers). Until then, keep the ASSURANCE / CUTOVER rows at
-**PENDING**.
+This document remains the runbook **if** an optional independent third-party
+security audit is still commissioned. It no longer blocks cutover.
+Phase B GB `addAdmin(AAC)` and Phase C canary (0.01 paid GB) were **executed**
+2026-10-15. Next production obstacle:
+[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D (miner-vote cutover).
 
 Related:
 
 - [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) — Obstacles 1–5 Accepted
-- [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) — tests + fail-closed smoke PASS; §4 checklist
-- [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A recorded; B–D blocked on this audit
-- [THIRD-PARTY-ACCEPTANCE.md](THIRD-PARTY-ACCEPTANCE.md) — Shadow / confirmer acceptance (different track)
+- [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) — tests + fail-closed smoke PASS; §4 **WAIVED**; §5 Phase C **EXECUTED**
+- [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A recorded; Phase B GB executed; Phase C canary **EXECUTED** 2026-10-15 (0.01 GB); Phase D **not executed**
+- [THIRD-PARTY-ACCEPTANCE.md](THIRD-PARTY-ACCEPTANCE.md) — Shadow track — also **WAIVED** as cutover hard stop
 
 ---
 
@@ -176,12 +177,17 @@ Optional: attach the PDF as a **GitHub Release** asset
 
 ### 6.2 Update status rows (same PR)
 
+> **Note (2026-10-14):** production sequencing already records audit as
+> **WAIVED BY OWNER**. The table below applies only if an optional audit is
+> later run and Accepted; do not rewrite WAIVED → Accepted without a real
+> auditor artifact.
+
 | File | Change |
 | --- | --- |
 | `docs/PRODUCTION-ASSURANCE.md` | §4 Status → **Accepted**; link acceptance doc + artifact hash |
-| `docs/CUTOVER-CUSTODY.md` | Hard stop item 1 → Accepted with link; Phase B still **NOT EXECUTED** |
+| `docs/CUTOVER-CUSTODY.md` | Hard stop item 1 → Accepted with link; Phase B GB **EXECUTED**; Phase C canary **EXECUTED** 2026-10-15 (0.01 GB); Phase D still **NOT EXECUTED** |
 | `docs/INDEPENDENT-AUDIT.md` | Header Status → point to acceptance doc (keep process text) |
-| `README.md` | Independent audit **PENDING** → **Accepted** (custody still closed) |
+| `README.md` | Independent audit **WAIVED** / optional **Accepted** (custody still closed) |
 
 **Do not** flip Phase B–D to executed in that PR.
 
@@ -198,7 +204,7 @@ git add docs/INDEPENDENT-AUDIT-ACCEPTANCE.md \
 git commit -m "$(cat <<'EOF'
 docs(aac): record independent audit Accepted (custody still closed)
 
-Attach third-party acceptance artifact hash; Phase B+ remains not executed.
+Attach third-party acceptance artifact hash; Phases C–D remain not executed.
 EOF
 )"
 git push -u origin HEAD
@@ -209,21 +215,24 @@ Remote: `git@github.com:CoNET-project/bridgeAAC.git`.
 
 ### 6.4 Mirror GitBook (same task if public book cites AAC)
 
-Update English pages that say audit **PENDING**:
+Update English pages that still say audit **PENDING** (production pages should
+already say **WAIVED** / next = Phase B):
 
 - `src/docs/gitbook/l1/aac-cross-chain.md`
 - `src/docs/gitbook/developers/l1-erc20-bridge.md` (if it cites the gate)
 
-Point them at the GitHub acceptance blob / Release. Deploy with the project
-GitBook script (prefer `REMOTE_USER=peter` on `conet.network` if root SSH fails).
-Smoke `https://gitbook.conet.network/l1/aac-cross-chain.html`.
+Point them at the GitHub acceptance blob / Release **or** the waive note.
+Deploy with the project GitBook script (prefer `REMOTE_USER=peter` on
+`conet.network` if root SSH fails). Smoke
+`https://gitbook.conet.network/l1/aac-cross-chain.html`.
 
 ### 6.5 If Findings (not Accepted)
 
 - Do **not** create `INDEPENDENT-AUDIT-ACCEPTANCE.md` with Status Accepted.
 - Open a GitHub issue or `docs/INDEPENDENT-AUDIT-FINDINGS.md` listing defects.
-- Keep ASSURANCE §4 **PENDING**; freeze cutover; re-open related gate sections
-  after fixes; schedule a re-audit on a new commit pin.
+- Keep ASSURANCE §4 as **WAIVED** (or restore **PENDING** only if the owner
+  re-imposes audit as a hard stop); freeze cutover; re-open related gate
+  sections after fixes; schedule a re-audit on a new commit pin.
 
 ---
 
@@ -235,8 +244,8 @@ Even with audit Accepted on GitHub:
 | --- | --- |
 | Custody open / settler upgrade that sets `custodyOpen` | Separate gate + auth |
 | Cutover Phase B role grants | Explicit owner message naming txs |
-| Phase C canary mint/release | Explicit auth + ceiling |
-| Phase D miner-vote disable | Only after successful canary |
+| Phase C canary mint/release | ~~Explicit auth + ceiling~~ — **EXECUTED** 2026-10-15 (0.01 GB) |
+| Phase D miner-vote disable | Explicit owner auth after successful canary |
 | Unpause historical canaries | Out of scope |
 
 ---

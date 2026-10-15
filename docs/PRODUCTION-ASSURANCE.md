@@ -1,15 +1,18 @@
 # Production assurance (post Obstacles 1–5)
 
-**Date:** 2026-10-14 (initial); Phase A re-run **2026-10-15**  
+**Date:** 2026-10-14 (initial); Phase A re-run **2026-10-15**; Phase C
+**EXECUTED 2026-10-15**  
 **Repo HEAD (evidence):** `83bb39b` (initial); Phase A re-run at `a44b907`  
 **Scope:** Independent assurance package after
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) Obstacles 1–5 Accepted.  
-**Custody:** remains **closed**. This document does **not** authorize Treasury /
-GB / Peer role grants, mint, release, settlement broadcasting, miner-vote
-cutover, or unpause of any historical canary.
+**Custody:** remains **closed** for production settle / USDC. Phase C proved
+one-shot AAC-proxy `mintPaid` for **0.01 paid GB** only. This document does
+**not** authorize miner-vote cutover, Treasury grants, or unpause of any
+historical canary.
 
-Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**
-(2026-10-15); Phases B–D **not executed**.
+Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**;
+Phase B GB **executed** (2026-10-15); Phase C canary **EXECUTED** (2026-10-15;
+0.01 GB); Phase D **not executed**.
 
 ---
 
@@ -18,15 +21,18 @@ Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**
 | Track | Status |
 | --- | --- |
 | Local adversarial + full Rust test suite | **PASS** (`cargo test --tests` → **107** passed, **0** failed; reconfirmed 2026-10-15 at `a44b907`) |
-| Live Base fail-closed smoke (proxy settler) | **PASS** (initial + Phase A re-run 2026-10-15) |
+| Live Base fail-closed smoke (proxy settler) | **PASS** (initial + Phase A re-run 2026-10-15; settle still reverts after Phase C upgrade) |
 | Cutover Phase A (read-only preflight) | **RECORDED** — see [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase A evidence |
-| Small canary mint / release / unpause | **NOT RUN** (custody closed; not authorized) |
-| Independent third-party security audit | **PENDING** (checklist below; no external sign-off in-repo) |
-| Role grant / miner-vote cutover | **NOT EXECUTED** — Phase B+ still blocked on audit |
+| Small canary mint (paid GB) | **EXECUTED** — Phase C C0/C1/C2 (0.01 GB to OWNER); see §5 |
+| Independent third-party security audit | **WAIVED BY OWNER 2026-10-14** (checklist retained below for optional use) |
+| Third-party / Shadow acceptance as cutover hard stop | **WAIVED BY OWNER 2026-10-14** (same message) |
+| Role grant / miner-vote cutover | Phase B GB `addAdmin(AAC)` **EXECUTED**; Phase C canary **EXECUTED**; Phase D miner-vote **NOT EXECUTED** |
 
-**Independent audit is not Passed.** Engineering assurance evidence is recorded
-here so an external auditor can verify gates 1–5 without relying on chat logs.
-Until that audit is Accepted in writing, cutover stay closed.
+**Independent audit / third-party acceptance are no longer hard stops** (owner
+waive 2026-10-14: 「请跳过 第三方验收与独立审计 步骤，不在需要独立审计，直接进入下一个生产部署的阻碍」).
+Engineering assurance evidence remains recorded. **Custody stays closed**
+for settle (still reverts). Phase C one-shot `canaryMintPaid` is spent.
+**Next production obstacle:** Phase D miner-vote cutover.
 
 ---
 
@@ -68,7 +74,7 @@ Production proxy: `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`.
 | `owner()` | `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` | match |
 | `COVER()` | `0x01506527a4Dab14141038Db15f5341dcF4729233` | match |
 | `CONET_FINALITY()` | `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9` | match |
-| EIP-1967 implementation | Settler `0x3085216E8329eF7d10c914cB1C43Cd8168f53442` | match |
+| EIP-1967 implementation | Obstacle 5 Settler `0x3085216E8329eF7d10c914cB1C43Cd8168f53442` (Phase A); live after Phase C → SettlerCanary `0x9b8DDa3d27473A4EdD351fFD4106c388876A9864` | Phase A match; Phase C upgraded |
 | `settle()` (no args) | revert `CustodyClosed()` (`0x61839255`) | revert data `0x61839255` |
 | Consume-once `isConsumed(bytes32(0))` at `0xC6CBcC0c…` | `false` | `false` |
 
@@ -100,14 +106,14 @@ No production rollback tx was sent as part of this assurance run.
 
 ---
 
-## 4. Independent audit checklist (external — PENDING)
+## 4. Independent audit checklist (external — WAIVED)
 
-**How to complete and publish Accepted on GitHub:** follow
-[INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) (process draft). That runbook
-covers engagement, evidence pack, acceptance artifact shape, and the PR that
-flips this section — without inventing Passed status here.
+**Owner waive (2026-10-14):** independent audit and third-party / Shadow
+acceptance are **no longer required** before Cutover Phase B. The checklist
+and [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) runbook remain for optional
+engagement; do **not** invent a Passed acceptance artifact.
 
-An independent auditor should confirm at least:
+If an auditor is engaged anyway, they should confirm at least:
 
 1. **Gate evidence integrity** — Obstacles 1–5 in `PRODUCTION-CUSTODY-GATES.md`
    match live Base addresses, Sourcify / explorer verification, and repo commits
@@ -126,32 +132,41 @@ An independent auditor should confirm at least:
 6. **No silent unpause** — historical canaries stay paused; unpause is out of
    scope for this cutover proposal.
 
-**Status:** PENDING external written acceptance. Do not mark this row Passed
-in-repo without that artifact (create `INDEPENDENT-AUDIT-ACCEPTANCE.md` per the
-runbook when the auditor Accepts).
+**Status:** **WAIVED BY OWNER 2026-10-14** as a production hard stop. Phase B
+B1/B2 and Phase C C1/C2 were later **named and executed** (2026-10-15). Next
+blocker: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) **Phase D** (miner-vote
+cutover — needs separate owner auth).
 
 ---
 
-## 5. Small canary (NOT AUTHORIZED)
+## 5. Small canary (EXECUTED 2026-10-15)
 
-A production canary would require, in a later task with explicit owner
-authorization:
+Phase C **EXECUTED** (owner: 「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
+Evidence: [deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json).
 
-1. Independent audit Accepted.
-2. Cutover Phase A–B role grants executed and verified on-chain.
-3. A bounded AAC mint or release amount with a documented ceiling.
-4. Immediate halt criteria (revert rates, wrong amount, double consume).
+| Step | Result |
+| --- | --- |
+| C0 deploy SettlerCanary | `0x9b8DDa3d…9864` (tx `0x0f609b3a…3994`) |
+| C1 `upgradeTo` | tx `0x252c560f…4673` |
+| C2 `canaryMintPaid(OWNER, 10000000, aacId)` | tx `0x386d253e…483a`; OWNER GB `0 → 10000000` |
+| Post-check | `canaryMintCompleted()=true`; settle still reverts; `admins(AAC)=true` |
 
-**This assurance run did not execute any canary mint, release, or unpause.**
+Envelope: amount `10000000` (0.01 paid GB), aacId
+`0x166dca2560308688f371222e4b7ef51ed2ae1ac427671ec95b537314d547da56`, to OWNER.
+Second `canaryMintPaid` must revert `CanaryAlreadyDone`. Historical canary
+unpause was **not** sent.
 
 ---
 
 ## 6. Explicit non-claims
 
 - Obstacles 1–5 Accepted ≠ custody open.
-- 107 local tests ≠ third-party audit.
-- Fail-closed smoke ≠ permission to grant roles.
-- GitBook / whitepaper sync ≠ cutover.
+- Phase B GB `admins(AAC)` ≠ open settle / miner-vote cutover.
+- Phase C 0.01 paid-GB canary ≠ open settle / USDC mint / Phase D.
+- Owner waive of audit ≠ Phase D.
+- 107 local tests ≠ permission to open custody.
+- Fail-closed smoke ≠ permission to open settle.
+- GitBook / whitepaper sync ≠ cutover Phase D.
 
 ---
 

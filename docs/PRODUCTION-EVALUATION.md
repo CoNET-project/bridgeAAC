@@ -22,8 +22,10 @@ custody closed
 The current on-chain threshold plan is
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md). Obstacles **1–5
 are Accepted** (2026-10-14). Custody, mint, release, and the miner-vote cutover
-remain closed until independent audit and a separate cutover proposal. The
-closed Base proxy does not open custody by itself.
+remain closed for settle / miner-vote cutover (independent audit and third-party
+acceptance **waived by owner 2026-10-14**; Phase B GB **executed** 2026-10-15;
+Phase C canary **EXECUTED** 2026-10-15 — 0.01 paid GB; next obstacle Cutover
+Phase D). The closed Base proxy does not open production settle by itself.
 
 ## Final production Shadow evaluation — 2026-09-28
 
@@ -217,11 +219,12 @@ Custody activation is closed. Obstacles 1–5 in
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) are Accepted.
 Engineering assurance after those gates:
 [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) (107 Rust tests + Base
-fail-closed smoke **PASS**; independent third-party audit **PENDING**).
-Treasury/GB role grants and miner-vote cutover remain outside those gates;
-see the proposal-only [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) (**NOT
-EXECUTED**). This build does not mint, release, or broadcast a bridge
-transaction. Reports print `custody closed`, `registry paused`, and
+fail-closed smoke **PASS**; independent audit + third-party acceptance
+**WAIVED BY OWNER 2026-10-14**). Treasury/GB role grants and miner-vote
+cutover remain outside those gates beyond Phase C; Phase C paid-GB canary is
+**EXECUTED** (0.01 GB); next obstacle is
+[CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D (**NOT EXECUTED** until named).
+Shadow reports still print `custody closed`, `registry paused`, and
 `consume denied`. The shadow decision path does not print `final true`.
 
 Miner `voteBridgeOperation` and `voteBridgeMint` remain live until a later

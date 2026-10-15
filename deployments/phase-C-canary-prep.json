@@ -1,0 +1,58 @@
+{
+  "chainId": 8453,
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+  "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+  "conetFinality": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "proposed": {
+    "label": "beamio.aac.phase-c.canary.v1",
+    "aacId": "0x166dca2560308688f371222e4b7ef51ed2ae1ac427671ec95b537314d547da56",
+    "amount": "10000000",
+    "amountHuman": "0.01 paid GB",
+    "to": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "ceiling": "10000000",
+    "ceilingHuman": "0.01 paid GB (CANARY_MAX_AMOUNT)"
+  },
+  "steps": [
+    {
+      "id": "C0",
+      "action": "deploy AacProductionCustodyGateSettlerCanary impl",
+      "requires": "PHASE_C_DEPLOY_IMPL=1 or PHASE_C_EXECUTE=1"
+    },
+    {
+      "id": "C1",
+      "action": "upgradeTo(canaryImpl) on proxy 0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+      "requires": "PHASE_C_EXECUTE=1 + named amount/aacId/ceiling"
+    },
+    {
+      "id": "C2",
+      "action": "canaryMintPaid(to, amount, aacId)",
+      "requires": "PHASE_C_EXECUTE=1 + PHASE_C_AMOUNT + PHASE_C_AAC_ID + PHASE_C_TO"
+    }
+  ],
+  "hardStop": "Owner must name amount / aacId / ceiling in a separate message before PHASE_C_EXECUTE=1.",
+  "preflight": {
+    "adminsAac": true,
+    "adminsOwner": true,
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "impl": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+    "gap": "Obstacle 5 settler emits Settled only; consume OkEffect is empty; mintPaid requires AAC code path (this canary)."
+  },
+  "compiler": "0.8.35+commit.47b9dedd",
+  "standardJson": "/Users/peter/Downloads/BeamioContract/src/bridgeAAC/deployments/base-AacProductionCustodyGateSettlerCanary-standard-input.json",
+  "status": "EXECUTED",
+  "generatedAt": "2026-10-15T01:15:35.161Z",
+  "c0": {
+    "address": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+    "txHash": "0x0f609b3a8346167d34825ea6a707cd68dded0fd6742badb905752943ccaa3994",
+    "blockNumber": 52618795
+  },
+  "c1c2": {
+    "upgradeTx": "0x252c560f163e1d1b0ee0800de4a741ff91c5bab340078cca1847de1231754673",
+    "upgradeBlock": 52618798,
+    "mintTx": "0x386d253e2e6aa442d2054b975ff6f978226dba89bca296f3bcc2d2e3e375483a",
+    "mintBlock": 52618800,
+    "balBefore": "0",
+    "balAfter": "10000000"
+  }
+}

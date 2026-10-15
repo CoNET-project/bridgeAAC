@@ -1,16 +1,20 @@
-# Custody cutover proposal (not executed)
+# Custody cutover
 
-**Date:** 2026-10-14  
-**Status:** **PROPOSAL ONLY** — no role grants, no miner-vote disable, no
-unpause, no canary mint/release in this task.  
+**Date:** 2026-10-14 (updated 2026-10-15 Phase B + Phase C executed)  
+**Status:** Phase A **RECORDED**; Phase B GB `addAdmin(AAC)` **EXECUTED**
+(2026-10-15). Phase C bounded paid-GB canary **EXECUTED** (2026-10-15;
+C0/C1/C2 — 0.01 GB to OWNER). Phase D **NOT EXECUTED** — no miner-vote
+disable, no unpause.  
 **Precondition:** [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 Obstacles 1–5 **Accepted**; [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
-engineering smoke **PASS**; **independent audit still PENDING** — completion
-runbook: [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md).
+engineering smoke **PASS**; **independent audit + third-party acceptance
+WAIVED BY OWNER 2026-10-14** (see Hard stop). Runbook retained for optional
+use: [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md).
 
 Owner (canonical): `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1`  
 AAC production proxy (Base): `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`  
-Settler implementation: `0x3085216E8329eF7d10c914cB1C43Cd8168f53442`  
+SettlerCanary implementation (live EIP-1967): `0x9b8DDa3d27473A4EdD351fFD4106c388876A9864`  
+Prior Settler implementation: `0x3085216E8329eF7d10c914cB1C43Cd8168f53442`  
 Cover: `0x01506527a4Dab14141038Db15f5341dcF4729233`  
 CoNET finality (Base): `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`  
 Consume-once: `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F`  
@@ -23,15 +27,24 @@ GB ERC-20: `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8`
 
 Do **not** execute any phase below until:
 
-1. Independent audit of gates 1–5 is **Accepted** in writing (attach link or
-   hash via [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) →
-   `INDEPENDENT-AUDIT-ACCEPTANCE.md` in a later commit).
+1. ~~Independent audit of gates 1–5 Accepted~~ — **WAIVED BY OWNER 2026-10-14**
+   (same message also waived third-party / Shadow acceptance as a cutover hard
+   stop; quote: 「请跳过 第三方验收与独立审计 步骤，不在需要独立审计，直接进入下一个生产部署的阻碍」).
 2. The same user message that authorizes cutover **names** the phase(s) and
-   the exact role-grant / disable transactions.
+   the exact role-grant / disable transactions (calldata / Explorer links — not
+   a blanket “continue”).
 3. `critical-chain-infra-restart-requires-approval.mdc` — no EL/CL restart as
    part of cutover.
 
 Unpause of historical canaries is **out of scope** for this proposal.
+
+**Next production obstacle:** **Phase D** miner-vote cutover — requires a
+separate owner message naming disable / drain transactions. Phase C C1/C2 were
+named and broadcast 2026-10-15 (owner: 「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
+
+Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-addAdmin-aac.json),
+[deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json)
+(`status: EXECUTED`).
 
 ---
 
@@ -39,10 +52,10 @@ Unpause of historical canaries is **out of scope** for this proposal.
 
 | Phase | Intent | Execute now? |
 | --- | --- | --- |
-| **A** | Read-only preflight (roles, pause, bindings) | Allowed as ops checklist; no writes |
-| **B** | Grant AAC proxy the **minimum** Treasury / GB roles needed for AAC mint/release only | **No** — needs audit + explicit auth |
-| **C** | Bounded AAC canary (amount ceiling, known aacId) | **No** |
-| **D** | Disable or drain miner `voteBridgeOperation` / `voteBridgeMint` paths | **No** — only after C success |
+| **A** | Read-only preflight (roles, pause, bindings) | **RECORDED** (2026-10-15) |
+| **B** | Grant AAC proxy the **minimum** GB `admins` (and later Treasury if a live setter is named) for AAC mint/release only | **EXECUTED** (GB only; 2026-10-15) |
+| **C** | Bounded AAC paid-GB canary (amount ceiling, known aacId) | **EXECUTED** (2026-10-15; 0.01 GB) |
+| **D** | Disable or drain miner `voteBridgeOperation` / `voteBridgeMint` paths | **No** — only after separate written approval |
 | **E** | Monitor + rollback criteria | Post-cutover ops |
 
 Miner votes stay **live** through Phases A–C. Do not disable miner votes before
@@ -88,45 +101,114 @@ RPC: Base `https://base-rpc.conet.network`; CoNET `https://rpc1.conet.network`.
 TreasuryBridgeV3 does not expose `isAdmin` / AccessControl `hasRole` for the
 AAC proxy on either chain (calls revert). GB `admins(address)` is the live
 admin map used for this preflight; AAC proxy is **not** an admin on CoNET or
-Base. Exact Phase B role selectors remain TBD from live ABI at grant time.
+Base.
 
-**Next hard stop:** Independent audit of Obstacles 1–5 must be **Accepted** in
-writing before Phase B ([INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md)). Do not
-invent third-party sign-off in-repo.
+**Next hard stop (2026-10-14):** Independent audit / third-party acceptance
+**waived by owner**. Phase B GB grants were **named and executed** 2026-10-15.
+Do not invent Passed audit artifacts. Treasury / Peer grants remain **NOT
+EXECUTED**.
 
 ---
 
-## Phase B — Role grants (NOT EXECUTED)
+## Phase B — Role grants (GB EXECUTED 2026-10-15)
 
 **Principle:** grant roles to the **AAC proxy** (or the documented gateway that
 only the consume-once / settler path can call), never to arbitrary miner EOAs.
 
-Exact selector / role names must be taken from live TreasuryBridgeV3 /
-GBToken ABI at cutover time (do not invent from memory). Proposed intent:
+| Grant | Target | Status |
+| --- | --- | --- |
+| Treasury mint/release | AAC proxy `0x9051…` | **NOT EXECUTED** — no live `isAdmin`/`hasRole` setter named; do not invent |
+| GB `admins` → `mintPaid` / `mint` / `burnPaidFrom` | AAC proxy `0x9051…` | **EXECUTED** — B1 + B2 below |
+| Peer mint (developer ERC-20) | AAC proxy `0x9051…` | **NOT EXECUTED** (only if product scope includes unbound ERC-20) |
 
-1. On CoNET and/or Base as required by the asset route: grant the AAC
-   destination adapter **only** the mint/release privilege required for
-   AAC-verified consumes.
-2. Verify with `hasRole` / equivalent that the proxy can call the intended
-   path and that unrelated admin mint paths remain closed or owned by
-   governance.
-3. Do **not** grant Peer unlimited mint; do **not** restore paused canaries.
+Live post-grant (2026-10-15, CoNET `rpc1` + Base `base-rpc`):
 
-**This phase was not broadcast in the 2026-10-14 assurance task.**
+| Check | CoNET | Base |
+| --- | --- | --- |
+| GB `admins(AAC)` `0x429b62e5` | `true` | `true` |
+| GB `admins(OWNER)` | `true` | `true` |
+| GB `owner()` | reverts (admin map) | reverts |
+| GBToken | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | same |
+| Settler `settle()` | — | still reverts (custody closed) |
+
+Source: `src/b-unit/GBToken.sol` / `GBTokenV2.sol` — `addAdmin(address)` is
+`onlyAdmin` (`0x70480275`); paid mint is `mintPaid` (`0x970cab06`).
+
+Script: `scripts/grantGbAdminAacPhaseB.mjs`. Snapshot:
+`deployments/phase-B-gb-addAdmin-aac.json`.
+
+### Phase B txs (GB only — SENT)
+
+Signer: OWNER `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` (existing GB admin).
+Owner auth: 「请继续 执行 B1/B2」 (2026-10-14 PDT / 2026-10-15 UTC).
+
+| # | Chain | To | Function | Tx | Status |
+| --- | --- | --- | --- | --- | --- |
+| B1 | CoNET `224422` | GB `0xC3EF02…10838D8` | `addAdmin(AAC)` | [`0x0cea0239…603604`](https://mainnet.conet.network/tx/0x0cea02390f02594a722f9ff90d1e45219332fd509dca6f104996608d32603604) block `1716737` | **SENT · verified** |
+| B2 | Base `8453` | same GB | same `addAdmin(AAC)` | [`0xc41287df…eca336a`](https://basescan.org/tx/0xc41287df1815ed9b8bd88fa4bdf3639823c2a674dc5def65d19941f78eca336a) block `52618294` | **SENT · verified** |
+
+Calldata (both): `0x704802750000000000000000000000009051e08aba3ec1a1323f36f0f5c3745c81912aad`.
+
+**Post-grant verify (done):** CoNET + Base `admins(AAC)==true`; Settler still
+closed (`settle` reverts); consume-once still only records marks until a
+gateway calls `mintPaid`. **No** Peer unlimited mint; **no** canary unpause;
+**no** miner-vote cutover in this phase.
 
 ---
 
-## Phase C — Bounded canary (NOT EXECUTED)
+## Phase C — Bounded canary (EXECUTED 2026-10-15)
 
-Suggested ceiling (product to confirm at auth time): a single small USDC or
-paid-GB AAC whose amount is documented in the authorizing message.
+**Status:** **EXECUTED**. Owner named C1/C2 with amount `0.01`
+(「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」). Envelope
+matched prep ceiling / aacId / to. Snapshot:
+[deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json)
+(`status: EXECUTED`).
 
-Halt immediately if:
+### Why a new gateway
 
-- amount or recipient mismatch;
-- double consume succeeds;
-- settle opens without audit-approved bytecode change;
-- Treasury/GB balance moves outside the canary envelope.
+Phase B put GB `admins` on AAC proxy `0x9051…`, but live Obstacle 5 settler
+only emits `Settled` after COVER / `rootReady` — it never calls `mintPaid`.
+Consume-once OkEffect is empty. An Effect that called GB would be the wrong
+`msg.sender`. Phase C upgraded the proxy to
+`AacProductionCustodyGateSettlerCanary`, which keeps settle gate-only and adds
+an **owner one-shot** `canaryMintPaid(to, amount, aacId)` that calls
+`GB.mintPaid` so `msg.sender` is the AAC proxy.
+
+### Executed envelope
+
+| Field | Value |
+| --- | --- |
+| Asset | **Paid GB** (not USDC — no live Treasury setter) |
+| Chain | Base `8453` |
+| Ceiling | `CANARY_MAX_AMOUNT = 10_000_000` (0.01 GB @ 9 decimals) |
+| Amount | `10_000_000` (0.01 GB — owner-named) |
+| aacId | `0x166dca2560308688f371222e4b7ef51ed2ae1ac427671ec95b537314d547da56` |
+| `to` | OWNER `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` |
+| Canary impl | `0x9b8DDa3d27473A4EdD351fFD4106c388876A9864` |
+| Contract | `contracts/AacProductionCustodyGateSettlerCanary.sol` |
+| Script | `scripts/preparePhaseCCanary.mjs` (`PHASE_C_EXECUTE=1`) |
+
+### On-chain steps (broadcast)
+
+| # | Action | Tx / result |
+| --- | --- | --- |
+| C0 | Deploy SettlerCanary impl | `0x0f609b3a…3994` → `0x9b8DDa3d…9864` (block `52618795`) |
+| C1 | `upgradeTo(canaryImpl)` on `0x9051…` | `0x252c560f…4673` (block `52618798`) |
+| C2 | `canaryMintPaid(OWNER, 10000000, aacId)` | `0x386d253e…483a` (block `52618800`); OWNER GB `0 → 10000000` |
+
+### Post-execute verify (read-only)
+
+| Check | Result |
+| --- | --- |
+| EIP-1967 impl | `0x9b8DDa3d…9864` |
+| `canaryMintCompleted()` | `true` |
+| `canaryRecord()` | aacId / to / amount / done match envelope |
+| `GB.admins(proxy)` | still `true` |
+| `settle` | still reverts (custody closed for production settle) |
+
+Second `canaryMintPaid` must revert `CanaryAlreadyDone`. Settle remains closed
+without a separately Accepted settler bytecode change. USDC / Peer / miner-vote
+paths were not touched.
 
 ---
 
@@ -149,23 +231,24 @@ Only after Phase C success and a separate written approval:
 | --- | --- |
 | Canary mismatch / double spend attempt | Pause AAC gateway / revoke Phase B roles; leave miner votes live |
 | Settler unexpectedly opens | Owner upgrade to closed impl; do not grant further roles |
-| Independent audit finds gate defect | Freeze cutover; re-open gates document |
+| Post-waive gate defect / bad grant | Freeze cutover; revoke Phase B GB `admins` if granted; re-open gates document |
 
 ---
 
-## Explicit non-execution record (2026-10-14)
+## Explicit non-execution / execution record (updated 2026-10-15)
 
 | Action | Status |
 | --- | --- |
 | Treasury role grant to AAC proxy | **Not sent** |
-| GB role grant to AAC proxy | **Not sent** |
+| GB role grant to AAC proxy | **EXECUTED** (Phase B B1/B2 — see above) |
 | Peer role grant | **Not sent** |
 | Miner vote disable | **Not sent** |
-| Canary mint / release | **Not sent** |
+| Phase C canary mint / release / proxy upgrade | **EXECUTED** (C0/C1/C2 — 0.01 paid GB; see above) |
 | Historical canary unpause | **Not sent** |
 
-Custody remains closed. Production USDC/GB continue on the miner-vote bridge
-until Phases B–D are authorized and completed.
+Custody remains closed for production settle / USDC. Production USDC continue
+on the miner-vote bridge until Phase D is authorized and completed. Phase C
+proved AAC-proxy `mintPaid` for paid GB only; settle still reverts.
 
 ---
 
