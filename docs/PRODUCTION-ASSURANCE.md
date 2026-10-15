@@ -1,14 +1,15 @@
 # Production assurance (post Obstacles 1–5)
 
-**Date:** 2026-10-14  
-**Repo HEAD (evidence):** `83bb39b`  
+**Date:** 2026-10-14 (initial); Phase A re-run **2026-10-15**  
+**Repo HEAD (evidence):** `83bb39b` (initial); Phase A re-run at `a44b907`  
 **Scope:** Independent assurance package after
 [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md) Obstacles 1–5 Accepted.  
 **Custody:** remains **closed**. This document does **not** authorize Treasury /
 GB / Peer role grants, mint, release, settlement broadcasting, miner-vote
 cutover, or unpause of any historical canary.
 
-Cutover proposal (not executed): [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
+Cutover: [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) — Phase A **recorded**
+(2026-10-15); Phases B–D **not executed**.
 
 ---
 
@@ -16,11 +17,12 @@ Cutover proposal (not executed): [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md).
 
 | Track | Status |
 | --- | --- |
-| Local adversarial + full Rust test suite | **PASS** (`cargo test --tests` → **107** passed, **0** failed) |
-| Live Base fail-closed smoke (proxy settler) | **PASS** |
+| Local adversarial + full Rust test suite | **PASS** (`cargo test --tests` → **107** passed, **0** failed; reconfirmed 2026-10-15 at `a44b907`) |
+| Live Base fail-closed smoke (proxy settler) | **PASS** (initial + Phase A re-run 2026-10-15) |
+| Cutover Phase A (read-only preflight) | **RECORDED** — see [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase A evidence |
 | Small canary mint / release / unpause | **NOT RUN** (custody closed; not authorized) |
 | Independent third-party security audit | **PENDING** (checklist below; no external sign-off in-repo) |
-| Role grant / miner-vote cutover | **NOT EXECUTED** — see cutover proposal |
+| Role grant / miner-vote cutover | **NOT EXECUTED** — Phase B+ still blocked on audit |
 
 **Independent audit is not Passed.** Engineering assurance evidence is recorded
 here so an external auditor can verify gates 1–5 without relying on chat logs.
@@ -75,6 +77,12 @@ that is expected and is not part of the fail-closed settler smoke.
 
 **ASSURANCE_SMOKE: PASS** — proxy remains closed; settle path cannot open
 custody via the no-arg entry.
+
+**Re-run (2026-10-15, HEAD `a44b907`):** same eight checks **PASS** again as
+part of [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase A. Additional CoNET/Base
+GB `admins(AAC proxy) == false` and `gb-mint-authority` (custody closed;
+admin-mint selectors still open on GBToken; vote-mint `no-validators`) are
+recorded in that Phase A evidence table — not a role grant.
 
 ---
 

@@ -304,7 +304,8 @@ Peer roles.
 | Step | When | Tracker |
 |---|---|---|
 | Independent audit of gates 1–5 | Before any role grant | [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) §4 — **PENDING** |
-| Engineering assurance (tests + fail-closed smoke) | After Obstacles 1–5 Accepted | [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) — **PASS** (2026-10-14) |
+| Engineering assurance (tests + fail-closed smoke) | After Obstacles 1–5 Accepted | [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md) — **PASS** (2026-10-14; reconfirmed 2026-10-15) |
+| Cutover Phase A read-only preflight | After assurance smoke; before Phase B | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase A evidence — **RECORDED** (2026-10-15) |
 | Grant Treasury or GB roles to the proxy | After the audit, in a separate cutover transaction | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase B — **NOT EXECUTED** |
 | Leave miner `voteBridgeOperation` and `voteBridgeMint` live | Until that cutover transaction | [CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md) Phase D — **NOT EXECUTED** |
 | Unpause the old canary, or point it at these proofs | Not part of this plan | Explicitly excluded |

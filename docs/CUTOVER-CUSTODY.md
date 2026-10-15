@@ -61,6 +61,36 @@ Record live reads before any grant:
 | Miner vote entrypoints | Still the production bridge |
 | Assurance smoke | Re-run §2 of `PRODUCTION-ASSURANCE.md` |
 
+### Phase A evidence (2026-10-15) — RECORDED
+
+**Status:** Phase A **completed** (read-only). No grants, no mint/release, no
+miner-vote disable, no unpause. Repo HEAD at record time: `a44b907`.  
+RPC: Base `https://base-rpc.conet.network`; CoNET `https://rpc1.conet.network`.
+
+| Read | Observed | Pass? |
+| --- | --- | --- |
+| Proxy `custodyOpen()` | `false` | yes |
+| Proxy `headerFinal()` | `false` | yes |
+| Proxy `owner()` | `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` | yes |
+| Proxy `COVER()` | `0x01506527a4Dab14141038Db15f5341dcF4729233` | yes |
+| Proxy `CONET_FINALITY()` | `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9` | yes |
+| EIP-1967 implementation | `0x3085216E8329eF7d10c914cB1C43Cd8168f53442` | yes |
+| `settle()` (no args) | revert `CustodyClosed` (`0x61839255`) | yes |
+| Consume-once `isConsumed(bytes32(0))` | `false` | yes |
+| CoNET GB `admins(AAC proxy)` | `false` (`0x0`) | yes |
+| Base GB `admins(AAC proxy)` | `false` (`0x0`) | yes |
+| CoNET GB `bridge-aac gb-mint-authority` | `admin-mint open`, `vote-mint no-validators`, `validator-count 0`, `mint-closed no`, `custody-gate no`, `custody closed` | yes (AAC still has no GB mint authority; miner path selectors remain live) |
+| Local `cargo test --tests` | **107** passed, **0** failed | yes |
+| Assurance smoke §2 re-run | Same closed proxy criteria as above | **PASS** |
+
+TreasuryBridgeV3 does not expose `isAdmin` / AccessControl `hasRole` for the
+AAC proxy on either chain (calls revert). GB `admins(address)` is the live
+admin map used for this preflight; AAC proxy is **not** an admin on CoNET or
+Base. Exact Phase B role selectors remain TBD from live ABI at grant time.
+
+**Next hard stop:** Independent audit of Obstacles 1–5 must be **Accepted** in
+writing before Phase B. Do not invent third-party sign-off in-repo.
+
 ---
 
 ## Phase B — Role grants (NOT EXECUTED)
