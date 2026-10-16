@@ -404,6 +404,37 @@ pub fn verify_settled(
     (confirmed, out)
 }
 
+/// Add one settled operation to the manifest after the destination readers
+/// confirm its settlement transaction. The manifest is replaced atomically.
+/// An operation already listed, or one that is not confirmed, leaves the file
+/// unchanged.
+pub fn record_settled(
+    manifest: &Path,
+    entry: SettledOperation,
+    base_rpcs: &[String],
+    conet_rpcs: &[String],
+) -> Result<String, Error> {
+    let mut list = if manifest.exists() { load_settled(manifest)? } else { Vec::new() };
+    if list.iter().any(|item| item.operation_id == entry.operation_id) {
+        return Err(Error::BadFixture);
+    }
+    let (confirmed, report) = verify_settled(std::slice::from_ref(&entry), base_rpcs, conet_rpcs);
+    if !confirmed.contains(&entry.operation_id) {
+        return Err(Error::SettlementNotConfirmed);
+    }
+    list.push(entry);
+    let text = serde_json::to_string_pretty(&list).map_err(|_| Error::Journal)?;
+    if let Some(parent) = manifest.parent() {
+        if !parent.as_os_str().is_empty() {
+            fs::create_dir_all(parent).map_err(|_| Error::Journal)?;
+        }
+    }
+    let tmp = manifest.with_extension("json.tmp");
+    fs::write(&tmp, format!("{text}\n")).map_err(|_| Error::Journal)?;
+    fs::rename(&tmp, manifest).map_err(|_| Error::Journal)?;
+    Ok(report)
+}
+
 pub struct PreparedCycle {
     pub report: String,
     /// `None` means the cursor file is corrupt. The caller must not replace it.

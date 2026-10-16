@@ -62,7 +62,7 @@ pub use merkle::{build_tree, prove, verify as verify_merkle, MerkleProof, Merkle
 pub use mpt::{encode_consensus_receipt, prove_receipts, single_leaf_proof, verify_receipt, ConsensusLog};
 pub use service::{
     absorb_ops, alerts_for, apply_reader_lag, apply_stable, batch_for_lag, deployment_floor, drill_report, finish_cycle, load_cursor, load_settled, merge_op_note,
-    prepare_cycle_with_settled, reconcile_pending_except, SettledOperation,
+    prepare_cycle_with_settled, reconcile_pending_except, record_settled, SettledOperation,
     max_metric, next_cursor, plan_range, prepare_cycle, prepare_cycle_with_targets, reconcile_pending, save_cursor,
     should_pause, valid_reader_set, write_cycle,
     write_page, OpNote, PreparedCycle, ShadowCursor, CATCHUP_BLOCKS, CURSOR_LAG_ALERT_BLOCKS,

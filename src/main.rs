@@ -163,6 +163,16 @@ fn main() -> ExitCode {
                 ExitCode::from(2)
             }
         },
+        Some("confirm-settled") => match confirm_settled_cmd(args) {
+            Ok(report) => {
+                print!("{report}");
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                eprintln!("error: {err}");
+                ExitCode::from(2)
+            }
+        },
         Some("version") => {
             println!("bridge-aac {}", env!("CARGO_PKG_VERSION"));
             println!("shadow read-only");
@@ -210,6 +220,7 @@ fn main() -> ExitCode {
                  bridge-aac destination-consumer --conet-rpc <url> --base-rpc <url>\n  \
                  bridge-aac gb-mint-authority --rpc <url>\n  \
                  bridge-aac base-quorum-reader --rpc <url> --rpc <url> [--from <height>] [--blocks <count>]\n  \
+                 bridge-aac confirm-settled --manifest <file> --operation-id <hex> --settle-chain base|conet --settler <hex> --settle-tx <hex> [--base-rpc <url>]... [--conet-rpc <url>]... [--note <text>]\n  \
                  bridge-aac drill <directory>\n  \
                  bridge-aac version",
                 version = env!("CARGO_PKG_VERSION")
@@ -646,6 +657,48 @@ fn shadow(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Erro
         tx.as_deref(),
         journal.as_deref().map(std::path::Path::new),
     )
+}
+
+fn confirm_settled_cmd(mut args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {
+    let mut manifest = None;
+    let mut operation_id = None;
+    let mut settle_chain = None;
+    let mut settler = None;
+    let mut settle_tx = None;
+    let mut note = String::new();
+    let mut base_rpcs = Vec::new();
+    let mut conet_rpcs = Vec::new();
+    while let Some(flag) = args.next() {
+        match flag.as_str() {
+            "--manifest" => manifest = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--operation-id" => operation_id = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--settle-chain" => settle_chain = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--settler" => settler = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--settle-tx" => settle_tx = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--note" => note = args.next().ok_or(bridge_aac::Error::BadLength)?,
+            "--base-rpc" => base_rpcs.push(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            "--conet-rpc" => conet_rpcs.push(args.next().ok_or(bridge_aac::Error::BadLength)?),
+            _ => return Err(bridge_aac::Error::BadFixture),
+        }
+    }
+    let settle_chain = settle_chain.ok_or(bridge_aac::Error::BadLength)?;
+    if settle_chain != "base" && settle_chain != "conet" {
+        return Err(bridge_aac::Error::BadFixture);
+    }
+    let entry = bridge_aac::SettledOperation {
+        operation_id: operation_id.ok_or(bridge_aac::Error::BadLength)?,
+        settle_chain,
+        settler: settler.ok_or(bridge_aac::Error::BadLength)?,
+        settle_tx: settle_tx.ok_or(bridge_aac::Error::BadLength)?,
+        note,
+    };
+    let report = bridge_aac::record_settled(
+        std::path::Path::new(&manifest.ok_or(bridge_aac::Error::BadLength)?),
+        entry,
+        &base_rpcs,
+        &conet_rpcs,
+    )?;
+    Ok(format!("recorded\n{report}"))
 }
 
 fn verify_receipt_cmd(args: impl Iterator<Item = String>) -> Result<String, bridge_aac::Error> {

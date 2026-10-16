@@ -27,6 +27,8 @@ pub enum Error {
     CursorMissing,
     /// Two execution clients disagreed on the canonical header.
     Quorum,
+    /// The settlement transaction is not confirmed by every destination reader.
+    SettlementNotConfirmed,
 }
 
 impl fmt::Display for Error {

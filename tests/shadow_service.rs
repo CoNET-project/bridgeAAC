@@ -1,6 +1,6 @@
 use bridge_aac::{
-    alerts_for, format_observation, load_settled, reconcile_pending_except, write_cycle, AuthenticatedHeader,
-    OpNote, Observation, SettledOperation,
+    alerts_for, format_observation, load_settled, reconcile_pending_except, record_settled, write_cycle,
+    AuthenticatedHeader, OpNote, Observation, SettledOperation,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -292,5 +292,53 @@ fn the_settled_manifest_parses_and_rejects_a_bad_file() {
     std::fs::write(&bad, "{not json").unwrap();
     assert!(load_settled(&bad).is_err());
     assert!(load_settled(&dir.join("missing.json")).is_err());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+
+#[test]
+fn an_unconfirmed_settlement_leaves_the_manifest_unchanged() {
+    let dir = std::env::temp_dir().join(format!("aac-record-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let manifest = dir.join("settled.json");
+    let entry = SettledOperation {
+        operation_id: "0xcc".into(),
+        settle_chain: "conet".into(),
+        settler: "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE".into(),
+        settle_tx: "0x01".into(),
+        note: String::new(),
+    };
+    // One reader is not a quorum, so nothing can be confirmed.
+    let one = vec!["http://127.0.0.1:9".to_string()];
+    assert_eq!(
+        record_settled(&manifest, entry.clone(), &one, &one),
+        Err(bridge_aac::Error::SettlementNotConfirmed)
+    );
+    assert!(!manifest.exists());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn an_operation_already_listed_is_refused_before_any_read() {
+    let dir = std::env::temp_dir().join(format!("aac-record-dup-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let manifest = dir.join("settled.json");
+    std::fs::write(
+        &manifest,
+        r#"[{"operation_id":"0xcc","settle_chain":"conet","settler":"0x01","settle_tx":"0x01"}]"#,
+    )
+    .unwrap();
+    let entry = SettledOperation {
+        operation_id: "0xcc".into(),
+        settle_chain: "conet".into(),
+        settler: "0x01".into(),
+        settle_tx: "0x02".into(),
+        note: String::new(),
+    };
+    assert_eq!(
+        record_settled(&manifest, entry, &[], &[]),
+        Err(bridge_aac::Error::BadFixture)
+    );
+    assert_eq!(load_settled(&manifest).unwrap().len(), 1);
     let _ = std::fs::remove_dir_all(&dir);
 }
