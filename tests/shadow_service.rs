@@ -106,6 +106,17 @@ fn cursor_range_does_not_start_at_genesis_and_stays_put_on_failure() {
 }
 
 #[test]
+fn a_missing_cursor_is_not_a_quiet_heartbeat() {
+    use bridge_aac::{alerts_for, load_cursor, Error};
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+    let path = std::env::temp_dir().join(format!("bridge-aac-missing-{stamp}.json"));
+    assert_eq!(load_cursor(&path), Err(Error::CursorMissing));
+    let report = "cursor missing\ncursor caught-up\nheartbeat yes\ncursor-lag 0\n";
+    assert_eq!(alerts_for(report), vec!["alert cursor-missing"]);
+    assert!(!report.contains("cursor no"));
+}
+
+#[test]
 fn corrupt_cursor_alerts_and_is_not_replaced() {
     use bridge_aac::{alerts_for, finish_cycle, load_cursor, prepare_cycle};
     let stamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
@@ -173,6 +184,15 @@ fn reconcile_alerts_only_after_the_lag_window() {
     assert!(!quiet.contains("0xdef"));
     assert!(!quiet.contains("0xabc"));
     assert!(!quiet.contains("0xend"));
+    let mut earlier = ops["0xend"].clone();
+    earlier.cancelled = false;
+    let later = ops["0xend"].clone();
+    bridge_aac::merge_op_note(&mut earlier, &later);
+    assert!(earlier.cancelled);
+    let mut crossed = BTreeMap::new();
+    crossed.insert("0xend".to_string(), earlier);
+    let across = reconcile_pending(&crossed, Some(11 + RECONCILE_LAG_BLOCKS), Some(1), RECONCILE_LAG_BLOCKS);
+    assert!(!across.contains("0xend"));
     let late = reconcile_pending(&ops, Some(1), Some(11 + RECONCILE_LAG_BLOCKS), RECONCILE_LAG_BLOCKS);
     assert!(late.contains("reconcile pending"));
     assert!(late.contains("chain conet"));

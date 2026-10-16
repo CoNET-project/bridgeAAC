@@ -57,9 +57,10 @@ pub struct ConsensusFacts {
     pub handoff_epoch: u64,
     /// How many sync-committee periods were linked. Zero when unread.
     pub handoff_periods: u64,
-    /// `Some(true)` when the genesis beacon state hashes to the genesis header
-    /// and its `genesis_validators_root` is the published CoNET pin. That pin
-    /// does not by itself trust the current sync committee.
+    /// `Some(true)` when slot 0's header root and state root are the published
+    /// CoNET genesis roots and the state's `genesis_validators_root` field
+    /// matches too. That field alone does not identify the genesis state, and
+    /// this pin does not trust the current sync committee.
     pub genesis_pin: Option<bool>,
 }
 
@@ -400,13 +401,38 @@ fn encode_header(message: &Value) -> Result<[u8; 112], Error> {
     Ok(out)
 }
 
-/// Published CoNET genesis validators root. The observer compares this pin
-/// with the bytes inside the hashed genesis state. It is not taken from the
-/// beacon `/genesis` JSON in the same call.
+/// Published CoNET genesis validators root. This is one field inside the
+/// genesis state. It is not taken from the beacon `/genesis` JSON in the
+/// same call, and it does not identify that state.
 pub(crate) const PUBLISHED_GENESIS_VALIDATORS_ROOT: [u8; 32] = [
     0xac, 0xac, 0x75, 0x66, 0xfd, 0xf3, 0x84, 0xa1, 0xad, 0xa4, 0x5c, 0x01, 0xdc, 0xf9, 0x03, 0x0d,
     0x7e, 0xb0, 0xe1, 0xe5, 0xf5, 0x30, 0x26, 0x59, 0x10, 0x1d, 0x0b, 0x2a, 0x5b, 0xb5, 0x90, 0x92,
 ];
+
+/// Slot-0 beacon block root. A served header is genesis only when its SSZ
+/// hash equals this value.
+pub(crate) const PUBLISHED_GENESIS_HEADER_ROOT: [u8; 32] = [
+    0x37, 0xfa, 0xe6, 0xd9, 0x50, 0xf5, 0x88, 0xef, 0x15, 0x83, 0x9d, 0xcd, 0xf6, 0x9f, 0x45, 0x47,
+    0xee, 0x22, 0x83, 0xd6, 0xf2, 0x81, 0x5c, 0xf9, 0xb9, 0xe0, 0xee, 0x56, 0x3a, 0xbc, 0x2f, 0xb3,
+];
+
+/// Hash tree root of the CoNET genesis beacon state. The slot-0 header commits
+/// to this root. A state that only copies [`PUBLISHED_GENESIS_VALIDATORS_ROOT`]
+/// into its validators-root field does not match.
+pub(crate) const PUBLISHED_GENESIS_STATE_ROOT: [u8; 32] = [
+    0xbc, 0x15, 0x24, 0xab, 0x2d, 0xfb, 0x1a, 0xc3, 0xef, 0xe6, 0xf7, 0xcc, 0xa7, 0xea, 0xeb, 0xdd,
+    0xda, 0x67, 0xa5, 0x4f, 0xd3, 0xd8, 0xce, 0xb6, 0xaf, 0xdb, 0xfc, 0xf6, 0x26, 0x39, 0x4b, 0xb2,
+];
+
+pub(crate) fn matches_published_genesis(
+    header_root: &[u8; 32],
+    state_root: &[u8; 32],
+    validators_root: &[u8; 32],
+) -> bool {
+    *header_root == PUBLISHED_GENESIS_HEADER_ROOT
+        && *state_root == PUBLISHED_GENESIS_STATE_ROOT
+        && *validators_root == PUBLISHED_GENESIS_VALIDATORS_ROOT
+}
 
 const EPOCHS_PER_SYNC_COMMITTEE_PERIOD: u64 = 256;
 const SLOTS_PER_EPOCH: u64 = 32;
@@ -426,22 +452,28 @@ struct Handoff {
 const HANDOFF_PERIODS: u64 = 4;
 
 /// `None` when the genesis header or state was not read. `Some(false)` when
-/// the state hash or the validators root disagrees with the published pin.
+/// the served header, its state, or the validators-root field disagrees with
+/// the published CoNET genesis roots.
 fn pin_genesis(beacon: &str) -> Option<bool> {
     let header = http_json(&format!("{beacon}/eth/v1/beacon/headers/genesis")).ok()?;
     let header_root = json_hash(header.pointer("/data/root")?).ok()?;
     let message = header.pointer("/data/header/message")?;
     let encoded = encode_header(message).ok()?;
-    if crate::ssz_state::hash_beacon_header(&encoded).ok()? != header_root {
+    if crate::ssz_state::hash_beacon_header(&encoded).ok()? != header_root
+        || header_root != PUBLISHED_GENESIS_HEADER_ROOT
+    {
         return Some(false);
     }
     let state_root = json_hash(message.get("state_root")?).ok()?;
+    if state_root != PUBLISHED_GENESIS_STATE_ROOT {
+        return Some(false);
+    }
     let state = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/genesis")).ok()?;
-    if crate::ssz_state::hash_beacon_state(&state).ok()? != state_root {
+    if crate::ssz_state::hash_beacon_state(&state).ok()? != PUBLISHED_GENESIS_STATE_ROOT {
         return Some(false);
     }
     let found = crate::ssz_state::genesis_validators_root(&state).ok()?;
-    Some(found == PUBLISHED_GENESIS_VALIDATORS_ROOT)
+    Some(matches_published_genesis(&header_root, &state_root, &found))
 }
 
 /// Last slot before the epoch transition that installs this period's committee.
@@ -526,8 +558,9 @@ struct ForkSchedule {
     genesis_root: [u8; 32],
 }
 
+/// The signing domain uses the pinned genesis validators root, not the copy the
+/// beacon serves. A beacon with another root produces signatures that fail.
 fn fork_schedule(beacon: &str, slot: u64) -> Option<ForkSchedule> {
-    let genesis = http_json(&format!("{beacon}/eth/v1/beacon/genesis")).ok()?;
     let fork_body = http_json(&format!("{beacon}/eth/v1/beacon/states/{slot}/fork")).ok()?;
     let fork_data = fork_body.pointer("/data")?;
     let fork = crate::sync_aggregate::ForkVersion {
@@ -535,8 +568,7 @@ fn fork_schedule(beacon: &str, slot: u64) -> Option<ForkSchedule> {
         current: version_bytes(fork_data.get("current_version")?.as_str()?).ok()?,
         epoch: json_u64(fork_data.get("epoch")?).ok()?,
     };
-    let genesis_root = json_hash(genesis.pointer("/data/genesis_validators_root")?).ok()?;
-    Some(ForkSchedule { fork, genesis_root })
+    Some(ForkSchedule { fork, genesis_root: PUBLISHED_GENESIS_VALIDATORS_ROOT })
 }
 
 fn bind_signed_header(beacon: &str, block: &Value, schedule: Option<&ForkSchedule>) -> StateBind {
@@ -654,7 +686,6 @@ fn verify_block_aggregate(root: &str, block: &Value) -> Result<AggregateCheck, E
     if indexes.len() != 512 || bits.len() < 64 || signature.len() != 96 {
         return Ok(AggregateCheck { verified: false, bound: true, size: indexes.len() as u64, epoch });
     }
-    let genesis = http_json(&format!("{root}/eth/v1/beacon/genesis"))?;
     let fork_body = http_json(&format!("{root}/eth/v1/beacon/states/{previous_slot}/fork"))?;
     let fork_data = fork_body.pointer("/data").ok_or(Error::Rpc)?;
     let fork = crate::sync_aggregate::ForkVersion {
@@ -662,12 +693,7 @@ fn verify_block_aggregate(root: &str, block: &Value) -> Result<AggregateCheck, E
         current: version_bytes(fork_data.get("current_version").and_then(Value::as_str).unwrap_or("0x"))?,
         epoch: json_u64(fork_data.get("epoch").ok_or(Error::Rpc)?)?,
     };
-    let genesis_root = json_hash(
-        genesis
-            .pointer("/data/genesis_validators_root")
-            .ok_or(Error::Rpc)?,
-    )?;
-    let domain = crate::sync_aggregate::sync_domain(&fork, epoch, genesis_root);
+    let domain = crate::sync_aggregate::sync_domain(&fork, epoch, PUBLISHED_GENESIS_VALIDATORS_ROOT);
     let signing = crate::sync_aggregate::signing_root(parent_root, domain);
     let pubkeys = validator_pubkeys(root, &previous_slot.to_string(), &indexes)?;
     let verified = crate::sync_aggregate::verify_participants(&bits, &pubkeys, &signature, &signing).is_ok();
@@ -909,6 +935,34 @@ mod tests {
         assert_eq!(
             hex::encode(PUBLISHED_GENESIS_VALIDATORS_ROOT),
             "acac7566fdf384a1ada45c01dcf9030d7eb0e1e5f5302659101d0b2a5bb59092"
+        );
+        assert_eq!(
+            hex::encode(PUBLISHED_GENESIS_HEADER_ROOT),
+            "37fae6d950f588ef15839dcdf69f4547ee2283d6f2815cf9b9e0ee563abc2fb3"
+        );
+        assert_eq!(
+            hex::encode(PUBLISHED_GENESIS_STATE_ROOT),
+            "bc1524ab2dfb1ac3efe6f7cca7eaebddda67a54fd3d8ceb6afdbfcf626394bb2"
+        );
+        assert!(!matches_published_genesis(
+            &[9u8; 32],
+            &PUBLISHED_GENESIS_STATE_ROOT,
+            &PUBLISHED_GENESIS_VALIDATORS_ROOT
+        ));
+    }
+
+    #[test]
+    fn the_published_genesis_header_commits_to_the_published_state() {
+        let body = [
+            0xbc, 0xe7, 0x3e, 0xe2, 0xc6, 0x17, 0x85, 0x18, 0x46, 0xaf, 0x2b, 0x3e, 0xa2, 0x28, 0x7e, 0x3b,
+            0x68, 0x60, 0x98, 0xe1, 0x8a, 0xe5, 0x08, 0xc7, 0x27, 0x1a, 0xaa, 0x06, 0xab, 0x1d, 0x06, 0xcd,
+        ];
+        let mut header = [0u8; 112];
+        header[48..80].copy_from_slice(&PUBLISHED_GENESIS_STATE_ROOT);
+        header[80..112].copy_from_slice(&body);
+        assert_eq!(
+            crate::ssz_state::hash_beacon_header(&header).unwrap(),
+            PUBLISHED_GENESIS_HEADER_ROOT
         );
     }
 }

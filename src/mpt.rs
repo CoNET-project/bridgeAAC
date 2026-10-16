@@ -75,6 +75,26 @@ fn follow(child: &Item, nibbles: &[u8], proof: &[Vec<u8>], cursor: &mut usize) -
     }
 }
 
+/// Leaf value stored under the raw trie `key` (for account proofs,
+/// `keccak256(address)`). The proof must start at `root`.
+pub(crate) fn verify_key(root: &[u8; 32], key: &[u8], proof: &[Vec<u8>]) -> Result<Vec<u8>, Error> {
+    resolve(root, &bytes_to_nibbles(key), proof)
+}
+
+/// Storage root (field 2) of an RLP account `[nonce, balance, storageRoot, codeHash]`.
+pub(crate) fn account_storage_root(account: &[u8]) -> Result<[u8; 32], Error> {
+    let items = rlp_list(account)?;
+    let [_, _, Item::Bytes(root), _] = items.as_slice() else {
+        return Err(Error::MerkleMismatch);
+    };
+    if root.len() != 32 {
+        return Err(Error::MerkleMismatch);
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(root);
+    Ok(out)
+}
+
 pub struct ConsensusLog {
     pub address: [u8; 20],
     pub topics: Vec<[u8; 32]>,
@@ -271,6 +291,18 @@ fn collect(node: &Node, nibbles: &[u8], proof: &mut Vec<Vec<u8>>) {
     }
 }
 
+/// Build a trie from `(key, value)` entries and prove `key`. Keys must share one length.
+#[cfg(test)]
+pub(crate) fn prove_key(entries: &[(Vec<u8>, Vec<u8>)], key: &[u8]) -> ([u8; 32], Vec<Vec<u8>>) {
+    let mut root = Node::Empty;
+    for (path, value) in entries {
+        root = insert(root, &bytes_to_nibbles(path), value.clone());
+    }
+    let mut proof = Vec::new();
+    collect(&root, &bytes_to_nibbles(key), &mut proof);
+    (keccak256(&encode_node(&root)), proof)
+}
+
 pub fn single_leaf_proof(index: u64, receipt: &[u8]) -> ([u8; 32], Vec<Vec<u8>>) {
     let node = rlp_list_raw(&[rlp_bytes(&encode_hp(&bytes_to_nibbles(&rlp_uint(index)), true)), rlp_bytes(receipt)]);
     (keccak256(&node), vec![node])
@@ -326,7 +358,7 @@ fn bytes_to_nibbles(bytes: &[u8]) -> Vec<u8> {
     out
 }
 
-fn rlp_uint(value: u64) -> Vec<u8> {
+pub(crate) fn rlp_uint(value: u64) -> Vec<u8> {
     if value == 0 {
         return rlp_bytes(&[]);
     }
@@ -335,7 +367,7 @@ fn rlp_uint(value: u64) -> Vec<u8> {
     rlp_bytes(&bytes[start..])
 }
 
-fn rlp_bytes(data: &[u8]) -> Vec<u8> {
+pub(crate) fn rlp_bytes(data: &[u8]) -> Vec<u8> {
     if data.len() == 1 && data[0] < 0x80 {
         return data.to_vec();
     }
@@ -344,7 +376,7 @@ fn rlp_bytes(data: &[u8]) -> Vec<u8> {
     out
 }
 
-fn rlp_list_raw(items: &[Vec<u8>]) -> Vec<u8> {
+pub(crate) fn rlp_list_raw(items: &[Vec<u8>]) -> Vec<u8> {
     let payload = items.iter().flatten().copied().collect::<Vec<_>>();
     let mut out = rlp_header(payload.len(), 0xc0, 0xf7);
     out.extend(payload);

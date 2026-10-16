@@ -225,6 +225,9 @@ pub fn alerts_for(report: &str) -> Vec<&'static str> {
     if report.contains("rpc no") {
         alerts.push("alert rpc");
     }
+    if report.contains("cursor missing") {
+        alerts.push("alert cursor-missing");
+    }
     if report.contains("cursor no") {
         alerts.push("alert cursor");
     }
@@ -258,10 +261,17 @@ pub fn service_targets() -> [(&'static str, Vec<String>); 2] {
 
 pub fn load_cursor(path: &Path) -> Result<ShadowCursor, Error> {
     if !path.exists() {
-        return Ok(ShadowCursor::default());
+        return Err(Error::CursorMissing);
     }
     let text = fs::read_to_string(path).map_err(|_| Error::Journal)?;
     serde_json::from_str(&text).map_err(|_| Error::Journal)
+}
+
+/// Fold a later window into an earlier note. Cancel and execute are sticky.
+pub fn merge_op_note(existing: &mut OpNote, note: &OpNote) {
+    existing.initiated = existing.initiated.min(note.initiated);
+    existing.executed |= note.executed;
+    existing.cancelled |= note.cancelled;
 }
 
 pub fn save_cursor(path: &Path, cursor: &ShadowCursor) -> Result<(), Error> {
@@ -346,8 +356,9 @@ pub fn prepare_cycle_with_targets(
     base_rpcs: &[String],
     conet_rpcs: &[String],
 ) -> PreparedCycle {
-    let mut cursor = match load_cursor(cursor_path) {
-        Ok(cursor) => cursor,
+    let (mut cursor, missing_cursor) = match load_cursor(cursor_path) {
+        Ok(cursor) => (cursor, false),
+        Err(Error::CursorMissing) => (ShadowCursor::default(), true),
         Err(_) => {
             return PreparedCycle {
                 report: "cursor no\naccepted no\n".to_string(),
@@ -394,6 +405,9 @@ pub fn prepare_cycle_with_targets(
         }
     }
     report.push_str(&reconcile_pending(&cursor.ops, cursor.base, cursor.conet, RECONCILE_LAG_BLOCKS));
+    if missing_cursor {
+        report.insert_str(0, "cursor missing\n");
+    }
     PreparedCycle {
         report,
         cursor: Some(cursor),
@@ -459,10 +473,7 @@ fn scan_chain(
     }
     for (id, note) in seen {
         match cursor.ops.get_mut(&id) {
-            Some(existing) => {
-                existing.initiated = existing.initiated.min(note.initiated);
-                existing.executed |= note.executed;
-            }
+            Some(existing) => merge_op_note(existing, &note),
             None => {
                 cursor.ops.insert(id, note);
             }

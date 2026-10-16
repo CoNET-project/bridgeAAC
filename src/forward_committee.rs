@@ -1,4 +1,9 @@
-//! Forward sync-committee updates rooted at the published CoNET genesis state.
+//! Forward sync-committee updates from the published CoNET genesis.
+//!
+//! Period 0's committee comes from the genesis beacon state. That state is
+//! accepted when its hash is the published state root and the slot-0 header
+//! that commits to it hashes to the published header root. Matching the
+//! `genesis_validators_root` field is required and is not sufficient.
 //!
 //! Each step uses the committee already trusted for period `P` to authenticate
 //! the committee for period `P+1`. A two-thirds aggregate is the normal update.
@@ -481,12 +486,18 @@ fn load_genesis(beacon: &str) -> Option<GenesisAnchor> {
     if hash_beacon_state(&state).ok()? != state_root {
         return Some(GenesisAnchor { pinned: false, header_root, current: Vec::new() });
     }
+    let hashed_header = hash_beacon_header(&encoded).ok()?;
+    let hashed_state = hash_beacon_state(&state).ok()?;
     let found = ssz_state::genesis_validators_root(&state).ok()?;
     let current = ssz_state::sync_committee_pubkeys(&state).ok()?;
+    let pinned = hashed_header == header_root
+        && hashed_state == state_root
+        && crate::conet_consensus::matches_published_genesis(&header_root, &state_root, &found)
+        && current.len() == COMMITTEE_SIZE;
     Some(GenesisAnchor {
-        pinned: found == crate::conet_consensus::PUBLISHED_GENESIS_VALIDATORS_ROOT && current.len() == COMMITTEE_SIZE,
+        pinned,
         header_root,
-        current,
+        current: if pinned { current } else { Vec::new() },
     })
 }
 
@@ -497,10 +508,11 @@ fn load_checkpoint(path: &Path, genesis: &GenesisAnchor) -> Result<Option<Commit
     let text = fs::read_to_string(path).map_err(|_| Error::Journal)?;
     let file: CheckpointFile = serde_json::from_str(&text).map_err(|_| Error::BadFixture)?;
     let pin = hex::encode(crate::conet_consensus::PUBLISHED_GENESIS_VALIDATORS_ROOT);
-    if file.v != 1 || file.genesis_validators_root != pin {
+    let published_header = hex::encode(crate::conet_consensus::PUBLISHED_GENESIS_HEADER_ROOT);
+    if file.v != 1 || file.genesis_validators_root != pin || file.genesis_header_root != published_header {
         return Err(Error::BadFixture);
     }
-    if file.genesis_header_root != hex::encode(genesis.header_root) {
+    if genesis.header_root != crate::conet_consensus::PUBLISHED_GENESIS_HEADER_ROOT {
         return Err(Error::BadFixture);
     }
     let committee = file
@@ -522,6 +534,9 @@ fn load_checkpoint(path: &Path, genesis: &GenesisAnchor) -> Result<Option<Commit
 }
 
 fn save_checkpoint(path: &Path, genesis: &GenesisAnchor, store: &CommitteeStore) -> Result<(), Error> {
+    if genesis.header_root != crate::conet_consensus::PUBLISHED_GENESIS_HEADER_ROOT {
+        return Err(Error::BadFixture);
+    }
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
             fs::create_dir_all(parent).map_err(|_| Error::Journal)?;
@@ -530,7 +545,7 @@ fn save_checkpoint(path: &Path, genesis: &GenesisAnchor, store: &CommitteeStore)
     let file = CheckpointFile {
         v: 1,
         genesis_validators_root: hex::encode(crate::conet_consensus::PUBLISHED_GENESIS_VALIDATORS_ROOT),
-        genesis_header_root: hex::encode(genesis.header_root),
+        genesis_header_root: hex::encode(crate::conet_consensus::PUBLISHED_GENESIS_HEADER_ROOT),
         current_period: store.current_period,
         current_committee: store.current_committee.iter().map(hex::encode).collect(),
         finalized_epoch: store.finalized_epoch,
@@ -660,8 +675,9 @@ struct ForkSchedule {
     genesis_root: [u8; 32],
 }
 
+/// The signing domain uses the pinned genesis validators root, not the copy the
+/// beacon serves. A beacon with another root produces signatures that fail.
 fn fork_schedule(beacon: &str, slot: u64) -> Result<ForkSchedule, Error> {
-    let genesis = http_json(&format!("{beacon}/eth/v1/beacon/genesis"))?;
     let fork_body = http_json(&format!("{beacon}/eth/v1/beacon/states/{slot}/fork"))?;
     let fork_data = fork_body.pointer("/data").ok_or(Error::Rpc)?;
     Ok(ForkSchedule {
@@ -670,7 +686,7 @@ fn fork_schedule(beacon: &str, slot: u64) -> Result<ForkSchedule, Error> {
             current: version_bytes(fork_data.get("current_version").and_then(Value::as_str).unwrap_or("0x"))?,
             epoch: json_u64(fork_data.get("epoch").ok_or(Error::Rpc)?)?,
         },
-        genesis_root: json_hash(genesis.pointer("/data/genesis_validators_root").ok_or(Error::Rpc)?)?,
+        genesis_root: crate::conet_consensus::PUBLISHED_GENESIS_VALIDATORS_ROOT,
     })
 }
 

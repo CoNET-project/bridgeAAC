@@ -23,6 +23,8 @@ pub enum Error {
     /// The two Peer v5 `createERC20` sequences do not share one nonce and one parameter set.
     NonceMismatch,
     Journal,
+    /// The shadow cursor file is absent. Distinct from corrupt JSON.
+    CursorMissing,
     /// Two execution clients disagreed on the canonical header.
     Quorum,
 }

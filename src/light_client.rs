@@ -2,12 +2,14 @@
 //!
 //! The genesis-rooted diagnostic chain may contain forced updates. This track
 //! does not repair those periods. It starts from an explicit period checkpoint
-//! and accepts only a verified supermajority for finality. Fewer than three
-//! independent confirmations leaves the checkpoint at `safety observed`.
+//! and accepts only a verified supermajority for finality. Unsigned confirmation
+//! files stay at `safety observed` no matter how many signer strings they list.
 //! `trusted-committee` stays `no`, and this command does not feed shadow.
 
+use crate::conet_consensus::PUBLISHED_GENESIS_VALIDATORS_ROOT;
 use crate::error::Error;
 use crate::ssz_state::{self, hash_beacon_header, hash_beacon_state, verify_ssz_proof};
+use crate::sync_aggregate::{self, ForkVersion};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeSet;
@@ -202,17 +204,19 @@ pub fn force_best_update(store: &LightClientStore, update: &SpecUpdate, current_
 }
 
 pub fn safety_of(store: &LightClientStore, confirmations: usize) -> Safety {
-    if store.forced_updates > 0 || confirmations < WS_CONFIRMATIONS_REQUIRED {
-        if store.forced_updates == 0 && store.optimistic_slot > store.finalized_slot {
-            return Safety::Optimistic;
-        }
+    // Signer strings in confirmation JSON are not BLS proofs. Counting them
+    // must not mint weak-subjectivity trust.
+    let _ = confirmations;
+    if store.forced_updates > 0 {
         return Safety::Observed;
     }
     if store.supermajority_updates > 0 {
-        Safety::SupermajorityFinalized
-    } else {
-        Safety::WeakSubjectivityTrusted
+        return Safety::SupermajorityFinalized;
     }
+    if store.optimistic_slot > store.finalized_slot {
+        return Safety::Optimistic;
+    }
+    Safety::Observed
 }
 
 pub fn confirmed_signers(header_root: [u8; 32], confirmations: &[(String, [u8; 32])]) -> usize {
@@ -469,10 +473,21 @@ fn find_supermajority_block(beacon: &str, period: u64) -> Result<SignedBlock, Er
             Some(block) => {
                 let bits = block_bits(&block).unwrap_or(0);
                 if bits.saturating_mul(3) >= (COMMITTEE_SIZE as u64).saturating_mul(2) {
+                    let parent_root = {
+                        let message = block.pointer("/data/message").ok_or(Error::Rpc)?;
+                        json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?
+                    };
+                    if !sync_aggregate_binds(beacon, &block, parent_root) {
+                        if slot == start {
+                            break;
+                        }
+                        slot -= 1;
+                        continue;
+                    }
                     let message = block.pointer("/data/message").ok_or(Error::Rpc)?;
                     return Ok(SignedBlock {
                         slot: json_u64(message.get("slot").ok_or(Error::Rpc)?)?,
-                        parent_root: json_hash(message.get("parent_root").ok_or(Error::Rpc)?)?,
+                        parent_root,
                     });
                 }
             }
@@ -484,6 +499,77 @@ fn find_supermajority_block(beacon: &str, period: u64) -> Result<SignedBlock, Er
         slot -= 1;
     }
     Err(Error::Rpc)
+}
+
+/// A bit quorum is not a signature. The aggregate must verify against the
+/// parent state's sync committee and the pinned genesis validators root.
+fn sync_aggregate_binds(beacon: &str, block: &Value, parent_root: [u8; 32]) -> bool {
+    let Some(aggregate) = block.pointer("/data/message/body/sync_aggregate") else {
+        return false;
+    };
+    let (Ok(bits), Ok(signature)) = (
+        decode_hex(aggregate.get("sync_committee_bits").and_then(Value::as_str).unwrap_or("")),
+        decode_hex(aggregate.get("sync_committee_signature").and_then(Value::as_str).unwrap_or("")),
+    ) else {
+        return false;
+    };
+    let parent = format!("0x{}", hex::encode(parent_root));
+    let Ok(header) = http_json(&format!("{beacon}/eth/v1/beacon/headers/{parent}")) else {
+        return false;
+    };
+    let Some(header_msg) = header.pointer("/data/header/message") else {
+        return false;
+    };
+    let (Ok(parent_slot), Ok(state_root)) = (
+        json_u64(header_msg.get("slot").unwrap_or(&Value::Null)),
+        json_hash(header_msg.get("state_root").unwrap_or(&Value::Null)),
+    ) else {
+        return false;
+    };
+    let Ok(state) = http_bytes(&format!("{beacon}/eth/v2/debug/beacon/states/{parent_slot}")) else {
+        return false;
+    };
+    if hash_beacon_state(&state).ok() != Some(state_root) {
+        return false;
+    }
+    let Ok(keys) = ssz_state::sync_committee_pubkeys(&state) else {
+        return false;
+    };
+    let Ok(fork) = light_fork(beacon, parent_slot) else {
+        return false;
+    };
+    let domain = sync_aggregate::sync_domain(&fork, parent_slot / SLOTS_PER_EPOCH, PUBLISHED_GENESIS_VALIDATORS_ROOT);
+    let signing = sync_aggregate::signing_root(parent_root, domain);
+    sync_aggregate::verify_participants(&bits, &keys, &signature, &signing).is_ok()
+}
+
+fn light_fork(beacon: &str, slot: u64) -> Result<ForkVersion, Error> {
+    let body = http_json(&format!("{beacon}/eth/v1/beacon/states/{slot}/fork"))?;
+    let data = body.pointer("/data").ok_or(Error::Rpc)?;
+    Ok(ForkVersion {
+        previous: version_bytes(data.get("previous_version").and_then(Value::as_str).unwrap_or("0x"))?,
+        current: version_bytes(data.get("current_version").and_then(Value::as_str).unwrap_or("0x"))?,
+        epoch: json_u64(data.get("epoch").ok_or(Error::Rpc)?)?,
+    })
+}
+
+fn version_bytes(text: &str) -> Result<[u8; 4], Error> {
+    let bare = text.strip_prefix("0x").unwrap_or(text);
+    let bytes = hex::decode(bare).map_err(|_| Error::BadHex)?;
+    if bytes.len() != 4 {
+        return Err(Error::BadLength);
+    }
+    let mut out = [0u8; 4];
+    out.copy_from_slice(&bytes);
+    Ok(out)
+}
+
+fn decode_hex(text: &str) -> Result<Vec<u8>, Error> {
+    let bare = text.strip_prefix("0x").unwrap_or(text);
+    if bare.is_empty() {
+        return Err(Error::BadHex);
+    }
+    hex::decode(bare).map_err(|_| Error::BadHex)
 }
 
 fn block_bits(block: &Value) -> Option<u64> {
@@ -639,7 +725,7 @@ mod tests {
     }
 
     #[test]
-    fn three_distinct_confirmations_can_mark_the_checkpoint_without_opening_custody() {
+    fn three_distinct_unsigned_confirmations_stay_observed() {
         let root = [9u8; 32];
         let rows = vec![
             ("a".to_string(), root),
@@ -648,8 +734,10 @@ mod tests {
             ("c".to_string(), root),
         ];
         assert_eq!(confirmed_signers(root, &rows), 3);
-        let text = format_capture(18, true, "yes", 3, Safety::WeakSubjectivityTrusted);
-        assert!(text.contains("safety weak-subjectivity-trusted"));
+        assert_eq!(safety_of(&store(), 3), Safety::Observed);
+        let text = format_capture(18, true, "yes", 3, safety_of(&store(), 3));
+        assert!(text.contains("safety observed"));
+        assert!(!text.contains("weak-subjectivity-trusted"));
         assert!(text.contains("trusted-committee no"));
         assert!(text.contains("custody closed"));
         assert!(text.contains("feeds-shadow no"));

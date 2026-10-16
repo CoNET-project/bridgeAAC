@@ -6,6 +6,7 @@
 
 mod adapter;
 mod assets;
+mod base_output_root;
 mod conet_consensus;
 mod consume_spec;
 mod custody_gate;
@@ -60,7 +61,7 @@ pub use l1_output::{
 pub use merkle::{build_tree, prove, verify as verify_merkle, MerkleProof, MerkleTree};
 pub use mpt::{encode_consensus_receipt, prove_receipts, single_leaf_proof, verify_receipt, ConsensusLog};
 pub use service::{
-    absorb_ops, alerts_for, apply_reader_lag, apply_stable, batch_for_lag, deployment_floor, drill_report, finish_cycle, load_cursor,
+    absorb_ops, alerts_for, apply_reader_lag, apply_stable, batch_for_lag, deployment_floor, drill_report, finish_cycle, load_cursor, merge_op_note,
     max_metric, next_cursor, plan_range, prepare_cycle, prepare_cycle_with_targets, reconcile_pending, save_cursor,
     should_pause, valid_reader_set, write_cycle,
     write_page, OpNote, PreparedCycle, ShadowCursor, CATCHUP_BLOCKS, CURSOR_LAG_ALERT_BLOCKS,

@@ -4,13 +4,25 @@
 //! registry, then checks `isGameClaimValid` on the registry's anchor game.
 //! A matching anchor is an L1 observation. It does not replay the fault proof,
 //! it does not accept a Base execution tag, and it does not open custody.
+//!
+//! `BaseL1Finality` accepts a Base block only when that block is the anchored
+//! block and its output root, rebuilt from the header and an account proof of
+//! the message passer, equals the anchored root.
 
 use crate::assets::bindings;
+use crate::base_output_root::{header_hash_field, header_number, header_rlp, hex_bytes, verify_output_binding};
 use crate::error::Error;
 use crate::execution::JsonRpcExecution;
 use crate::finality::{AuthenticatedHeader, FinalityVerifier};
+use crate::hash::keccak256;
 use crate::ExecutionView;
+use serde_json::{json, Value};
 use std::time::Duration;
+
+/// `L2ToL1MessagePasser`, the account whose storage root enters the output root.
+const MESSAGE_PASSER: [u8; 20] = [
+    0x42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x16,
+];
 
 const ETHEREUM_CHAIN_ID: u64 = 1;
 const PORTAL_HEX: &str = "49048044d57e1c92a77f79988d21fa8faf74e97e";
@@ -70,6 +82,13 @@ impl BaseL1Finality {
 }
 
 impl FinalityVerifier for BaseL1Finality {
+    /// Accept only the Base block that the anchored output root commits to.
+    ///
+    /// The execution client's block is rebuilt into its header RLP, which must
+    /// hash to `header_hash`. The anchored game must name that block's number.
+    /// The output root is then recomputed from the header's state root, the
+    /// message-passer storage root, and the block hash. Blocks behind the anchor
+    /// are refused until an ancestry proof exists.
     fn authenticate(
         &self,
         chain_id: u64,
@@ -80,26 +99,58 @@ impl FinalityVerifier for BaseL1Finality {
         {
             return Err(Error::ChainMismatch);
         }
-        let block = self.base.block_by_hash(header_hash)?;
-        let canonical = self.base.block_by_number(block.number)?;
-        if canonical.hash != block.hash
-            || canonical.state_root != block.state_root
-            || canonical.receipts_root != block.receipts_root
-        {
+        let block = self.base.call(
+            "eth_getBlockByHash",
+            json!([format!("0x{}", hex::encode(header_hash)), false]),
+        )?;
+        if block.is_null() {
             return Err(Error::UnknownHeader);
         }
-        let facts = read_anchor_facts(&self.l1, block.number)?;
-        if !assess_anchor(&facts).covered {
+        if keccak256(&header_rlp(&block)?) != *header_hash {
+            return Err(Error::DigestMismatch);
+        }
+        let number = header_number(&block)?;
+        let state_root = header_hash_field(&block, "stateRoot")?;
+        let receipts_root = header_hash_field(&block, "receiptsRoot")?;
+        let facts = read_anchor_facts(&self.l1, number)?;
+        if !assess_anchor(&facts).l1_anchor || number != facts.game_sequence {
             return Err(Error::UnknownHeader);
         }
+        let proof = message_passer_proof(&self.base, number)?;
+        verify_output_binding(
+            &MESSAGE_PASSER,
+            header_hash,
+            &state_root,
+            &proof,
+            &facts.game_root,
+        )?;
         Ok(AuthenticatedHeader {
             chain_id,
-            header_hash: block.hash,
-            number: block.number,
-            state_root: block.state_root,
-            receipts_root: block.receipts_root,
+            header_hash: *header_hash,
+            number,
+            state_root,
+            receipts_root,
         })
     }
+}
+
+/// Account proof of the message passer at `number`, as the execution client returns it.
+fn message_passer_proof(base: &JsonRpcExecution, number: u64) -> Result<Vec<Vec<u8>>, Error> {
+    let result = base.call(
+        "eth_getProof",
+        json!([
+            format!("0x{}", hex::encode(MESSAGE_PASSER)),
+            [],
+            format!("0x{number:x}"),
+        ]),
+    )?;
+    result
+        .get("accountProof")
+        .and_then(Value::as_array)
+        .ok_or(Error::Rpc)?
+        .iter()
+        .map(|node| hex_bytes(node.as_str().ok_or(Error::Rpc)?))
+        .collect()
 }
 
 pub fn assess_anchor(facts: &AnchorFacts) -> AnchorReport {

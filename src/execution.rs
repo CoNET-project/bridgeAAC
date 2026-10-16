@@ -58,6 +58,9 @@ pub fn assess(
         return Err(Error::ChainMismatch);
     }
     let block = api.block_by_hash(header)?;
+    if block.hash != *header {
+        return Err(Error::UnknownHeader);
+    }
     let checkpoint = api.block_by_tag(level.tag())?;
     if block.number > checkpoint.number {
         return Err(Error::UnknownHeader);
@@ -116,7 +119,7 @@ impl JsonRpcExecution {
         Self { url: url.into() }
     }
 
-    fn call(&self, method: &str, params: serde_json::Value) -> Result<serde_json::Value, Error> {
+    pub(crate) fn call(&self, method: &str, params: serde_json::Value) -> Result<serde_json::Value, Error> {
         let response = ureq::post(&self.url)
             .timeout(Duration::from_secs(20))
             .set("content-type", "application/json")
@@ -191,4 +194,59 @@ fn parse_u64(text: &str) -> Result<u64, Error> {
 
 fn hex32(bytes: &[u8; 32]) -> String {
     format!("0x{}", hex::encode(bytes))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Answers every hash lookup with one canonical block, including a hash
+    /// that block does not have.
+    struct SubstitutingView {
+        canonical: ExecBlock,
+    }
+
+    impl ExecutionView for SubstitutingView {
+        fn chain_id(&self) -> Result<u64, Error> {
+            Ok(bindings::BASE_CHAIN_ID)
+        }
+
+        fn block_by_hash(&self, _hash: &[u8; 32]) -> Result<ExecBlock, Error> {
+            Ok(self.canonical)
+        }
+
+        fn block_by_number(&self, number: u64) -> Result<ExecBlock, Error> {
+            if number == self.canonical.number {
+                Ok(self.canonical)
+            } else {
+                Err(Error::UnknownHeader)
+            }
+        }
+
+        fn block_by_tag(&self, tag: &str) -> Result<ExecBlock, Error> {
+            if tag == FinalityLevel::Finalized.tag() {
+                Ok(self.canonical)
+            } else {
+                Err(Error::UnknownHeader)
+            }
+        }
+    }
+
+    #[test]
+    fn a_substituted_block_does_not_authenticate_another_hash() {
+        let canonical = ExecBlock {
+            number: 10,
+            hash: [1u8; 32],
+            state_root: [2u8; 32],
+            receipts_root: [3u8; 32],
+        };
+        let api = SubstitutingView { canonical };
+        let accepted = assess(bindings::BASE_CHAIN_ID, &canonical.hash, FinalityLevel::Finalized, &api).unwrap();
+        assert_eq!(accepted.header_hash, canonical.hash);
+        assert_eq!(accepted.receipts_root, canonical.receipts_root);
+        assert_eq!(
+            assess(bindings::BASE_CHAIN_ID, &[9u8; 32], FinalityLevel::Finalized, &api),
+            Err(Error::UnknownHeader)
+        );
+    }
 }
