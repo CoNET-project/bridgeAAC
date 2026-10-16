@@ -1,6 +1,8 @@
 name: bridgeAAC reproducibility build
 
 on:
+  push:
+    branches: [repro-build]
   workflow_dispatch:
 
 permissions:
