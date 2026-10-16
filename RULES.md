@@ -71,17 +71,18 @@ x86_64-unknown-linux-gnu
 [`deploy/bridge-aac-shadow-prod.env.example`](deploy/bridge-aac-shadow-prod.env.example)。
 
 每条链必须配置两个可达且独立的 reader；禁止重复同一个 URL 来制造 quorum。
-`70.35.205.77` 当前本地执行客户端监听 `127.0.0.1:8545`，它是 CoNET reader，
-不是 Base reader。该主机当前没有本地 Base execution endpoint，因此在提供第二个
-独立 Base reader 之前，不得启动 Shadow production unit。
 
-`.77` 允许探测的 Base reader 候选主机为 `38.102.126.30` 和
-`38.102.126.50`。主机名不等于 RPC endpoint；实际端口和 scheme 必须由运维写入
-`/etc/default/bridge-aac-shadow-prod`，并从 `.77` 验证 `eth_chainId == 8453`。
-截至最近只读排查，`.30:8547` 确认为 Base `8453`，但防火墙只允许
-`216.225.202.23`、`38.102.126.58` 和本机访问；`.50` 已探测端口返回的是
-CoNET `224422`，尚未发现 Base execution endpoint。未经 chain ID 验证，不得将
-`.50` 或任何其它端口作为 Base reader。
+当前 Base reader 为两个公共节点，由不同运营方提供：`mainnet.base.org`（Base）和
+`base.publicnode.com`（Allnodes）。二者都必须返回 `eth_chainId == 8453`，并在同一
+finalized 高度给出相同区块哈希。`38.102.126.30` 与 `38.102.126.58` 同属一个网段
+（Cogent COGENT-A），不被视为两个独立 reader，生产配置中不再使用。
+
+CONET reader 为生产主机本机执行客户端（`127.0.0.1:8545`）与
+`publicrpc.conet.network`。
+
+已在目标链上结算、但不会再由投票执行的操作，只能通过
+`bridge-aac confirm-settled` 写入 `deploy/settled-operations.json`。该命令在写入前由
+读取端点核对结算交易（成功、接收方为 settler、各读取端点区块哈希一致）；未通过则不写入。
 
 Reader finalized tip 的短暂差异属于 advisory `reader-lag-warning`，采用连续
 3 个周期触发、连续 3 个周期恢复的滞后策略；它本身不得打开 page 或重置
