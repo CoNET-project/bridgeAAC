@@ -8,7 +8,7 @@ This repository is phase 6 of that gateway. The shadow command reads public exec
 
 ## Milestones
 
-Recorded on 2026-10-15. Custody views stay closed.
+Recorded on 2026-10-16. Custody views stay closed. Release `bridge-aac-v0.33.12` closes the internal review findings; see [docs/AUDIT-2026-10-16.md](docs/AUDIT-2026-10-16.md).
 
 | Milestone | State |
 | --- | --- |
@@ -69,6 +69,7 @@ Miner `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBri
 ## Documents
 
 - [patch-geth](https://github.com/CoNET-project/patch-geth) — Cancun-only EIP-2537 build for the CoNET execution client
+- [Audit record 2026-10-16](docs/AUDIT-2026-10-16.md) (H1, H2, M1–M6 fixes; reproducible 0.33.12 build)
 - [Whitepaper](docs/WHITEPAPER.md)
 - [MVP phases](docs/MVP.md)
 - [Production custody gates](docs/PRODUCTION-CUSTODY-GATES.md)
@@ -170,6 +171,12 @@ It refuses non-ELF output. Run it on a Linux build host, or provide a working
 cross-linker on another host; a macOS Mach-O binary must never be installed as
 the production observer.
 
+The toolchain is pinned by `rust-toolchain.toml` (rustc 1.99.1). The script and
+the release workflow set `RUSTFLAGS` with `--remap-path-prefix` for the checkout
+and the cargo home, so the same commit built on a Linux host and in CI gives the
+same SHA-256. The 0.33.12 artifact was reproduced this way. A binary built with a
+different rustc or from another checkout path will have a different hash.
+
 Compute an AAC id:
 
 ```bash
@@ -196,9 +203,14 @@ bridge-aac check-header --chain base --rpc https://base-rpc.conet.network --leve
 ```
 
 For a Base custody review, add an Ethereum L1 RPC. This path requires the
-canonical OptimismPortal wiring, a claim-valid dispute-game anchor, and the
-target Base block to be covered by that anchor; it does not treat the Base
-execution `finalized` tag as sufficient and does not open custody:
+canonical OptimismPortal wiring, a claim-valid dispute-game anchor, and that the
+requested block is exactly the block the anchored game commits to. The header is
+rebuilt from the RPC block and must hash to the requested hash. The OP output
+root `keccak256(0x00…00 ‖ stateRoot ‖ storageRoot ‖ blockHash)` is recomputed
+from an account proof of the message passer (`0x4200…0016`) and must equal the
+anchored root. Blocks behind the anchor are refused (`accepted no`) until an
+ancestry proof exists. The path does not treat the Base execution `finalized` tag
+as sufficient and does not open custody:
 
 ```bash
 bridge-aac check-header --chain base \
@@ -207,7 +219,7 @@ bridge-aac check-header --chain base \
   --level finalized --header <block-hash>
 ```
 
-Settle one fixture log on the in-process test ledger. The command refuses `--rpc`. Without `--allow-header` the output does not say the header is final. `--circle-balance 0` keeps a burn-release AAC reserved.
+Settle one fixture log on the in-process test ledger. The command refuses `--rpc`. Without `--allow-header` the output does not say the header is final. The Circle balance defaults to `0`, so a burn-release AAC stays reserved unless `--circle-balance` is given.
 
 ```bash
 bridge-aac settle fixtures/base-lock-receipt.json 0 --allow-header 0x44
@@ -223,8 +235,9 @@ bridge-aac verify-receipt --chain base --rpc https://base-rpc.conet.network \
   --header <block-hash> --index 0 --receipt <rlp-hex> --proof <node-hex>
 ```
 
-The same command accepts `--l1-rpc` to bind the receipt root to an L1-covered
-Base block instead of only the execution client's finalized tag.
+The same command accepts `--l1-rpc` to bind the receipt root to the Base block
+that the anchored dispute game commits to (same rules as `check-header` above).
+Any other block is refused.
 
 `shadow` reads at least two execution clients. It proves one real receipt from TreasuryBridgeV3 or the GB token. A successful source receipt prints `execution-tag yes`, `registry paused`, and `consume denied`. The report does not print `final true`.
 
@@ -237,6 +250,8 @@ bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
 ```
 
 `shadow-service` scans from the saved cursor through the lower execution-tagged height. A quiet cycle scans at most 32 blocks. While the cursor is more than 64 blocks behind, it scans 256 blocks and starts the next cycle immediately. Both readers must agree on each block hash and receipts root. A temporary difference between reader finalized tips is reported as advisory `reader-lag-warning` with hysteresis; it does not by itself open the page or reset stable. A `cursor-lag` above 256 blocks, quorum mismatch, receipt-proof failure, RPC failure, or cursor error remains blocking and keeps `/var/lib/bridge-aac/page.txt` at `page open`. `stable yes` means the cursor stayed within 256 blocks of the lower head for 256 verified blocks. The first run records that height as the deployment floor and does not scan back to block 0. The cursor advances only after that range is written. A quiet caught-up cycle prints `heartbeat yes`. Quorum, receipt-proof, gateway, receipt-status, RPC, cursor, and reconcile failures print `BRIDGE_AAC_ALERT` on stdout and in the alert file. The process stays `custody closed`.
+
+A missing cursor file is reported as `cursor missing` and pages `alert cursor-missing`; a fresh start then begins at the current finalized head. A cancellation recorded in any scan window stays cancelled.
 
 The production-side Base reader is a separate read-only command. It takes two independently reachable execution RPCs, chooses the lower `finalized` height, and checks every requested height against both readers:
 
@@ -255,7 +270,8 @@ It requires Base chain ID `8453`, rejects height zero or a range above the lower
 | --- | --- |
 | `assets` | Which assets may cross, and whether the destination mints or releases |
 | `merkle` | Phase-0 inclusion proofs |
-| `execution` | Base and CONET checks against the execution client's safe or finalized tag |
+| `execution` | Base and CONET checks against the execution client's safe or finalized tag; the returned hash must equal the requested hash |
+| `base_output_root` | OP output-root binding for the Base L1 anchor path (header rebuild, account proof, output root) |
 | `adapter` | Phase-3 test-ledger settlement for the four bridgeable asset classes |
 | `mpt` | Ethereum receipt Merkle-Patricia inclusion against an attested receipts root |
 | `shadow` | Phase-5 read-only observation across two execution clients |
