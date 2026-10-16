@@ -8,8 +8,8 @@ required before cutover. Phase B GB `addAdmin(AAC)`, Phase C canary
 2026-10-15. Phase E monitor **RECORDED HEALTHY** 2026-10-15
 ([CUTOVER-CUSTODY.md](CUTOVER-CUSTODY.md)).
 
-This guide defines the acceptance evidence for `bridge-aac-v0.33.12`.
-Use the [v0.33.12 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.12)
+This guide defines the acceptance evidence for `bridge-aac-v0.33.13`.
+Use the [v0.33.13 GitHub Release](https://github.com/CoNET-project/bridgeAAC/releases/tag/bridge-aac-v0.33.13)
 as the artifact source.
 It covers the current production stage only:
 
@@ -97,7 +97,7 @@ serves the state successfully.
 ### M3.2 Produce the local confirmation
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 confirm-checkpoint \
+./bridge-aac-0.33.13-linux-x86_64 confirm-checkpoint \
   --beacon "http://127.0.0.1:${BEACON_HTTP_PORT}" \
   --period 18 \
   --out /tmp/aac-confirmation-<operator>.json
@@ -124,7 +124,7 @@ the command above against their own local beacon and return their confirmation
 JSON. The candidate owner combines them:
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 accept-confirmations \
+./bridge-aac-0.33.13-linux-x86_64 accept-confirmations \
   --checkpoint /path/to/aac-weak-subjectivity-period18.json \
   --confirmation /path/to/confirmation-operator-a.json \
   --confirmation /path/to/confirmation-operator-b.json \
@@ -181,7 +181,7 @@ HTTP 200 is required. Then run the same local confirmation tool against the
 Prysm REST API:
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 confirm-checkpoint \
+./bridge-aac-0.33.13-linux-x86_64 confirm-checkpoint \
   --beacon "$PRYSM_BEACON" \
   --period 18 \
   --out confirmation-prysm-<operator>.json
@@ -206,11 +206,11 @@ operator independence; it does not count as a second independent operator.
 Use a Linux `x86_64` host. Do not use a macOS Mach-O binary as an AAC node.
 
 ```bash
-curl -fL -o bridge-aac-0.33.12-linux-x86_64 \
-  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.12/bridge-aac-0.33.12-linux-x86_64
+curl -fL -o bridge-aac-0.33.13-linux-x86_64 \
+  https://github.com/CoNET-project/bridgeAAC/releases/download/bridge-aac-v0.33.13/bridge-aac-0.33.13-linux-x86_64
 
-sha256sum bridge-aac-0.33.12-linux-x86_64
-file bridge-aac-0.33.12-linux-x86_64
+sha256sum bridge-aac-0.33.13-linux-x86_64
+file bridge-aac-0.33.13-linux-x86_64
 ```
 
 Required SHA-256:
@@ -224,7 +224,7 @@ The artifact must be a Linux `x86_64` ELF executable.
 ## 2. Verify the source release
 
 ```bash
-git clone --branch bridge-aac-v0.33.12 \
+git clone --branch bridge-aac-v0.33.13 \
   https://github.com/CoNET-project/bridgeAAC.git
 cd bridgeAAC
 ./scripts/preflight-shadow.sh
@@ -233,7 +233,7 @@ cd bridgeAAC
 The preflight result must be:
 
 ```text
-preflight accepted bridge-aac-v0.33.12
+preflight accepted bridge-aac-v0.33.13
 ```
 
 ## 3. Verify two independent Base readers
@@ -243,7 +243,7 @@ independent reader paths; do not repeat one URL through different schemes or
 proxies to manufacture quorum.
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 base-quorum-reader \
+./bridge-aac-0.33.13-linux-x86_64 base-quorum-reader \
   --rpc <base-reader-1> \
   --rpc <base-reader-2> \
   --from <deployment-floor> \
@@ -261,7 +261,7 @@ rpc no
 ## 4. Verify the Ethereum L1 output anchor
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 base-l1-output \
+./bridge-aac-0.33.13-linux-x86_64 base-l1-output \
   --l1-rpc <ethereum-l1-rpc> \
   --base-rpc <base-rpc>
 ```
@@ -277,7 +277,7 @@ execution-ahead no
 Then verify the block through the L1-bound finality path:
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 check-header \
+./bridge-aac-0.33.13-linux-x86_64 check-header \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
@@ -307,7 +307,7 @@ that covered block. Do not choose a transaction from the current Base head when
 the head is ahead of the L1 anchor:
 
 ```bash
-ANCHOR_REPORT="$(./bridge-aac-0.33.12-linux-x86_64 base-l1-output \
+ANCHOR_REPORT="$(./bridge-aac-0.33.13-linux-x86_64 base-l1-output \
   --l1-rpc <ethereum-l1-rpc> --base-rpc <base-rpc>)"
 ANCHOR_L2="$(printf '%s\n' "$ANCHOR_REPORT" | awk '$1=="anchor-l2" {print $2; exit}')"
 BLOCK_HEX="$(printf '0x%x' "$ANCHOR_L2")"
@@ -321,7 +321,7 @@ TreasuryBridgeV3 or GB bridge event, rather than an unrelated successful
 transaction.
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 export-receipt-proof \
+./bridge-aac-0.33.13-linux-x86_64 export-receipt-proof \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
   --tx "$TX_HASH" \
@@ -342,7 +342,7 @@ receipts root, and proof nodes. It can also be checked with the lower-level
 command:
 
 ```bash
-./bridge-aac-0.33.12-linux-x86_64 verify-receipt \
+./bridge-aac-0.33.13-linux-x86_64 verify-receipt \
   --chain base \
   --rpc <base-rpc> \
   --l1-rpc <ethereum-l1-rpc> \
