@@ -450,7 +450,10 @@ Cover-eligible BridgeOperation.
 
 ---
 
-## F6 — USDC / Treasury cutover (BLOCKED 2026-10-15)
+## F6 — USDC / Treasury cutover (vote closure EXECUTED; Treasury grant NOT sent)
+
+Chain check 2026-10-16 (read-only, Base): Treasury `voteBridgeClosed()` = `true`, so the miner `voteBridgeOperation` closure is in effect. The AAC has no Treasury role. The section below is the original probe record from 2026-10-15 and is kept for history.
+
 
 Owner auth: same F1–F7 message (probe only — no invent).  
 Doc: [F6-USDC.md](F6-USDC.md)  

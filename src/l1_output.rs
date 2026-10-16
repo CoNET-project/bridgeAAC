@@ -10,7 +10,9 @@
 //! the message passer, equals the anchored root.
 
 use crate::assets::bindings;
-use crate::base_output_root::{header_hash_field, header_number, header_rlp, hex_bytes, verify_output_binding};
+use crate::base_output_root::{
+    header_hash_field, header_number, header_rlp, hex_bytes, verify_output_binding, walk_to_block,
+};
 use crate::error::Error;
 use crate::execution::JsonRpcExecution;
 use crate::finality::{AuthenticatedHeader, FinalityVerifier};
@@ -81,14 +83,19 @@ impl BaseL1Finality {
     }
 }
 
+/// Largest distance, in Base blocks, between a requested block and the anchored block.
+pub const MAX_ANCESTRY_BLOCKS: u64 = 4096;
+
 impl FinalityVerifier for BaseL1Finality {
-    /// Accept only the Base block that the anchored output root commits to.
+    /// Accept a Base block only when the anchored output root commits to a
+    /// descendant of it.
     ///
-    /// The execution client's block is rebuilt into its header RLP, which must
-    /// hash to `header_hash`. The anchored game must name that block's number.
-    /// The output root is then recomputed from the header's state root, the
-    /// message-passer storage root, and the block hash. Blocks behind the anchor
-    /// are refused until an ancestry proof exists.
+    /// The anchored block's header is rebuilt and bound to the anchored root
+    /// through the message-passer storage root. The requested block is then
+    /// reached by walking parent hashes from the anchored block. Every step
+    /// rebuilds the header and checks it hashes to the child's `parentHash`, so
+    /// the requested header's state and receipts roots are authenticated by
+    /// the L1 anchor. The walk is limited to `MAX_ANCESTRY_BLOCKS`.
     fn authenticate(
         &self,
         chain_id: u64,
@@ -110,26 +117,46 @@ impl FinalityVerifier for BaseL1Finality {
             return Err(Error::DigestMismatch);
         }
         let number = header_number(&block)?;
-        let state_root = header_hash_field(&block, "stateRoot")?;
-        let receipts_root = header_hash_field(&block, "receiptsRoot")?;
         let facts = read_anchor_facts(&self.l1, number)?;
-        if !assess_anchor(&facts).l1_anchor || number != facts.game_sequence {
+        if !assess_anchor(&facts).l1_anchor {
             return Err(Error::UnknownHeader);
         }
-        let proof = message_passer_proof(&self.base, number)?;
+        let anchor_number = facts.game_sequence;
+        if number > anchor_number || anchor_number - number > MAX_ANCESTRY_BLOCKS {
+            return Err(Error::UnknownHeader);
+        }
+        let anchor = self.base.call(
+            "eth_getBlockByNumber",
+            json!([format!("0x{anchor_number:x}"), false]),
+        )?;
+        if anchor.is_null() {
+            return Err(Error::Rpc);
+        }
+        let anchor_hash = keccak256(&header_rlp(&anchor)?);
+        let anchor_state_root = header_hash_field(&anchor, "stateRoot")?;
+        let proof = message_passer_proof(&self.base, anchor_number)?;
         verify_output_binding(
             &MESSAGE_PASSER,
-            header_hash,
-            &state_root,
+            &anchor_hash,
+            &anchor_state_root,
             &proof,
             &facts.game_root,
         )?;
+        let walked = walk_to_block(&anchor, number, |hash| {
+            self.base.call(
+                "eth_getBlockByHash",
+                json!([format!("0x{}", hex::encode(hash)), false]),
+            )
+        })?;
+        if keccak256(&header_rlp(&walked)?) != *header_hash {
+            return Err(Error::UnknownHeader);
+        }
         Ok(AuthenticatedHeader {
             chain_id,
             header_hash: *header_hash,
             number,
-            state_root,
-            receipts_root,
+            state_root: header_hash_field(&walked, "stateRoot")?,
+            receipts_root: header_hash_field(&walked, "receiptsRoot")?,
         })
     }
 }

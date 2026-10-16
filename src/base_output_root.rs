@@ -120,6 +120,39 @@ pub(crate) fn verify_output_binding(
     Ok(())
 }
 
+/// Walk from an anchored block down to `number` by parent hash. Every step
+/// rebuilds the parent's header, checks it against the child's `parentHash`,
+/// and checks the block number. The caller compares the returned block's hash
+/// with the requested hash. `fetch` returns a block by hash, and
+/// `Value::Null` means the client does not have it.
+pub(crate) fn walk_to_block<F>(anchor: &Value, number: u64, fetch: F) -> Result<Value, Error>
+where
+    F: Fn(&[u8; 32]) -> Result<Value, Error>,
+{
+    let mut child = anchor.clone();
+    let mut child_number = header_number(&child)?;
+    if number > child_number {
+        return Err(Error::UnknownHeader);
+    }
+    while child_number > number {
+        let parent_hash = header_hash_field(&child, "parentHash")?;
+        let parent = fetch(&parent_hash)?;
+        if parent.is_null() {
+            return Err(Error::Rpc);
+        }
+        if keccak256(&header_rlp(&parent)?) != parent_hash {
+            return Err(Error::DigestMismatch);
+        }
+        let parent_number = header_number(&parent)?;
+        if parent_number.checked_add(1) != Some(child_number) {
+            return Err(Error::DigestMismatch);
+        }
+        child = parent;
+        child_number = parent_number;
+    }
+    Ok(child)
+}
+
 /// Decode a `0x`-prefixed hex string. An odd number of digits is accepted.
 pub(crate) fn hex_bytes(text: &str) -> Result<Vec<u8>, Error> {
     let raw = text.strip_prefix("0x").unwrap_or(text);
@@ -272,6 +305,85 @@ mod tests {
             verify_output_binding(&MESSAGE_PASSER, &block_hash(), &state_root, &nodes, &claimed),
             Err(Error::MerkleMismatch)
         );
+    }
+
+    fn chain_block(text: &str) -> Value {
+        serde_json::from_str::<Value>(text).unwrap()["result"].clone()
+    }
+
+    fn chain() -> std::collections::HashMap<[u8; 32], Value> {
+        let blocks = [
+            chain_block(include_str!("../fixtures/base-block-52671183.json")),
+            chain_block(include_str!("../fixtures/base-block-52671184.json")),
+            chain_block(BLOCK_JSON),
+        ];
+        blocks
+            .into_iter()
+            .map(|block| (header_hash_field(&block, "hash").unwrap(), block))
+            .collect()
+    }
+
+    const BLOCK_JSON: &str = include_str!("../fixtures/base-block-52671185.json");
+
+    fn lookup(
+        blocks: &std::collections::HashMap<[u8; 32], Value>,
+    ) -> impl Fn(&[u8; 32]) -> Result<Value, Error> + '_ {
+        move |hash| Ok(blocks.get(hash).cloned().unwrap_or(Value::Null))
+    }
+
+    #[test]
+    fn the_walk_reaches_an_earlier_real_block() {
+        let blocks = chain();
+        let anchor = chain_block(BLOCK_JSON);
+        let walked = walk_to_block(&anchor, 52671183, lookup(&blocks)).unwrap();
+        assert_eq!(header_number(&walked).unwrap(), 52671183);
+        let expected = header_hash_field(
+            &chain_block(include_str!("../fixtures/base-block-52671183.json")),
+            "hash",
+        )
+        .unwrap();
+        assert_eq!(keccak256(&header_rlp(&walked).unwrap()), expected);
+    }
+
+    #[test]
+    fn the_walk_to_the_anchor_itself_returns_the_anchor() {
+        let blocks = chain();
+        let anchor = chain_block(BLOCK_JSON);
+        let walked = walk_to_block(&anchor, 52671185, lookup(&blocks)).unwrap();
+        assert_eq!(walked, anchor);
+    }
+
+    #[test]
+    fn a_tampered_intermediate_block_breaks_the_walk() {
+        let mut blocks = chain();
+        let (hash184, mut b184) = blocks
+            .iter()
+            .find(|(_, b)| header_number(b).unwrap() == 52671184)
+            .map(|(h, b)| (*h, b.clone()))
+            .unwrap();
+        b184["extraData"] = Value::String("0x00".to_string());
+        blocks.insert(hash184, b184);
+        let anchor = chain_block(BLOCK_JSON);
+        assert_eq!(
+            walk_to_block(&anchor, 52671183, lookup(&blocks)),
+            Err(Error::DigestMismatch)
+        );
+    }
+
+    #[test]
+    fn a_missing_parent_is_an_rpc_failure() {
+        let mut blocks = chain();
+        let hash184 = *blocks.iter().find(|(_, b)| header_number(b).unwrap() == 52671184).unwrap().0;
+        blocks.remove(&hash184);
+        let anchor = chain_block(BLOCK_JSON);
+        assert_eq!(walk_to_block(&anchor, 52671183, lookup(&blocks)), Err(Error::Rpc));
+    }
+
+    #[test]
+    fn a_block_above_the_anchor_is_not_reachable_by_walking() {
+        let blocks = chain();
+        let anchor = chain_block(BLOCK_JSON);
+        assert_eq!(walk_to_block(&anchor, 52671186, lookup(&blocks)), Err(Error::UnknownHeader));
     }
 
     #[test]
