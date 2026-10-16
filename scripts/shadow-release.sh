@@ -4,6 +4,8 @@ cd "$(dirname "$0")/.."
 mkdir -p artifacts
 . "$HOME/.cargo/env"
 target="${AAC_TARGET:-x86_64-unknown-linux-gnu}"
+# Strip build-machine paths so the same toolchain and commit give the same bytes.
+export RUSTFLAGS="--remap-path-prefix=$(pwd)=/build --remap-path-prefix=${CARGO_HOME:-$HOME/.cargo}=/cargo"
 if [ "${AAC_OFFLINE:-0}" = "1" ]; then
   cargo build --release --locked --offline --target "$target"
 else
