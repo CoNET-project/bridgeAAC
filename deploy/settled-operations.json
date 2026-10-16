@@ -1,0 +1,30 @@
+[
+  {
+    "operation_id": "0x850835a5d9399af29239c6e1d3e030c0216308302f327a1890cc4ba5fd1d3829",
+    "settle_chain": "conet",
+    "settler": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+    "settle_tx": "0x43cc7d537e6739c19e736c30af3cc81a70b05229ada7d1643b4759fda9bef396",
+    "note": "asset test, mode 1 (lock-mint), settled on CoNET; deployments/phase-asset-tests-proof.json"
+  },
+  {
+    "operation_id": "0xa15f74194cda706402515542db5c9ab0a9f86aea87a8048f1b27c4a191deb2e0",
+    "settle_chain": "conet",
+    "settler": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+    "settle_tx": "0x76307ead46498c0732ea704368473136374c60419139dc412ba3250597c3e35e",
+    "note": "asset test, mode 1 (lock-mint), settled on CoNET; deployments/phase-asset-tests-proof.json"
+  },
+  {
+    "operation_id": "0x133f94b09668e472d78e6198c830eab0a5438fa0eb45fc9c8d5518a79c4d7e7d",
+    "settle_chain": "conet",
+    "settler": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+    "settle_tx": "0x5c00b51595f8b6ba5287e4ee0727b082c5491fc35f247939eea42f59c9d6c739",
+    "note": "asset test, mode 2 (burn-release), settled on CoNET; deployments/phase-asset-tests-proof.json"
+  },
+  {
+    "operation_id": "0x737440463ec7cc74cae0f55d8b44332d8ef7416c6a0d17777385e182aec09e48",
+    "settle_chain": "conet",
+    "settler": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+    "settle_tx": "0x726426028cb6e0d71b86f3a24c33f0e62fefe5fd1fc8017d7e40f567cfc9b34d",
+    "note": "Base to CoNET 0.01 USDC canary, settled on CoNET; deployments/phase-base-conet-canary-proof.json"
+  }
+]

@@ -1,4 +1,8 @@
-use bridge_aac::{alerts_for, format_observation, write_cycle, AuthenticatedHeader, Observation};
+use bridge_aac::{
+    alerts_for, format_observation, load_settled, reconcile_pending_except, write_cycle, AuthenticatedHeader,
+    OpNote, Observation, SettledOperation,
+};
+use std::collections::{BTreeMap, BTreeSet};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn header() -> AuthenticatedHeader {
@@ -241,4 +245,52 @@ fn service_unit_restarts_and_logrotate_truncates_in_place() {
     assert!(unit.contains("--cursor"));
     assert!(unit.contains("--page"));
     assert!(rotate.contains("copytruncate"));
+}
+
+
+#[test]
+fn a_settled_operation_stops_being_pending_only_when_confirmed() {
+    let mut ops = BTreeMap::new();
+    ops.insert(
+        "0xaa".to_string(),
+        OpNote { chain: "base".into(), initiated: 100, executed: false, cancelled: false },
+    );
+    ops.insert(
+        "0xbb".to_string(),
+        OpNote { chain: "base".into(), initiated: 100, executed: false, cancelled: false },
+    );
+    let none = reconcile_pending_except(&ops, Some(1000), None, 256, &BTreeSet::new());
+    assert!(none.contains("operation-id 0xaa") && none.contains("operation-id 0xbb"));
+    let confirmed: BTreeSet<String> = ["0xaa".to_string()].into_iter().collect();
+    let some = reconcile_pending_except(&ops, Some(1000), None, 256, &confirmed);
+    assert!(!some.contains("operation-id 0xaa"));
+    assert!(some.contains("operation-id 0xbb"));
+}
+
+#[test]
+fn the_settled_manifest_parses_and_rejects_a_bad_file() {
+    let dir = std::env::temp_dir().join(format!("aac-settled-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let good = dir.join("settled.json");
+    std::fs::write(
+        &good,
+        r#"[{"operation_id":"0xaa","settle_chain":"conet","settler":"0x7285fD9a9e62751e952697f95DD753C82Bb84BbE","settle_tx":"0x01"}]"#,
+    )
+    .unwrap();
+    let parsed = load_settled(&good).unwrap();
+    assert_eq!(
+        parsed,
+        vec![SettledOperation {
+            operation_id: "0xaa".into(),
+            settle_chain: "conet".into(),
+            settler: "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE".into(),
+            settle_tx: "0x01".into(),
+            note: String::new(),
+        }]
+    );
+    let bad = dir.join("bad.json");
+    std::fs::write(&bad, "{not json").unwrap();
+    assert!(load_settled(&bad).is_err());
+    assert!(load_settled(&dir.join("missing.json")).is_err());
+    let _ = std::fs::remove_dir_all(&dir);
 }

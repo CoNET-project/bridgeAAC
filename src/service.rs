@@ -6,7 +6,7 @@
 use crate::error::Error;
 use crate::shadow::{observe_below, reader_heights};
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::Path;
@@ -320,9 +320,21 @@ pub fn reconcile_pending(
     conet_height: Option<u64>,
     lag: u64,
 ) -> String {
+    reconcile_pending_except(ops, base_height, conet_height, lag, &BTreeSet::new())
+}
+
+/// Like [`reconcile_pending`], but operations whose settlement was confirmed on
+/// the destination chain (`settled`) are not pending.
+pub fn reconcile_pending_except(
+    ops: &BTreeMap<String, OpNote>,
+    base_height: Option<u64>,
+    conet_height: Option<u64>,
+    lag: u64,
+    settled: &BTreeSet<String>,
+) -> String {
     let mut out = String::new();
     for (id, note) in ops {
-        if note.executed || note.cancelled {
+        if note.executed || note.cancelled || settled.contains(id) {
             continue;
         }
         let Some(height) = (match note.chain.as_str() {
@@ -340,6 +352,58 @@ pub fn reconcile_pending(
     out
 }
 
+/// An initiated operation whose settlement has been recorded on the
+/// destination chain. The observer confirms `settle_tx` against live readers
+/// before it stops reporting the operation as pending.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SettledOperation {
+    pub operation_id: String,
+    /// Destination chain of the settlement: `base` or `conet`.
+    pub settle_chain: String,
+    /// Settler contract that must receive the settlement transaction.
+    pub settler: String,
+    pub settle_tx: String,
+    /// Operator note. It is recorded in the manifest and not used by the check.
+    #[serde(default)]
+    pub note: String,
+}
+
+pub fn load_settled(path: &Path) -> Result<Vec<SettledOperation>, Error> {
+    let text = fs::read_to_string(path).map_err(|_| Error::BadFixture)?;
+    serde_json::from_str(&text).map_err(|_| Error::BadFixture)
+}
+
+/// Check each manifest entry against the destination readers. Returns the
+/// operation ids that were confirmed, and report lines for every entry.
+pub fn verify_settled(
+    entries: &[SettledOperation],
+    base_rpcs: &[String],
+    conet_rpcs: &[String],
+) -> (BTreeSet<String>, String) {
+    let mut confirmed = BTreeSet::new();
+    let mut out = String::new();
+    for entry in entries {
+        let (rpcs, chain_id) = match entry.settle_chain.as_str() {
+            "base" => (base_rpcs, crate::assets::bindings::BASE_CHAIN_ID),
+            "conet" => (conet_rpcs, crate::assets::bindings::CONET_CHAIN_ID),
+            _ => (&[][..], 0),
+        };
+        if crate::shadow::settlement_confirmed(rpcs, chain_id, &entry.settle_tx, &entry.settler) {
+            confirmed.insert(entry.operation_id.clone());
+            out.push_str(&format!(
+                "settled-operation verified\noperation-id {}\nsettle-tx {}\n",
+                entry.operation_id, entry.settle_tx
+            ));
+        } else {
+            out.push_str(&format!(
+                "settled-operation unverified\noperation-id {}\nsettle-tx {}\n",
+                entry.operation_id, entry.settle_tx
+            ));
+        }
+    }
+    (confirmed, out)
+}
+
 pub struct PreparedCycle {
     pub report: String,
     /// `None` means the cursor file is corrupt. The caller must not replace it.
@@ -355,6 +419,16 @@ pub fn prepare_cycle_with_targets(
     cursor_path: &Path,
     base_rpcs: &[String],
     conet_rpcs: &[String],
+) -> PreparedCycle {
+    prepare_cycle_with_settled(journal, cursor_path, base_rpcs, conet_rpcs, &[])
+}
+
+pub fn prepare_cycle_with_settled(
+    journal: &Path,
+    cursor_path: &Path,
+    base_rpcs: &[String],
+    conet_rpcs: &[String],
+    settled: &[SettledOperation],
 ) -> PreparedCycle {
     let (mut cursor, missing_cursor) = match load_cursor(cursor_path) {
         Ok(cursor) => (cursor, false),
@@ -404,7 +478,15 @@ pub fn prepare_cycle_with_targets(
             }
         }
     }
-    report.push_str(&reconcile_pending(&cursor.ops, cursor.base, cursor.conet, RECONCILE_LAG_BLOCKS));
+    let (confirmed, settled_report) = verify_settled(settled, &targets[0].1.to_vec(), &targets[1].1.to_vec());
+    report.push_str(&settled_report);
+    report.push_str(&reconcile_pending_except(
+        &cursor.ops,
+        cursor.base,
+        cursor.conet,
+        RECONCILE_LAG_BLOCKS,
+        &confirmed,
+    ));
     if missing_cursor {
         report.insert_str(0, "cursor missing\n");
     }

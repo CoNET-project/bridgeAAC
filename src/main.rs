@@ -200,7 +200,7 @@ fn main() -> ExitCode {
                  bridge-aac verify-receipt --chain base|conet --rpc <url> [--l1-rpc <url>] --header <hex> --index <n> --receipt <hex> --proof <hex>[,<hex>...]\n  \
                  bridge-aac export-receipt-proof --rpc <base-url> --l1-rpc <ethereum-l1-url> --tx <hash> --out <file>\n  \
                  bridge-aac shadow --chain base|conet --rpc <url> --rpc <url> [--tx <hash>] [--journal <file>]\n  \
-                 bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--interval <seconds>] [--once]\n  \
+                 bridge-aac shadow-service --journal <file> --cursor <file> --page <file> --log <file> --alert <file> [--base-rpc <url>] [--conet-rpc <url>] [--settled <file>] [--interval <seconds>] [--once]\n  \
                  bridge-aac base-l1-output --l1-rpc <url> --base-rpc <url> [--base-block <height>]\n  \
                  bridge-aac conet-consensus --beacon <url> --execution-rpc <url>\n  \
                  bridge-aac forward-committee --beacon <url> --checkpoint <file> [--witness-beacon <url>] [--execution-rpc <url>] [--periods <n>]\n  \
@@ -343,6 +343,7 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
     let mut conet_rpcs = Vec::new();
     let mut interval = 60u64;
     let mut once = false;
+    let mut settled_path = None;
     let mut args = args;
     while let Some(flag) = args.next() {
         match flag.as_str() {
@@ -361,6 +362,7 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
                     .map_err(|_| bridge_aac::Error::BadFixture)?;
             }
             "--once" => once = true,
+            "--settled" => settled_path = Some(args.next().ok_or(bridge_aac::Error::BadLength)?),
             _ => return Err(bridge_aac::Error::BadFixture),
         }
     }
@@ -384,12 +386,17 @@ fn shadow_service(args: impl Iterator<Item = String>) -> Result<(), bridge_aac::
     {
         return Err(bridge_aac::Error::BadFixture);
     }
+    let settled = match &settled_path {
+        Some(path) => bridge_aac::load_settled(std::path::Path::new(path))?,
+        None => Vec::new(),
+    };
     loop {
-        let prepared = bridge_aac::prepare_cycle_with_targets(
+        let prepared = bridge_aac::prepare_cycle_with_settled(
             std::path::Path::new(&journal),
             std::path::Path::new(&cursor),
             &base_rpcs,
             &conet_rpcs,
+            &settled,
         );
         print!("{}", prepared.report);
         for name in bridge_aac::alerts_for(&prepared.report) {

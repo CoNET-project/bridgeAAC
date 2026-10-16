@@ -394,6 +394,39 @@ pub fn export_receipt_proof(rpc: &str, tx_hash: &str) -> Result<ReceiptProofBund
     })
 }
 
+/// Confirm that `tx` succeeded on the chain behind `rpcs` and was sent to
+/// `settler`. Every reader must answer, report the same chain id, and return
+/// the same block hash. Any error or disagreement returns `false`.
+pub fn settlement_confirmed(rpcs: &[String], chain_id: u64, tx: &str, settler: &str) -> bool {
+    if rpcs.len() < 2 {
+        return false;
+    }
+    let mut block_hash: Option<String> = None;
+    for rpc in rpcs {
+        let Ok(got) = rpc_call(rpc, "eth_chainId", serde_json::json!([])) else { return false };
+        if got.as_str().and_then(|text| parse_u64(text).ok()) != Some(chain_id) {
+            return false;
+        }
+        let Ok(receipt) = rpc_call(rpc, "eth_getTransactionReceipt", serde_json::json!([tx])) else { return false };
+        if receipt.is_null()
+            || receipt.get("status").and_then(Value::as_str) != Some("0x1")
+            || receipt.get("to").and_then(Value::as_str).map(str::to_ascii_lowercase)
+                != Some(settler.to_ascii_lowercase())
+        {
+            return false;
+        }
+        let Some(hash) = receipt.get("blockHash").and_then(Value::as_str).map(str::to_ascii_lowercase) else {
+            return false;
+        };
+        match &block_hash {
+            None => block_hash = Some(hash),
+            Some(first) if *first != hash => return false,
+            Some(_) => {}
+        }
+    }
+    true
+}
+
 pub fn format_observation(
     chain: &str,
     block: &AuthenticatedHeader,
