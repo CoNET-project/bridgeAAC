@@ -43,6 +43,7 @@ jobs:
             binary="dist/bridge-aac-${version}-linux-x86_64"
           else
             cargo test --locked
+            export RUSTFLAGS="--remap-path-prefix=$(pwd)=/build --remap-path-prefix=${CARGO_HOME:-$HOME/.cargo}=/cargo"
             cargo build --release --locked --target x86_64-unknown-linux-gnu
             binary="target/x86_64-unknown-linux-gnu/release/bridge-aac"
             cp "$binary" "dist/bridge-aac-${version}-linux-x86_64"
