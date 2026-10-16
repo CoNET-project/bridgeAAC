@@ -1,13 +1,19 @@
 # Custody cutover
 
-**Date:** 2026-10-14 (updated 2026-10-15 Phase B–E)  
+**Date:** 2026-10-14 (updated 2026-10-15 Phase B–E + F1–F7)  
 **Status:** Phase A **RECORDED**; Phase B GB `addAdmin(AAC)` **EXECUTED**
 (2026-10-15). Phase C bounded paid-GB canary **EXECUTED** (2026-10-15;
 C0/C1/C2 — 0.01 GB to OWNER). Phase D **EXECUTED** (2026-10-15) —
 `GB.setBridgePaused(true)` on CoNET + Base for paid-GB `voteBridgeMint`;
-Treasury `voteBridgeOperation` **not** touched (USDC). Phase E monitor
-baseline **RECORDED HEALTHY** (2026-10-15; read-only). No historical canary
-unpause.  
+Treasury `voteBridgeOperation` **closed** (2026-10-15; `voteBridgeClosed=true` on Base and CoNET; USDC deposits that use that vote are stopped). Phase E monitor
+baseline **RECORDED HEALTHY** (2026-10-15; read-only). Audit F1–F7 under
+owner auth 「请依据审计报告, 依次移除生产前障碍」: **F1–F3 EXECUTED**,
+**F4 RUNBOOK+SCRIPT READY**, **F5 EXECUTED** (SettlerF5 + GB.admins re-grant),
+**F6 EXECUTED** (miner `voteBridgeOperation` closed; USDC deposits on that path stopped; no AAC Treasury grant),
+**F7 partial** (48h upgrade timelock + `transferOwnership` live; Owner still EOA).
+Security gaps (2026-10-15): instant `upgradeTo` on AAC, CheckpointRoot, and
+CoNET finality is closed; `mintTo` must be the receipt's single beneficiary.
+No historical canary unpause.  
 **Precondition:** [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 Obstacles 1–5 **Accepted**; [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
 engineering smoke **PASS**; **independent audit + third-party acceptance
@@ -16,13 +22,21 @@ use: [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md).
 
 Owner (canonical): `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1`  
 AAC production proxy (Base): `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd`  
-SettlerCanary implementation (live EIP-1967): `0x9b8DDa3d27473A4EdD351fFD4106c388876A9864`  
-Prior Settler implementation: `0x3085216E8329eF7d10c914cB1C43Cd8168f53442`  
+Live EIP-1967 Settler (**F7**): `0x29e10621fF159422237d2a0B9F020303F9BDdD12`  
+Prior Settler (F5): `0xa1aa63BF44128E9f14260886263c8775C4A2dA00`  
+Prior Settler (F3): `0xf131359EE46d261B91cEedE8772DE18fB821B2b0`  
+Prior Settler (F2): `0xeC19d84625edA6213F3126033B66397633d8688F`  
+Prior closed Settler (F1): `0x3085216E8329eF7d10c914cB1C43Cd8168f53442`  
+Retired SettlerCanary: `0x9b8DDa3d27473A4EdD351fFD4106c388876A9864`  
 Cover: `0x01506527a4Dab14141038Db15f5341dcF4729233`  
+CoNET inclusion (F2): `0x7064860E3594aE120f71700B2F46151c6D370559`  
 CoNET finality (Base): `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`  
-Consume-once: `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F`  
+Consume-once proxy: `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F`  
+Consume-once impl (F3): `0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598`  
+CheckpointRoot (period 1883): `0xcEE3D699df3df07a573f1aFf642888B97B7aA961`  
 TreasuryBridgeV3: `0xa208982212978550594A7FEEB70a61665d129003`  
-GB ERC-20: `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8`
+GB ERC-20: `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8`  
+GB `admins(AAC)`: **true** on CoNET + Base after F5
 
 ---
 
@@ -41,19 +55,32 @@ Do **not** execute any phase below until:
 
 Unpause of historical canaries is **out of scope** for this proposal.
 
-**Next production obstacle:** any future **settle-open** gate and/or Treasury
-USDC `voteBridgeOperation` cutover (requires new Accepted owner auth). Phase E
-monitor baseline was recorded HEALTHY 2026-10-15 (owner: 「请 继续 Phase E」).
-Phase D was named and broadcast 2026-10-15 (owner: 「请push,然后执行 Phase D」).
-Phase C C1/C2 were named 2026-10-15 (owner:
-「继续执行 C1（upgradeTo）/ C2（canaryMintPaid）,amount 为0.01」).
+**Remaining production-front obstacle:** SettlerF7c
+`0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44` is scheduled on the live F7
+proxy. `upgradeTo` is allowed only after **2026-10-17T13:25:41Z**, then
+`repairCanaryRecord()`. Do not call `scheduleUpgrade` again. The Base → CoNET
+0.01 USDC receipt is covered and settled. `sourceInitiateOpen` is true on Base and CoNET. CoNET destination `224422` stays
+closed. The owner-to-multisig handoff is withdrawn. AAC Owner stays the EOA
+`0x87cAeD…05E1`. Treasury `miners()` on Base and CoNET is that same EOA only.
+F6 vote close is **EXECUTED**. Phase E HEALTHY (2026-10-15).
 
 Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-addAdmin-aac.json),
 [deployments/phase-C-canary-prep.json](../deployments/phase-C-canary-prep.json)
 (`status: EXECUTED`),
 [deployments/phase-D-gb-setBridgePaused.json](../deployments/phase-D-gb-setBridgePaused.json),
 [deployments/phase-E-monitor-baseline.json](../deployments/phase-E-monitor-baseline.json)
-(`status: HEALTHY`).
+(`status: HEALTHY`),
+[deployments/phase-F4-committee-rotate.json](../deployments/phase-F4-committee-rotate.json)
+(`status: RUNBOOK_READY`),
+[deployments/phase-F1-off-canary.json](../deployments/phase-F1-off-canary.json),
+[deployments/phase-F2-conet-inclusion.json](../deployments/phase-F2-conet-inclusion.json),
+[deployments/phase-F3-settle-consume.json](../deployments/phase-F3-settle-consume.json),
+[deployments/phase-F5-settle-open.json](../deployments/phase-F5-settle-open.json)
+(`ok:true`),
+[deployments/phase-F6-usdc.json](../deployments/phase-F6-usdc.json)
+(`status: BLOCKED`),
+[deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+(`status: BLOCKED`).
 
 ---
 
@@ -68,7 +95,7 @@ Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-a
 | **E** | Monitor + rollback criteria (read-only baseline) | **RECORDED HEALTHY** (2026-10-15) |
 
 Miner GB votes stayed **live** through Phases A–C. Phase D paused only paid-GB
-`voteBridgeMint`. USDC `TreasuryBridgeV3.voteBridgeOperation` remains live.
+`voteBridgeMint`. USDC `TreasuryBridgeV3.voteBridgeOperation` was later **closed** (`voteBridgeClosed=true`, 2026-10-15).
 
 ---
 
@@ -244,7 +271,7 @@ explicitly for cutover).
 | Item | Status |
 | --- | --- |
 | Emergency re-enable | `GB.setBridgePaused(false)` by same GB admin / owner |
-| Treasury `voteBridgeOperation` | **NOT TOUCHED** |
+| Treasury `voteBridgeOperation` | **CLOSED** (`voteBridgeClosed=true`, 2026-10-15) |
 | AAC `settle` / custody | Still closed (`CustodyClosed`) |
 | AAC `mintPaid` (admin path) | Still available to AAC proxy (pause does not block admin mint) |
 
@@ -258,13 +285,20 @@ Script: `node scripts/monitorPhaseE.mjs` →
 
 ### Healthy baseline (must all hold)
 
-| Check | Live expectation |
+> **Post-F1–F3 note:** Phase E baseline below was recorded while SettlerCanary
+> was live and `admins(AAC)=true`. After F1–F3 the live expectations are:
+> EIP-1967 = F3 Settler `0xf131…B2b0`; ConsumeOnce impl `0x75aC…A598` with
+> gateway=AAC; `admins(AAC)=false`; no-arg `settle()` still reverts
+> `CustodyClosed`; F3 settle proves COVER then `consumeFromSettler` same tx
+> (mark only until F5 re-grants GB admin).
+
+| Check | Live expectation (as of Phase E record) |
 | --- | --- |
 | AAC `custodyOpen` / `headerFinal` | Both `false` |
-| AAC EIP-1967 impl | SettlerCanary `0x9b8D…9864` |
-| AAC `canaryMintCompleted` + `canaryRecord` | Spent; `aacId` / `to` / `amount=10000000` match Phase C |
+| AAC EIP-1967 impl (Phase E) | SettlerCanary `0x9b8D…9864` → **superseded by F1/F2** |
+| AAC `canaryMintCompleted` + `canaryRecord` | Spent on canary bytecode (gone after F1) |
 | AAC `settle()` | Reverts `CustodyClosed` (`0x61839255`) |
-| GB `admins(OWNER)` + `admins(AAC)` | `true` on CoNET + Base |
+| GB `admins(OWNER)` + `admins(AAC)` (Phase E) | Both `true` → **F1 set AAC=false** |
 | GB `bridgePaused` | `true` on CoNET + Base (paid-GB `voteBridgeMint`) |
 
 ### Rollback criteria (runbook only until symptom Accepted)
@@ -282,22 +316,178 @@ Re-run: `node scripts/monitorPhaseE.mjs` (exit `0` = HEALTHY; exit `2` = SYMPTOM
 
 ---
 
-## Explicit non-execution / execution record (updated 2026-10-15 Phase E)
+## Explicit non-execution / execution record (updated 2026-10-15 F1–F7)
 
 | Action | Status |
 | --- | --- |
-| Treasury role grant to AAC proxy | **Not sent** |
-| GB role grant to AAC proxy | **EXECUTED** (Phase B B1/B2 — see above) |
+| Treasury role grant to AAC proxy | **Not sent** (F6 BLOCKED — no live setter) |
+| GB role grant to AAC proxy | **EXECUTED** Phase B; **REVOKED** F1; **RE-GRANTED** F5 |
 | Peer role grant | **Not sent** |
 | Paid-GB miner `voteBridgeMint` pause (`setBridgePaused(true)`) | **EXECUTED** (Phase D — CoNET + Base; see above) |
-| Treasury USDC `voteBridgeOperation` disable | **Not sent** (USDC not served by AAC) |
+| Treasury USDC `voteBridgeOperation` disable | **EXECUTED** (2026-10-15; `voteBridgeClosed=true` on Base and CoNET) |
 | Phase C canary mint / release / proxy upgrade | **EXECUTED** (C0/C1/C2 — 0.01 paid GB; see above) |
 | Phase E monitor baseline | **RECORDED HEALTHY** (read-only; see above) |
+| F1 off-canary + GB `removeAdmin(AAC)` | **EXECUTED** (see below) |
+| F2 CoNET inclusion (no self-hash) | **EXECUTED** (see below) |
+| F3 settle ↔ consume-once same tx | **EXECUTED** (see below) |
+| F4 committee rotation (`applyUpdate` one period) | **EXECUTED** 1883 → 1884 (`0x47a9…d9cb`, gas 11,504,959) |
+| F5 settle-open (mint after consume + GB re-grant) | **EXECUTED** (SettlerF5 `0xa1aa…dA00`; see below) |
+| F6 USDC / stop `voteBridgeOperation` | **EXECUTED** (vote closed; no AAC Treasury grant; see [F6-USDC.md](F6-USDC.md)) |
+| F7 Owner key → multisig / timelock | **SCHEDULED** (F7b `0xfe5E…2C1f`; `upgradeTo` after 2026-10-17T13:02:09Z; Owner still EOA) |
 | Historical canary unpause | **Not sent** |
 
-Custody remains closed for production settle. Production **USDC** continues on
-the miner-vote Treasury bridge. Paid-GB miner `voteBridgeMint` is **paused**;
-AAC-proxy admin `mintPaid` remains the AAC canary path. Settle still reverts.
+Custody views remain closed (`custodyOpen` / `headerFinal` false). Production
+**USDC** miner `voteBridgeOperation` is **closed**. Paid-GB miner
+`voteBridgeMint` is **paused**. After F5, AAC **is** GB admin and SettlerF5 can
+`mintPaid` same-tx after consume (needs a **new** Cover-eligible BridgeOperation
+for live mint; F3 COVER sample already consumed).
+
+---
+
+## F1 — Off canary + revoke GB admins(AAC) (EXECUTED 2026-10-15)
+
+Owner auth: 「请依据审计报告, 依次移除生产前障碍」.  
+Script: [scripts/executeF1OffCanary.mjs](../scripts/executeF1OffCanary.mjs)  
+JSON: [deployments/phase-F1-off-canary.json](../deployments/phase-F1-off-canary.json)
+
+| Step | Tx | Block | Result |
+| --- | --- | --- | --- |
+| Base `upgradeTo(closed Settler)` | `0x5335badf…aa58` | `52624237` | EIP-1967 → `0x3085…3442` |
+| CoNET `GB.removeAdmin(AAC)` | `0x40da22bb…4800` | `1718720` | `admins(AAC)=false` |
+| Base `GB.removeAdmin(AAC)` | `0x732050aa…f6e2` | `52624242` | `admins(AAC)=false` |
+
+Verify: no-arg settle closed; canary selectors gone; owners remain GB admin.
+
+---
+
+## F2 — CoNET inclusion (no self-hash) (EXECUTED 2026-10-15)
+
+Owner auth: same F1–F7 message.  
+Script: [scripts/executeF2ConetInclusion.mjs](../scripts/executeF2ConetInclusion.mjs)  
+JSON: [deployments/phase-F2-conet-inclusion.json](../deployments/phase-F2-conet-inclusion.json)
+
+| Component | Address |
+| --- | --- |
+| `AacConetMessageInclusion` | `0x7064860E3594aE120f71700B2F46151c6D370559` |
+| Finality impl (verifyAggregate) | `0xdAF6…218a` |
+| Settler F2 (live AAC EIP-1967) | `0xeC199F6ebDf0f0F1d7F4e5C2e8b4A1B9D3c7688F` |
+
+Pass: independent Aggregate + CoNET EL receipt MPT + beacon walk; old
+`settleFromConet(bytes32,uint256,bytes)` selector gone; Base COVER settle
+smoke OK; custody still closed.
+
+---
+
+## F3 — Settle ↔ consume-once same tx (EXECUTED 2026-10-15)
+
+Owner auth: same F1–F7 message.  
+Script: [scripts/executeF3SettleConsume.mjs](../scripts/executeF3SettleConsume.mjs)  
+JSON: [deployments/phase-F3-settle-consume.json](../deployments/phase-F3-settle-consume.json)
+
+| Component | Address |
+| --- | --- |
+| Settler F3 (live AAC EIP-1967) | `0xf131359EE46d261B91cEedE8772DE18fB821B2b0` |
+| ConsumeOnce impl F3 | `0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598` |
+| ConsumeOnce proxy | `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F` (gateway = AAC) |
+| OkEffect / RevertEffect | `0x8Cdb…CbAF` / `0x6A44…2480` |
+
+| Smoke | Tx / result |
+| --- | --- |
+| RevertEffect | `0x7ad4…65c5` — EffectFailed; opId left **unconsumed** |
+| OkEffect | `0x01f9…0115` — consume mark + Settled; `mintedOf=10000` (no GB mint) |
+| Double OkEffect | reverts `AlreadyConsumed` |
+| Custody | `custodyOpen=false`; no-arg settle still closed |
+
+Pass: `settle` / `settleBridge` / `settleFromConet` take `address effect` last;
+same tx proves COVER/Inclusion then `consumeFromSettler`; no double cover;
+`GB.admins(AAC)` still false.
+
+---
+
+## F4 — Committee rotation (RUNBOOK + SCRIPT READY 2026-10-15)
+
+Owner auth: same F1–F7 message.  
+Runbook: [F4-COMMITTEE-ROTATION.md](F4-COMMITTEE-ROTATION.md)  
+Script: [scripts/executeF4CommitteeRotate.mjs](../scripts/executeF4CommitteeRotate.mjs)  
+JSON: [deployments/phase-F4-committee-rotate.json](../deployments/phase-F4-committee-rotate.json)
+(`status: RUNBOOK_READY`; period **1883** → next **1884**)
+
+| Pass condition (audit) | Status |
+| --- | --- |
+| Next period in a **separate** `applyUpdate` tx | Script enforces; dry-run OK |
+| Keep old-period message proof window | Documented; drain Cover+settle before rotate |
+| Gas under Base pairing budget (≤16,777,216) | Measured median ~11.5M; script refuses estimate ≥ cap |
+
+Live `CheckpointRoot.applyUpdate(Update)` broadcast waits for a period-`P` →
+`P+1` Update payload from Ethereum beacon (`PHASE_F4_EXECUTE=1` +
+`F4_UPDATE_JSON`). Custody views stay closed.
+
+---
+
+## F5 — Settle-open + GB.admins re-grant (EXECUTED 2026-10-15)
+
+Owner auth: same F1–F7 message.  
+Doc: [F5-SETTLE-OPEN.md](F5-SETTLE-OPEN.md)  
+Script: [scripts/executeF5SettleOpen.mjs](../scripts/executeF5SettleOpen.mjs)  
+JSON: [deployments/phase-F5-settle-open.json](../deployments/phase-F5-settle-open.json)
+(`ok:true`)
+
+| Component | Address |
+| --- | --- |
+| SettlerF5 (live AAC EIP-1967) | `0xa1aa63BF44128E9f14260886263c8775C4A2dA00` |
+| Prior F3 Settler | `0xf131359EE46d261B91cEedE8772DE18fB821B2b0` |
+
+| Step | Result |
+| --- | --- |
+| CoNET + Base `GB.addAdmin(AAC)` | `admins(AAC)=true` both chains |
+| AAC `upgradeTo(F5)` | live SettlerF5 |
+| COVER smoke settle | `AlreadyConsumed` (opId from F3; expected) |
+| Views | `custodyOpen=false`, `headerFinal=false` |
+
+Pass: settle APIs take `mintTo` + `effect`; same tx `consumeFromSettler` then
+`GB.mintPaid(mintTo, amount)`. Live mint of a **new** lock needs a fresh
+Cover-eligible BridgeOperation.
+
+---
+
+## F6 — USDC / Treasury cutover (BLOCKED 2026-10-15)
+
+Owner auth: same F1–F7 message (probe only — no invent).  
+Doc: [F6-USDC.md](F6-USDC.md)  
+Script: [scripts/executeF6Usdc.mjs](../scripts/executeF6Usdc.mjs)  
+JSON: [deployments/phase-F6-usdc.json](../deployments/phase-F6-usdc.json)
+(`status: BLOCKED`)
+
+| Probe | Result |
+| --- | --- |
+| Treasury impl | `0xf7474cac9c9833fa35ce10e3b22f442096ed0a06` |
+| `setBridgePaused` / `pause` / `paused` | **absent** |
+| `voteBridgeOperation` | **closed** (`voteBridgeClosed=true`) |
+| `isMiner(AAC)` / `allowedMintCallbacks(AAC)` | **false** / **false** |
+| Broadcast | **none** |
+
+Unblock requires explicit auth to upgrade Treasury (AAC grant + pause) or an
+accepted residual that USDC stays on miner vote.
+
+---
+
+## F7 — Owner key → multisig / timelock (BLOCKED 2026-10-15)
+
+Owner auth: same F1–F7 message (probe only — no invent).  
+Doc: [F7-OWNER-KEY.md](F7-OWNER-KEY.md)  
+Script: [scripts/executeF7OwnerKey.mjs](../scripts/executeF7OwnerKey.mjs)  
+JSON: [deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+(`status: BLOCKED`)
+
+| Probe | Result |
+| --- | --- |
+| AAC `owner()` | `0x87cAe…05E1` (EOA) |
+| Settler `transferOwnership` / `setOwner` / `acceptOwnership` | **absent** |
+| Settler `upgradeTo` | **present** (onlyOwner) |
+| Broadcast | **none** |
+
+Unblock requires naming a multisig/timelock **and** a Settler upgrade (or
+equivalent) that can transfer AAC `owner` storage — then Blockscout verify.
 
 ---
 
@@ -306,3 +496,8 @@ AAC-proxy admin `mintPaid` remains the AAC canary path. Settle still reverts.
 - [PRODUCTION-ASSURANCE.md](PRODUCTION-ASSURANCE.md)
 - [PRODUCTION-CUSTODY-GATES.md](PRODUCTION-CUSTODY-GATES.md)
 - [PRODUCTION-EVALUATION.md](PRODUCTION-EVALUATION.md)
+- [M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md](M4-SYNC-COMMITTEE-CHECKPOINT-ROOT.md) — F4 rotation rules
+- [F4-COMMITTEE-ROTATION.md](F4-COMMITTEE-ROTATION.md) — F4 runbook
+- [F5-SETTLE-OPEN.md](F5-SETTLE-OPEN.md) — F5 settle-open + mint (EXECUTED)
+- [F6-USDC.md](F6-USDC.md) — F6 USDC / Treasury (BLOCKED)
+- [F7-OWNER-KEY.md](F7-OWNER-KEY.md) — F7 Owner key (BLOCKED)

@@ -1,0 +1,50 @@
+{
+  "phase": "F1",
+  "status": "EXECUTED",
+  "executedAt": "2026-10-15T04:17:15.376Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "closedSettler": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+  "canaryImpl": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+  "implBefore": "0x9b8DDa3d27473A4EdD351fFD4106c388876A9864",
+  "implAfter": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+  "upgrade": {
+    "skipped": false,
+    "dryRun": false,
+    "txHash": "0x5335badf3e9e1aa84df30f7fac4ff0037d654fc410796a4d3659f0cee936aa58",
+    "blockNumber": 52624237,
+    "implAfter": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442"
+  },
+  "removeAdmin": {
+    "conet": {
+      "chain": "F1-CoNET-removeAdmin",
+      "chainId": 224422,
+      "skipped": false,
+      "txHash": "0x40da22bbad454a4fb0b0e1785495965daffa9b9625e06fc547772eca304b4800",
+      "blockNumber": 1718720,
+      "adminsAac": false
+    },
+    "base": {
+      "chain": "F1-Base-removeAdmin",
+      "chainId": 8453,
+      "skipped": false,
+      "txHash": "0x732050aa9b0c85e14ca394de0011fb4d59224cd540b59c983894ca504d0cf6e2",
+      "blockNumber": 52624242,
+      "adminsAac": false
+    }
+  },
+  "verify": {
+    "smoke": {
+      "settleClosed": true,
+      "settleError": "execution reverted (unknown custom error)",
+      "canarySelectorGone": true
+    },
+    "admins": {
+      "conetAac": false,
+      "baseAac": false,
+      "conetOwner": true,
+      "baseOwner": true
+    }
+  },
+  "ok": true
+}

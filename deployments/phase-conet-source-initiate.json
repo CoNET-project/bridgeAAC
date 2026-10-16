@@ -1,0 +1,10 @@
+{
+  "treasury": "0xa208982212978550594A7FEEB70a61665d129003",
+  "conetSourceInitiateOpen": true,
+  "baseSourceInitiateOpen": true,
+  "conetDest8453": true,
+  "conetDest224422": false,
+  "baseDest224422": true,
+  "conetVoteClosed": true,
+  "tx": "0x672d33fa7839f61aab526199613314230f04908c51eb47b309886c712fe52ba3"
+}

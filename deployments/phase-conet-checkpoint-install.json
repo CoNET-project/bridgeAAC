@@ -1,0 +1,13 @@
+{
+  "checkpoint": "0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a",
+  "period": "1884",
+  "slot": "15438688",
+  "beaconRoot": "0xceb162b06a51d3bb5fbf516ecaa5c9904345b9f1582e09e44f3f69d53f81537c",
+  "stateRoot": "0xa8ad483bc980514a40afb8f47122db862fc5b81782ba6a45118babae8ef0c8c0",
+  "compressedDigest": "0x8e3acb6cc93ea9d9cf7d443e104bde5422eaabe0fbb8b34e88facea7c20fbf91",
+  "install": "0xaae4fecf2a5fa677baeb931232f1ebd39932207ecde2b461f67ff18e1d9d7e2e",
+  "observers": [
+    "https://lodestar-mainnet.chainsafe.io",
+    "lighthouse@38.102.126.50:5052"
+  ]
+}

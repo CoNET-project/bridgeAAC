@@ -1,0 +1,18 @@
+{
+  "proxy": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "implementation": "0xE1699DeDAF18C05d8224F69bE97385A121F9f94F",
+  "deployTx": "0x2c15651fc23b7bfae5dd430149b9abf24633f2c094097f5e5f35f3f8b30a69aa",
+  "scheduleTx": "0x35e96fffeeebc173450d396a46a4f4b4316db8e723f9b1f56167eaae1413a3d0",
+  "upgradeReadyAt": "1792266353",
+  "upgradeReadyAtIso": "2026-10-17T19:45:53.000Z",
+  "periodBefore": "215",
+  "headSlot": "1786159",
+  "headPeriod": "218",
+  "note": "schedule only. upgradeTo and applyUpdate stay unsent. Ethereum period 1884 is still current.",
+  "sourcify": {
+    "verificationId": "b1d87dc6-d52d-4a4c-a080-86982ed86bed",
+    "match": "match",
+    "creationMatch": "match",
+    "runtimeMatch": "match"
+  }
+}

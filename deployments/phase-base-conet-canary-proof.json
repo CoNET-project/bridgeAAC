@@ -1,0 +1,11 @@
+{
+  "lock": "0xa1ed9817ac5361dcf1613d9ef863d8f868e5b54e987fad2710481693dc290b2a",
+  "operationId": "0x737440463ec7cc74cae0f55d8b44332d8ef7416c6a0d17777385e182aec09e48",
+  "amount": "10000",
+  "covered": true,
+  "headerFinal": true,
+  "settler": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+  "settle": "0x726426028cb6e0d71b86f3a24c33f0e62fefe5fd1fc8017d7e40f567cfc9b34d",
+  "finalizedSlot": "15438848",
+  "messageSlot": "15438793"
+}

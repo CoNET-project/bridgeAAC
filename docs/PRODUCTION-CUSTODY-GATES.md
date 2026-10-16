@@ -3,9 +3,9 @@
 Status on `2026-10-14` (Phase E updated `2026-10-15`): **custody closed.** The
 stable Base proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` can quote
 accepted execution proofs. `headerFinal()` is false. `settle()` reverts
-`CustodyClosed`. Paid-GB miner `voteBridgeMint` is **paused** (Phase D);
-Phase E monitor baseline is **HEALTHY**. USDC `voteBridgeOperation` remains
-the live USDC bridge.
+`CustodyClosed`. Paid-GB miner `voteBridgeMint` is **paused** (Phase D).
+Treasury miner `voteBridgeOperation` is **closed** (`voteBridgeClosed=true`
+on Base and CoNET, 2026-10-15).
 
 This page is the current threshold plan. Historical Shadow approvals in
 [PRODUCTION-EVALUATION.md](PRODUCTION-EVALUATION.md) do not open custody.

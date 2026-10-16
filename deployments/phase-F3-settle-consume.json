@@ -1,0 +1,64 @@
+{
+  "phase": "F3",
+  "status": "EXECUTED",
+  "executedAt": "2026-10-15T04:40:03.580Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "skipUpgrade": true,
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "consumeProxy": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+  "settlerImpl": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
+  "consumeImpl": "0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598",
+  "aacImplBefore": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
+  "aacImplAfter": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
+  "consumeImplBefore": "0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598",
+  "consumeImplAfter": "0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598",
+  "settleSelector": "0x46eb6e75",
+  "okEffect": "0x8Cdb0DB088c67A70a5db45dB8A4B2e1b9E4BCbAF",
+  "revertEffect": "0x6A4469c7337185c60f311f9B6f2958aB3dDb2480",
+  "smoke": {
+    "settleClosed": true,
+    "notGatewayRejected": true,
+    "revertEffectFailed": true,
+    "revertTx": "0x7ad4e67417debe9685fa148a37f905b97a603c9a6729818d7891da8481b565c5",
+    "revertLeftUnconsumed": true,
+    "revertError": "transaction execution reverted",
+    "okTx": "0x01f9afaea153de37c1be5682cc062a07297af1b62a9c19babd65207b812d0115",
+    "okGasUsed": 10926581,
+    "operationId": "0x365db5b664ff368928fbf362ba6905b63a16834e9693a9f2b11f58b094baa289",
+    "amount": "10000",
+    "minted": "10000",
+    "doubleReverted": true,
+    "doubleError": "transaction execution reverted",
+    "binding": {
+      "header": "0xa05fd11539f924f56d33f13f207a8a61af2815bf4a9ae3e6b12ba91bb1f68f9b",
+      "root": "0x89c154bfe7da3430a2db1b13a3df7e04a4fce0b6739c5a62ecf17b2c5e96833c",
+      "leaf": "0x365db5b664ff368928fbf362ba6905b63a16834e9693a9f2b11f58b094baa289"
+    }
+  },
+  "views": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+    "COVER": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "CONET_INCLUSION": "0x7064860E3594aE120f71700B2F46151c6D370559",
+    "CONSUME": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+    "consumeGateway": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd"
+  },
+  "transactions": {
+    "consumeImpl": null,
+    "consumeUpgrade": null,
+    "setGateway": null,
+    "settlerImpl": null,
+    "aacUpgrade": null,
+    "settleRevert": "0x7ad4e67417debe9685fa148a37f905b97a603c9a6729818d7891da8481b565c5",
+    "settleOk": "0x01f9afaea153de37c1be5682cc062a07297af1b62a9c19babd65207b812d0115"
+  },
+  "priorUpgradeNote": "Upgrades already live from first F3 EXECUTE; this run is smoke + EXECUTED artifact only (coverSettleCalldata re-encode fix).",
+  "standardJson": {
+    "consume": "deployments/base-AacProductionConsumeOnce-F3-standard-input.json",
+    "settler": "deployments/base-AacProductionCustodyGateSettler-F3-standard-input.json"
+  },
+  "meaning": "F3: settle/settleBridge/settleFromConet prove COVER/Inclusion then call ConsumeOnce.consumeFromSettler in the same tx (effect last arg). Gateway=AAC. No double cover. Settled emits only after consume. GB.admins(AAC) still false — mark only until F5.",
+  "ok": true
+}

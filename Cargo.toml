@@ -10,6 +10,14 @@ publish = false
 name = "bridge-aac"
 path = "src/main.rs"
 
+[[bin]]
+name = "expand-sync-committee"
+path = "src/bin/expand_sync_committee.rs"
+
+[[bin]]
+name = "export-receipt"
+path = "src/bin/export_receipt.rs"
+
 [dependencies]
 hex = "0.4"
 serde = { version = "1", features = ["derive"] }

@@ -175,7 +175,7 @@ contract AacEthereumCheckpointRoot {
         return false;
     }
 
-    function upgradeTo(address newImplementation) external {
+    function upgradeTo(address newImplementation) external virtual {
         if (msg.sender != owner) revert NotOwner();
         if (address(this) == self || _implementation() != self) revert NotProxy();
         if (newImplementation == address(0) || newImplementation.code.length == 0) revert BadAddress();

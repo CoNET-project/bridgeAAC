@@ -1,0 +1,12 @@
+{
+  "status": "SCHEDULED",
+  "impl": "0xfe5Eab561908e278F7578860A89325A47C5D2C1f",
+  "deployTx": "0xcc48abea29d87f30465fd8fcd5d6d5ba0618c5604ca4c5163e760f31e2b6c303",
+  "scheduleTx": "0xff85dfdf0dc929e95c1ef64e5086af682945d089b2e9a26d30a5c241cadd7735",
+  "scheduleBlock": 52639991,
+  "upgradeReadyAt": "1792242129",
+  "upgradeReadyAtIso": "2026-10-17T13:02:09.000Z",
+  "canaryAmountSlot52": "0x0000000000000000000000000000000000000000000000000000000000989680",
+  "sourcifyMatchId": 56160060,
+  "note": "upgradeTo is available after upgradeReadyAt. Then call repairCanaryRecord()."
+}

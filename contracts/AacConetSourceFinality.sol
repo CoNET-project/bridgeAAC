@@ -95,11 +95,30 @@ contract AacConetSourceFinality {
         emit CommitteeInstalled(period, snapshotSlot_, compressedDigest, snapshotStateRoot_);
     }
 
+    /// @notice Re-verify one Aggregate against the installed committee without latching.
+    /// @dev Usable after `rootReady` so each CoNET message can carry an independent BLS proof.
+    function verifyAggregate(Aggregate calldata input)
+        external
+        view
+        returns (uint256 participants, bool ok)
+    {
+        participants = _checkAggregate(input);
+        ok = true;
+    }
+
     function proveAggregate(Aggregate calldata input)
         external
         returns (uint256 participants, bool headerFinal_)
     {
-        if (period == 0 || rootReady || compressedDigest == bytes32(0)) revert InvalidProof();
+        if (rootReady) revert InvalidProof();
+        participants = _checkAggregate(input);
+        rootReady = true;
+        headerFinal_ = true;
+        emit AggregateProven(period, participants, input.attested.slot, input.signatureSlot);
+    }
+
+    function _checkAggregate(Aggregate calldata input) private view returns (uint256 participants) {
+        if (period == 0 || compressedDigest == bytes32(0)) revert InvalidProof();
         if (
             input.signerUncompressed.length != COMMITTEE_SIZE * 128 || input.bits.length != 64
                 || input.signaturePoint.length != 256 || input.signatureSlot / 8192 != period
@@ -116,12 +135,9 @@ contract AacConetSourceFinality {
             _hashToCurve(_signingRoot(input.attested)),
             input.signaturePoint
         );
-        rootReady = true;
-        headerFinal_ = true;
-        emit AggregateProven(period, participants, input.attested.slot, input.signatureSlot);
     }
 
-    function upgradeTo(address newImplementation) external {
+    function upgradeTo(address newImplementation) external virtual {
         if (msg.sender != owner) revert NotOwner();
         if (address(this) == self || _implementation() != self) revert NotProxy();
         if (newImplementation == address(0) || newImplementation.code.length == 0) revert BadAddress();
@@ -136,7 +152,7 @@ contract AacConetSourceFinality {
         uint256 participants,
         bytes memory message,
         bytes calldata signaturePoint
-    ) private view {
+    ) internal view {
         bytes memory msmInput = new bytes(participants * 160);
         uint256 written;
         for (uint256 i; i < COMMITTEE_SIZE; i++) {
@@ -166,7 +182,7 @@ contract AacConetSourceFinality {
         if (pairedWord != bytes32(uint256(1))) revert InvalidProof();
     }
 
-    function _hashToCurve(bytes32 signingRoot) private view returns (bytes memory point) {
+    function _hashToCurve(bytes32 signingRoot) internal view returns (bytes memory point) {
         bytes memory uniform = _expand(signingRoot);
         bytes memory shifted = new bytes(392);
         _loadShifted(shifted);
@@ -274,7 +290,7 @@ contract AacConetSourceFinality {
         }
     }
 
-    function _signingRoot(Header calldata attested) private view returns (bytes32) {
+    function _signingRoot(Header calldata attested) internal view returns (bytes32) {
         bytes32 header = _header(attested.slot, attested.proposer, attested.parentRoot, attested.stateRoot, attested.bodyRoot);
         bytes4 version = _forkVersion(attested.slot / 32);
         bytes32 forkData = sha256(abi.encodePacked(bytes32(version), GENESIS_VALIDATORS_ROOT));
@@ -286,7 +302,7 @@ contract AacConetSourceFinality {
         return 0x20000093;
     }
 
-    function _compressedDigest(bytes calldata uncompressed) private pure returns (bytes32) {
+    function _compressedDigest(bytes calldata uncompressed) internal pure returns (bytes32) {
         bytes memory packed = new bytes(COMMITTEE_SIZE * 48);
         for (uint256 i; i < COMMITTEE_SIZE; i++) {
             uint256 uAt = i * 128;
@@ -343,7 +359,7 @@ contract AacConetSourceFinality {
         chunk = bytes32(word);
     }
 
-    function _count(bytes calldata bits) private pure returns (uint256 total) {
+    function _count(bytes calldata bits) internal pure returns (uint256 total) {
         for (uint256 i; i < COMMITTEE_SIZE; i++) {
             if (_bit(bits, i)) total++;
         }

@@ -1,0 +1,67 @@
+{
+  "phase": "F4",
+  "status": "EXECUTED",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "recordedAt": "2026-10-15T05:28:29.443Z",
+  "addresses": {
+    "checkpointRoot": "0xcEE3D699df3df07a573f1aFf642888B97B7aA961",
+    "aac": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+    "aacImpl": "0x29e10621fF159422237d2a0B9F020303F9BDdD12",
+    "settlerF3Expected": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
+    "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "consumeOnce": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1"
+  },
+  "live": {
+    "period": "1883",
+    "nextPeriod": "1884",
+    "rootReady": true,
+    "compressedDigest": "0xb5e26546712793699378679bbfe918ce15ea3a230259d05113189599b634db94",
+    "tipBlock": 52626381,
+    "tipGasLimit": "400000000",
+    "pairingGasCap": "16777216",
+    "measuredMedianGas": "11481348"
+  },
+  "checks": {
+    "rootReady": true,
+    "rootOwnerIsCustodyOwner": true,
+    "aacOwnerIsCustodyOwner": true,
+    "custodyStillClosed": true,
+    "aacImplPresent": true,
+    "coverStoreIsCheckpointRoot": true,
+    "periodNonZero": true,
+    "tipGasLimitAbovePairingCap": true
+  },
+  "blockers": [],
+  "proofWindow": {
+    "rule": "Cover.cover requires messageSlot/8192 == STORE.period(); Settler re-runs Cover each settle",
+    "actionBeforeRotate": "Drain Cover+settle for all locks with messageSlot in current period",
+    "afterRotate": "Old-period slots cannot obtain new Cover proofs; ConsumeOnce storage unchanged"
+  },
+  "runbook": "docs/F4-COMMITTEE-ROTATION.md",
+  "updatePath": "deployments/f4-update-1883.json",
+  "updateValidation": {
+    "path": "/Users/peter/Downloads/BeamioContract/src/bridgeAAC/deployments/f4-update-1883.json",
+    "shapeErrors": [],
+    "participants": 512,
+    "quorumOk": true,
+    "nextDigest": "0x8e3acb6cc93ea9d9cf7d443e104bde5422eaabe0fbb8b34e88facea7c20fbf91",
+    "nextDigestDiffersFromStored": true,
+    "signaturePeriod": "1883",
+    "attestedPeriod": "1883"
+  },
+  "estimateGas": {
+    "wei": "11689913",
+    "underPairingCap": true,
+    "pairingGasCap": "16777216"
+  },
+  "tx": {
+    "hash": "0x47a9574c75a3dd3c8b92270f69fbaaa8dd8bee98fa97a202732033c6d968d9cb",
+    "blockNumber": 52626383,
+    "gasUsed": "11504959",
+    "fromPeriod": "1883",
+    "toPeriod": "1884",
+    "compressedDigest": "0x8e3acb6cc93ea9d9cf7d443e104bde5422eaabe0fbb8b34e88facea7c20fbf91"
+  },
+  "next": "F5 settle-open + GB.admins(AAC) — see docs/CUTOVER-CUSTODY.md"
+}

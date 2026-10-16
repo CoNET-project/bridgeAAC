@@ -1,0 +1,51 @@
+{
+  "phase": "F2",
+  "status": "EXECUTED",
+  "executedAt": "2026-10-15T04:27:17.491Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "finalityProxy": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+  "inclusion": "0x7064860E3594aE120f71700B2F46151c6D370559",
+  "settlerImpl": "0xeC19d84625edA6213F3126033B66397633d8688F",
+  "finalityImpl": "0xdAF69159597Ea1E993B3af7dFe1Be7003fDA218a",
+  "aacImplBefore": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
+  "aacImplAfter": "0xeC19d84625edA6213F3126033B66397633d8688F",
+  "finalityImplBefore": "0x9C9AC8F5E3c3861DDfF3aF16b40C4131B59617f0",
+  "finalityImplAfter": "0xdAF69159597Ea1E993B3af7dFe1Be7003fDA218a",
+  "oldSettleFromConetSelector": "0xf5c2a781",
+  "smoke": {
+    "oldSelectorGoneFromCode": true,
+    "oldSelectorCallReverted": true,
+    "oldSelectorError": "missing revert data",
+    "settleClosed": true,
+    "coverSettleTx": "0x2ad04ee068c58d2211994e66e5e90ec29aafc23d61a022b6a981cb16c7e81098",
+    "coverSettleGasUsed": 10774451,
+    "garbageInclusionReverted": true,
+    "garbageError": "execution reverted (unknown custom error)",
+    "rootReady": true,
+    "verifyAggregateSelector": "0x68a2858e"
+  },
+  "views": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+    "COVER": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "CONET_INCLUSION": "0x7064860E3594aE120f71700B2F46151c6D370559"
+  },
+  "transactions": {
+    "finalityImpl": "0xd0cace22ef333c1731145dbace0f3e3ebaf69772a3f83b5f6077b28f9a1c7128",
+    "finalityUpgrade": "0xa7cbccc6b72fdf6ea60f1eaa5354a1fb6f10a21a58b49ef556455e1a466256f6",
+    "inclusion": "0x69d53406b251c8e1728fe06d1ae3a86834befff5c5769a1678e2266b6b255cd1",
+    "settlerImpl": "0xcfaef1585e880063d1497e89b7518e774e19626f0908c26b1eb2beb0aaea84a5",
+    "aacUpgrade": "0x1c77f9c33eac908381db28a7947244223bfdfafd4380a7aea96535d3b784f26a",
+    "coverSettle": "0x2ad04ee068c58d2211994e66e5e90ec29aafc23d61a022b6a981cb16c7e81098"
+  },
+  "standardJson": {
+    "finality": "deployments/base-AacConetSourceFinality-F2-standard-input.json",
+    "inclusion": "deployments/base-AacConetMessageInclusion-standard-input.json",
+    "settler": "deployments/base-AacProductionCustodyGateSettler-F2-standard-input.json"
+  },
+  "meaning": "F2: settleFromConet now requires independent CoNET Aggregate + EL receipt MPT + beacon walk via AacConetMessageInclusion.cover. Old self-hash settleFromConet(bytes32,uint256,bytes) removed. Base settle still COVER-gated. custodyOpen/headerFinal remain false.",
+  "ok": true
+}

@@ -1,0 +1,25 @@
+{
+  "chains": {
+    "base": {
+      "treasuryImpl": "0xA33c84493845cB2ba3b26EdCca0B8cAc5E1bFE13",
+      "treasuryDeployTx": "0x60e2ba483af0a626ee3fe34749406cc426217e82de639d454bed5a2cf1982cc8",
+      "upgradeTx": "0x4b4e275cb4508da1378a017b03a30a209c7be24e8d49d0489f257ec681e515bf",
+      "aacExecutor": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+      "voteBridgeClosed": true,
+      "sourceInitiateOpen": false,
+      "baseDestinationOpen": true,
+      "conetDestinationOpen": false
+    },
+    "conet": {
+      "treasuryImpl": "0x1c41A44814d272b0ef145EbB40e9D47bfcd10B1a",
+      "treasuryDeployTx": "0x9492329d3ae53e27fd3e2ad2b0c855ac9365f5ce8b364dda7f9b44f60ad72526",
+      "upgradeTx": "0x47d0780fb690acf35c6b02e70e09dcb7f16d734cbdfb581d232f6f06bcc77ba4",
+      "aacExecutor": "0x0661C8116D027907e387667Df5aCad2F2E9ad30b",
+      "voteBridgeClosed": true,
+      "sourceInitiateOpen": false,
+      "baseDestinationOpen": true,
+      "conetDestinationOpen": false
+    }
+  },
+  "note": "aacDestinationOpen[8453]=true; other chains stay closed; sourceInitiateOpen unchanged"
+}

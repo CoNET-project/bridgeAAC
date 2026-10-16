@@ -2,8 +2,8 @@
   "chainId": 8453,
   "generatedAt": "2026-10-14T06:48:52.665Z",
   "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
-  "implementation": "0x3085216E8329eF7d10c914cB1C43Cd8168f53442",
-  "previousImplementation": "0x6c5b1E857Dc2807D5383Eb8001783258FFC3645F",
+  "implementation": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+  "previousImplementation": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
   "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
   "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
   "cover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
@@ -59,5 +59,13 @@
     },
     "match": "match"
   },
-  "meaning": "Production proxy upgraded to settler. settle/settleBridge succeed only via COVER.cover in the same call. settleFromConet requires rootReady + inclusion binding. No-arg settle still CustodyClosed. custodyOpen and headerFinal remain false. No AAC consume and no Treasury/GB/Peer roles."
+  "meaning": "F5: Settler proves COVER/Inclusion then consumeFromSettler then GB.mintPaid(mintTo,amount) in same tx. GB.admins(AAC) true CoNET+Base. Custody views still closed. COVER smoke opId already consumed in F3 — structural AlreadyConsumed only; live mint needs new BridgeOperation.",
+  "conetInclusion": "0x7064860E3594aE120f71700B2F46151c6D370559",
+  "f2": true,
+  "upgradeTx": "0xba8aed970365284298983990d79931fb59f8b3e2bb9a0c6784b44a456bb0d483",
+  "consume": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+  "f3": true,
+  "smokeOkTx": "0x01f9afaea153de37c1be5682cc062a07297af1b62a9c19babd65207b812d0115",
+  "f5": true,
+  "f3Archaeological": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0"
 }

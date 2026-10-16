@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.35;
 
-/// @notice Destination consume-once consumer for production custody obstacle 4.
-/// @dev Base-origin consumes re-verify `cover.cover()` in the same call and
-/// require `operationId == aacId`. CoNET-origin consumes require
-/// `rootReady` on the obstacle-3 adapter. The consumer records mint or
-/// release for the id; it does not grant Treasury, GB, or Peer roles. A
-/// failed effect rolls back consumption and the mint/release mark.
+/// @notice Destination consume-once consumer for production custody obstacle 4 / F3.
+/// @dev Gateway-only. `consumeAfterCover` re-runs COVER (standalone path).
+///      `consumeFromSettler` trusts the AAC settler that already proved COVER /
+///      Inclusion in the same tx (F3 — do not re-cover; Base gas budget).
+///      Failed effects roll back the consume mark. Settled alone never mints.
 contract AacProductionConsumeOnce {
     bytes32 private constant INIT_SLOT =
         0x0e90e418ef8a16accc9c1e3b0f6fba23a670a5665607f3c908efca71b10d2619;
@@ -148,6 +147,21 @@ contract AacProductionConsumeOnce {
     ) external {
         if (msg.sender != gateway) revert NotGateway();
         if (!IAacConetSourceFinality(CONET_FINALITY).rootReady()) revert GateFailed();
+        _consume(id, header, root, leaf, action, amount, effect);
+    }
+
+    /// @notice F3: consume after Settler already proved COVER / Inclusion this tx.
+    /// @dev Gateway must be the AAC proxy. Does not re-run cover (gas).
+    function consumeFromSettler(
+        bytes32 id,
+        bytes32 header,
+        bytes32 root,
+        bytes32 leaf,
+        uint8 action,
+        uint256 amount,
+        address effect
+    ) external {
+        if (msg.sender != gateway) revert NotGateway();
         _consume(id, header, root, leaf, action, amount, effect);
     }
 

@@ -2,8 +2,8 @@
   "chainId": 8453,
   "generatedAt": "2026-10-14T06:34:20.582Z",
   "proxy": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
-  "implementation": "0xcb197f3B8c277D3e507993C35F086Ab9Eb41a94F",
-  "gateway": "0xcE30DdFFB7B2C75c6615D441c232ac9D60b6344B",
+  "implementation": "0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598",
+  "gateway": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
   "okEffect": "0x8Cdb0DB088c67A70a5db45dB8A4B2e1b9E4BCbAF",
   "revertEffect": "0x6A4469c7337185c60f311f9B6f2958aB3dDb2480",
   "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
@@ -79,5 +79,8 @@
       "match": "match"
     },
     "match": "match"
-  }
+  },
+  "previousImplementation": "0x75aC7020976C6048FCB2bb8741fCA72e2d1cA598",
+  "f3": true,
+  "smokeOkTx": "0x01f9afaea153de37c1be5682cc062a07297af1b62a9c19babd65207b812d0115"
 }

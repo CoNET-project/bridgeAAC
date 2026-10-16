@@ -1,0 +1,35 @@
+{
+  "chains": {
+    "base": {
+      "treasuryImpl": "0x8AC7588BE4dA34c1b862E1E683A7f45230024226",
+      "treasuryDeployTx": "0x93435935c5e64f74b9ed06240c82fecac0d7eba6eff289559ec8623b8b74a583",
+      "upgradeTx": "0xcf8ac73b9df34e06b285988724768c44e09cdc3ea2c59290833bf989b193ef9e",
+      "aacExecutor": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+      "voteBridgeClosed": true,
+      "sourceInitiateOpen": false,
+      "chainEffect": null
+    },
+    "conet": {
+      "treasuryImpl": "0x64b245561a34d6DB30B95EED5Bf22Be99C070844",
+      "treasuryDeployTx": "0x75a8b07e21dad1335ebd4a3d74d497fe4b000d424a7574901ddfa2221e91e687",
+      "upgradeTx": "0xd0d445760bee40805d7aa63669af7af76b0470008b3c6e845fbc79a12ba73c20",
+      "aacExecutor": "0x0661C8116D027907e387667Df5aCad2F2E9ad30b",
+      "voteBridgeClosed": true,
+      "sourceInitiateOpen": false,
+      "chainEffect": {
+        "address": "0x0661C8116D027907e387667Df5aCad2F2E9ad30b",
+        "tx": "0x5764d3bb6c026fd24f5b722fbf72a94fe7151f81eb6d28fb63ab359e2d74cb10",
+        "block": 1724208
+      }
+    }
+  },
+  "baseSettler": {
+    "address": "0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44",
+    "tx": "0xb7f29c525cd4d4fba7adba63018f6f490cc3c3a491066e5707178dbed2239982",
+    "block": 52640694,
+    "effect": "0xc8EDc28c6c3528544D82Bad4218EB2DB5fC9cD16",
+    "scheduleTx": "0x6ed0860b7a4966a3c396e861e00c51f85cf654a3242ed5cfa0913e71d7c6a802",
+    "upgradeReadyAt": "1792243541",
+    "upgradeReadyAtIso": "2026-10-17T13:25:41.000Z"
+  }
+}

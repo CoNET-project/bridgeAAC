@@ -1,0 +1,46 @@
+{
+  "phase": "F5",
+  "status": "EXECUTED",
+  "executedAt": "2026-10-15T04:56:40.066Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "settlerImpl": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+  "aacImplBefore": "0xf131359EE46d261B91cEedE8772DE18fB821B2b0",
+  "aacImplAfter": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+  "settleSelector": "0x02b7784c",
+  "mintPaidSelector": "0x970cab06",
+  "okEffect": "0x8Cdb0DB088c67A70a5db45dB8A4B2e1b9E4BCbAF",
+  "gb": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+  "smoke": {
+    "settleClosed": true,
+    "gbAdminsBase": true,
+    "gbAdminsConet": true,
+    "alreadyConsumedOnCoverSmoke": true,
+    "smokeTx": "0x1549e9b7a4fb3a8d400499dea41880c9424ab0b76f5ee4840deb7426f866de10",
+    "smokeError": "transaction execution reverted",
+    "liveMintNeedsNewBridgeOperation": true
+  },
+  "views": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "proofLink": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+    "COVER": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+    "CONET_INCLUSION": "0x7064860E3594aE120f71700B2F46151c6D370559",
+    "CONSUME": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+    "GB": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+    "consumeGateway": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+    "gbAdminsBase": true,
+    "gbAdminsConet": true
+  },
+  "transactions": {
+    "gbAddAdminConet": "0xe583cf0cd0e2b273c0ca1e90cb68cba09d45950b0a7eca2eaa0e95b0ba3867cd",
+    "gbAddAdminBase": "0xcb29435842a261e841b3c3c9bc66d82f54b59f20a7e3b6fa4d78a4892da0456a",
+    "settlerImpl": "0x18c6fc49bdf0de3df54196f76093e9c44ddb995ef5cc77dae00ffdae34e0a333",
+    "aacUpgrade": "0xba8aed970365284298983990d79931fb59f8b3e2bb9a0c6784b44a456bb0d483",
+    "smokeAlreadyConsumed": "0x1549e9b7a4fb3a8d400499dea41880c9424ab0b76f5ee4840deb7426f866de10"
+  },
+  "standardJson": "deployments/base-AacProductionCustodyGateSettlerF5-standard-input.json",
+  "meaning": "F5: Settler proves COVER/Inclusion then consumeFromSettler then GB.mintPaid(mintTo,amount) in same tx. GB.admins(AAC) true CoNET+Base. Custody views still closed. COVER smoke opId already consumed in F3 — structural AlreadyConsumed only; live mint needs new BridgeOperation.",
+  "ok": true
+}

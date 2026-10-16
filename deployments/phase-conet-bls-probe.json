@@ -1,0 +1,21 @@
+{
+  "oldProbe": "0x864896C7dD5CA603AA11C3dC0BA329EB78Cc5F78",
+  "probe": {
+    "address": "0xed2E4B55152A657B43A5065a01B9655dB0033713",
+    "tx": "0x3980362ba94bbb4f228d077522cdac25fe8e77835ccd5ad507b742e03d99f39c"
+  },
+  "cover": {
+    "address": "0xA5bB063652A9f21ddF600e78AC1c7db1A0812E06",
+    "tx": "0xae542e31d3b32efbcc9d826aac79ad5ddfd8419cde45de08b27aded3023b3dd3"
+  },
+  "settler": {
+    "address": "0x7285fD9a9e62751e952697f95DD753C82Bb84BbE",
+    "tx": "0xaa2083c32cfc2e4d09d52922f09befe7582a02d8a79e6b9dd4778efff5e78bb5"
+  },
+  "checkpoint": "0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a",
+  "receiptVerifier": "0x6B44d8469c902F0BbF74333AAfE7E164D020943f",
+  "effectReader": "0x3EFD6b90A19B5d1027b734460672A330764c27Df",
+  "probeAvailable": true,
+  "chainEffectSettler": "0x0000000000000000000000000000000000000000",
+  "note": "setSettler stays unset until a committee is installed and a real Base receipt proof is covered"
+}

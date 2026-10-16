@@ -1,0 +1,50 @@
+{
+  "createdAt": "2026-10-15T20:10:24.694Z",
+  "locks": [
+    {
+      "name": "gb",
+      "sourceAsset": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "destinationAsset": "0xC3EF02DaE632b4C10abB66e07d92a387c10838D8",
+      "mode": 1,
+      "amount": "1000000",
+      "policyId": "0x3c77e106328303013115b9b860df21a7f0383bf5db7d9bf02877ee9eb5962773",
+      "beneficiary": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "nonce": "1792095004701",
+      "sourceTxHash": "0x06c26961b171d624073feab290f95ebadb90cac1a8ab33da90b3758b596e2bec",
+      "lock": "0xc1183fbe71dbade397621f4d55d3f56779544e44155923242c97a036c413f692",
+      "blockNumber": 52652830,
+      "blockHash": "0x2b6765fb37c537572cef638afb70e080b2a6128c709129802b54eaa314634486",
+      "parentBeaconBlockRoot": "0xae37835c8d31af9e4d24cfef064532f07a49f546876329854e6c587a102ef670"
+    },
+    {
+      "name": "usdc",
+      "sourceAsset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "destinationAsset": "0x5209865D404aA5646eDe5B91CD4218909eA72eDA",
+      "mode": 1,
+      "amount": "1000",
+      "policyId": "0x626a68cdec47a950948cabb519c4a2a914b488b4095285467fbe525b14959022",
+      "beneficiary": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "nonce": "1792095014715",
+      "sourceTxHash": "0x1e79ef051702e1995472a2e029636b4498f71b2dcf72390fd6affa8243edc01e",
+      "lock": "0x833e1b9f3625669f32fe639f886bf5c679662b560dc6cad839297e9ba9ed13f9",
+      "blockNumber": 52652835,
+      "blockHash": "0x6222f7ed6d861bb050fb91ad0ded1e50296c45e8d6bddc25a6bc16b65a1d1de1",
+      "parentBeaconBlockRoot": "0xddfe091df7f953c76487eefebdf1d8c9b0d637d5c9f169c591a5bc879d3fac25"
+    },
+    {
+      "name": "wcnet",
+      "sourceAsset": "0x0E01ca7a99B38a4E021C25B7BE01356E71158B66",
+      "destinationAsset": "0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5",
+      "mode": 2,
+      "amount": "100000000000000",
+      "policyId": "0xe6aeaeb7f313ed92bf175e9be04c2ac482a0d24cc1759fa500dd0dd551974b6c",
+      "beneficiary": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "nonce": "1792095019699",
+      "sourceTxHash": "0xd50b6e69d6b21181843def7fa032a4d9759a61e4a44b063f6c5fa487667cf7ea",
+      "lock": "0x89496662176a091daa62ac6582c78f1ecb0f05ca03277645614d73ceef9d3725",
+      "blockNumber": 52652837,
+      "blockHash": "0x8cb407ec90691219d5fe872c55f67a0303c809bbb1d1f91b6dfc991ea84c0841",
+      "parentBeaconBlockRoot": "0x6000c6ab428157080b4257c577724574d8b0fc7e30a05d1d7d75d22a142101b4"
+    }
+  ]
+}

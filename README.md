@@ -20,13 +20,13 @@ Recorded on 2026-10-15. Custody views stay closed.
 | Phase E | Monitor baseline **recorded healthy** (read-only). [docs/CUTOVER-CUSTODY.md](docs/CUTOVER-CUSTODY.md) |
 | F4 committee | CheckpointRoot `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` rotated period **1883 → 1884** |
 | Miner completion | `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBridgeClosed` on Base and CoNET |
-| Destination allowlist | `aacDestinationOpen(8453)` is true on both treasuries. `aacDestinationOpen(224422)` is false. `sourceInitiateOpen` is false on both. Later chains use `setAacDestinationOpen` without another treasury upgrade |
+| Destination allowlist | `aacDestinationOpen(8453)` is true on both treasuries. Base `aacDestinationOpen(224422)` is true. CoNET `aacDestinationOpen(224422)` stays false. `sourceInitiateOpen` is true on both treasuries. Later chains use `setAacDestinationOpen` without another treasury upgrade |
 | SettlerF7c | Pending implementation `0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44`. `upgradeTo` is allowed only after **2026-10-17T13:25:41Z**. The live AAC implementation is still F7 `0x29e10621fF159422237d2a0B9F020303F9BDdD12` |
 | wCNET | CoNET `0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5` (native wrap on). Base `0x0E01ca7a99B38a4E021C25B7BE01356E71158B66` (wrap off). CoNET completion of wCNET must release locked tokens, not mint |
-| Base → CoNET proof | CoNET has no Ethereum BLS precompile on stock Geth. Probe `0x864896C7dD5CA603AA11C3dC0BA329EB78Cc5F78` reports `available() == false`. The receipt settler `0x1C302DE6a6c4d9BE30193A6Bcd65A522C9b9898D` is deployed and Blockscout-verified, and it is **not** installed on `AacChainEffect`. The CoNET checkpoint proxy `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` does not have a committee installed |
-| Execution client | [patch-geth](https://github.com/CoNET-project/patch-geth) builds a Geth that registers EIP-2537 (`0x0b`–`0x11`) on the Cancun table. Prague stays off. That binary is **not** installed on the CoNET execution fleet |
+| Base → CoNET proof | Probe `0xed2E4B55152A657B43A5065a01B9655dB0033713`, cover `0xA5bB063652A9f21ddF600e78AC1c7db1A0812E06`, settler `0x7285fD9a9e62751e952697f95DD753C82Bb84BbE`. Checkpoint `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` is period **1884**, `rootReady` true. The 0.01 USDC lock `0xa1ed9817ac5361dcf1613d9ef863d8f868e5b54e987fad2710481693dc290b2a` covered with `headerFinal` true. `setSettler` `0xf84d10d8…679a3` installed that settler. `settle` `0x72642602…b34d` minted 0.01 canonical CoNET-USDC to the beneficiary |
+| Execution client | The checked CoNET execution clients (`38.102.126.30:8889`, `38.102.126.50` ports `8888`/`8883`/`8884`, `38.102.126.58:8885`) run patched Geth 1.17.8. Empty `eth_call` to `0x0b` returns `invalid input length`. Prague stays off |
 
-Do not schedule another AAC upgrade. A second `scheduleUpgrade` resets the 48-hour clock. Do not open `sourceInitiateOpen` before the destination completer exists. Do not call `setSettler` while the BLS probe is false.
+Do not schedule another AAC upgrade. A second `scheduleUpgrade` resets the 48-hour clock. `sourceInitiateOpen` is true on Base and CoNET. The presence check calls precompile `0x0b` with a 100,000 gas stipend: a reverting precompile burns the whole stipend, and an uncapped call exhausts the receipt proof before the pairing. The earlier probe `0xbaff644E…EB6B` and settler `0x1E160EFB…3814` are superseded.
 
 ## What this crate checks
 
@@ -64,7 +64,7 @@ Intended addresses, same bytecode address on both chains, separate storage:
 
 Chain ids: CONET `224422`, Base `8453`.
 
-Miner `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBridgeClosed`. Paid-GB `voteBridgeMint` is paused. This crate still does not mint or release. Base → CoNET completion waits on the patch-geth execution client and on a settler that is not installed yet.
+Miner `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBridgeClosed`. Paid-GB `voteBridgeMint` is paused. This crate still does not mint or release. The checked execution clients run patch-geth. The Base → CoNET 0.01 USDC canary is covered and settled through `AacChainEffect`. CoNET wCNET completion stays mode 2 (release). `sourceInitiateOpen` is true on Base and CoNET.
 
 ## Documents
 

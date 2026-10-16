@@ -1,0 +1,14 @@
+{
+  "amount6": "10000",
+  "beneficiary": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "destinationChainId": "224422",
+  "sourceAsset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "destinationAsset": "0x5209865D404aA5646eDe5B91CD4218909eA72eDA",
+  "nonce": "1792089725168",
+  "sourceTxHash": "0x92e89f96caf9f0fdcac389f97c8e925cc1b60d7ed7a9c60f8299565e8122d58e",
+  "lock": "0xa1ed9817ac5361dcf1613d9ef863d8f868e5b54e987fad2710481693dc290b2a",
+  "blockNumber": 52650190,
+  "baseDestOpen": true,
+  "baseInitiateOpen": true,
+  "conetInitiateOpen": false
+}

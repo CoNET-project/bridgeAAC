@@ -1,0 +1,28 @@
+diff --git a/core/vm/contracts.go b/core/vm/contracts.go
+index 7cfe63b..82e220d 100644
+--- a/core/vm/contracts.go
++++ b/core/vm/contracts.go
+@@ -108,6 +108,8 @@ var PrecompiledContractsBerlin = PrecompiledContracts{
+ 
+ // PrecompiledContractsCancun contains the default set of pre-compiled Ethereum
+ // contracts used in the Cancun release.
++// CoNET build: addresses 0x0b-0x11 are included here so BLS12-381 is active
++// without scheduling Prague (7702 / 6110 / 7002 / 7251 stay off).
+ var PrecompiledContractsCancun = PrecompiledContracts{
+ 	common.BytesToAddress([]byte{0x1}): &ecrecover{},
+ 	common.BytesToAddress([]byte{0x2}): &sha256hash{},
+@@ -119,6 +121,14 @@ var PrecompiledContractsCancun = PrecompiledContracts{
+ 	common.BytesToAddress([]byte{0x8}): &bn256PairingIstanbul{},
+ 	common.BytesToAddress([]byte{0x9}): &blake2F{},
+ 	common.BytesToAddress([]byte{0xa}): &kzgPointEvaluation{},
++	// CoNET: EIP-2537 on the Cancun ruleset. Do not require pragueTime.
++	common.BytesToAddress([]byte{0x0b}): &bls12381G1Add{},
++	common.BytesToAddress([]byte{0x0c}): &bls12381G1MultiExp{},
++	common.BytesToAddress([]byte{0x0d}): &bls12381G2Add{},
++	common.BytesToAddress([]byte{0x0e}): &bls12381G2MultiExp{},
++	common.BytesToAddress([]byte{0x0f}): &bls12381Pairing{},
++	common.BytesToAddress([]byte{0x10}): &bls12381MapG1{},
++	common.BytesToAddress([]byte{0x11}): &bls12381MapG2{},
+ }
+ 
+ // PrecompiledContractsPrague contains the set of pre-compiled Ethereum

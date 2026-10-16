@@ -1,0 +1,174 @@
+{
+  "phase": "F7",
+  "status": "BLOCKED",
+  "recordedAt": "2026-10-15T05:03:34.964Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "meaning": "F7 Owner key migration to multisig/timelock is blocked: AAC owner remains EOA and live Settler has no ownership-transfer entrypoint. Probe only; no broadcast.",
+  "expectedOwnerEoa": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "aacImpl": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+  "ownership": [
+    {
+      "label": "AAC",
+      "address": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+      "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "hasOwnerView": true
+    },
+    {
+      "label": "SettlerF5Impl",
+      "address": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+      "owner": "0x0000000000000000000000000000000000000000",
+      "hasOwnerView": true
+    },
+    {
+      "label": "CheckpointRoot",
+      "address": "0xcEE3D699df3df07a573f1aFf642888B97B7aA961",
+      "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "hasOwnerView": true
+    },
+    {
+      "label": "Treasury",
+      "address": "0xa208982212978550594A7FEEB70a61665d129003",
+      "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "hasOwnerView": true
+    },
+    {
+      "label": "Finality",
+      "address": "0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9",
+      "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+      "hasOwnerView": true
+    },
+    {
+      "label": "Cover",
+      "address": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+      "owner": null,
+      "hasOwnerView": false,
+      "error": "missing revert data"
+    },
+    {
+      "label": "Consume",
+      "address": "0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F",
+      "owner": null,
+      "hasOwnerView": false,
+      "error": "missing revert data"
+    },
+    {
+      "label": "Inclusion",
+      "address": "0x7064860E3594aE120f71700B2F46151c6D370559",
+      "owner": null,
+      "hasOwnerView": false,
+      "error": "missing revert data"
+    },
+    {
+      "label": "ProofLink",
+      "address": "0x4b0465A26C79CC4BddB0f756FD40ad0B23596d1b",
+      "owner": null,
+      "hasOwnerView": false,
+      "error": "missing revert data"
+    }
+  ],
+  "selectors": {
+    "aacImpl": {
+      "owner": {
+        "selector": "0x8da5cb5b",
+        "present": true
+      },
+      "transferOwnership": {
+        "selector": "0xf2fde38b",
+        "present": false
+      },
+      "renounceOwnership": {
+        "selector": "0x715018a6",
+        "present": false
+      },
+      "setOwner": {
+        "selector": "0x13af4035",
+        "present": false
+      },
+      "acceptOwnership": {
+        "selector": "0x79ba5097",
+        "present": false
+      },
+      "nominateOwner": {
+        "selector": "0x5b94db27",
+        "present": false
+      },
+      "upgradeTo": {
+        "selector": "0x3659cfe6",
+        "present": true
+      }
+    },
+    "treasuryImpl": {
+      "owner": {
+        "selector": "0x8da5cb5b",
+        "present": true
+      },
+      "transferOwnership": {
+        "selector": "0xf2fde38b",
+        "present": true
+      },
+      "renounceOwnership": {
+        "selector": "0x715018a6",
+        "present": true
+      },
+      "setOwner": {
+        "selector": "0x13af4035",
+        "present": false
+      },
+      "acceptOwnership": {
+        "selector": "0x79ba5097",
+        "present": false
+      },
+      "nominateOwner": {
+        "selector": "0x5b94db27",
+        "present": false
+      },
+      "upgradeTo": {
+        "selector": "0x3659cfe6",
+        "present": false
+      }
+    },
+    "checkpointRoot": {
+      "owner": {
+        "selector": "0x8da5cb5b",
+        "present": false
+      },
+      "transferOwnership": {
+        "selector": "0xf2fde38b",
+        "present": false
+      },
+      "renounceOwnership": {
+        "selector": "0x715018a6",
+        "present": false
+      },
+      "setOwner": {
+        "selector": "0x13af4035",
+        "present": false
+      },
+      "acceptOwnership": {
+        "selector": "0x79ba5097",
+        "present": false
+      },
+      "nominateOwner": {
+        "selector": "0x5b94db27",
+        "present": false
+      },
+      "upgradeTo": {
+        "selector": "0x3659cfe6",
+        "present": false
+      }
+    }
+  },
+  "ownerIsEoa": true,
+  "canTransferAacOnLiveSettler": false,
+  "blockedReasons": [
+    "AAC proxy owner is still the production EOA 0x87cAe…05E1 (not a multisig/timelock).",
+    "Live SettlerF5 / Beacon layout has owner() + upgradeTo(owner-only) but no transferOwnership / setOwner / acceptOwnership.",
+    "Cannot move AAC owner without a named Settler upgrade that adds ownership transfer (or equivalent) — do not invent.",
+    "No multisig / timelock address is named in this cutover for Owner handoff.",
+    "Treasury Ownable transferOwnership exists on impl, but F7 gate is AAC custody Owner key; Treasury handoff is a separate explicit auth."
+  ],
+  "requiredNextAuth": "Explicit written auth to (1) deploy/name a multisig or timelock, (2) upgrade AAC Settler to add ownership transfer (or replace Owner via a named path), (3) transfer AAC (+ optionally CheckpointRoot / Treasury) ownership, then Blockscout-verify any new impl.",
+  "ok": true,
+  "executeBroadcast": false
+}

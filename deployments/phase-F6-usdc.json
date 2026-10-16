@@ -1,0 +1,89 @@
+{
+  "phase": "F6",
+  "status": "BLOCKED",
+  "recordedAt": "2026-10-15T05:03:33.351Z",
+  "ownerAuth": "请依据审计报告, 依次移除生产前障碍",
+  "meaning": "F6 USDC cutover cannot complete on live TreasuryBridgeV3 without an explicit Treasury upgrade that adds AAC authorization and/or a pause for voteBridgeOperation. Probe only; no broadcast.",
+  "treasuryProxy": "0xa208982212978550594A7FEEB70a61665d129003",
+  "treasuryImpl": "0xf7474CAC9C9833FA35cE10E3B22F442096eD0A06",
+  "aacProxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "selectors": {
+    "setBridgePaused": {
+      "selector": "0x74ac0ec1",
+      "present": false
+    },
+    "voteBridgeOperation": {
+      "selector": "0x7b776fb4",
+      "present": true
+    },
+    "addMiner": {
+      "selector": "0xf3982e5e",
+      "present": true
+    },
+    "removeMiner": {
+      "selector": "0x10242590",
+      "present": true
+    },
+    "setBridgeAssetAuthorization": {
+      "selector": "0x92db43ed",
+      "present": true
+    },
+    "setMintCallbackAllowed": {
+      "selector": "0x410dd849",
+      "present": true
+    },
+    "isMiner": {
+      "selector": "0x701b70ac",
+      "present": true
+    },
+    "minerCount": {
+      "selector": "0x6d1da431",
+      "present": true
+    },
+    "transferOwnership": {
+      "selector": "0xf2fde38b",
+      "present": true
+    },
+    "owner": {
+      "selector": "0x8da5cb5b",
+      "present": true
+    },
+    "isAdmin": {
+      "selector": "0x24d7806c",
+      "present": false
+    },
+    "hasRole": {
+      "selector": "0x91d14854",
+      "present": false
+    },
+    "pause": {
+      "selector": "0x8456cb59",
+      "present": false
+    },
+    "paused": {
+      "selector": "0x5c975abb",
+      "present": false
+    }
+  },
+  "views": {
+    "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "minerCount": 4,
+    "isMinerAac": false,
+    "isMinerOwner": true,
+    "allowedMintCallbacksAac": false,
+    "authorizedBridgeAssetUsdcBase": false,
+    "authorizedBridgeAssetUsdcConet": false
+  },
+  "sourceHasSetBridgePaused": null,
+  "blockedReasons": [
+    "Live TreasuryBridgeV3 has no setBridgePaused / pause / paused (impl bytecode + source).",
+    "Live Treasury has no isAdmin / hasRole for AAC mint/release authority.",
+    "voteBridgeOperation remains onlyMiner; cannot disable without inventing a setter or upgrading Treasury.",
+    "removeMiner requires remaining miners ≥ 1; cannot zero the miner set.",
+    "setMintCallbackAllowed / setBridgeAssetAuthorization are not AAC settle/mint authority for USDC vote path.",
+    "CUTOVER Phase B already recorded Treasury role grant to AAC as NOT EXECUTED — do not invent."
+  ],
+  "requiredNextAuth": "Explicit written auth to upgrade TreasuryBridgeV3 (UUPS) with AAC grant + voteBridgeOperation pause/disable, then Blockscout verify on the spot — or product decision to leave USDC on miner vote permanently.",
+  "ok": true,
+  "executeBroadcast": false
+}

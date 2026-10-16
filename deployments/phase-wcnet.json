@@ -1,0 +1,32 @@
+{
+  "chains": {
+    "conet": {
+      "token": "0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5",
+      "impl": "0x87Cfac4525Bf949616c7038D7148613d6AFacE2E",
+      "implTx": "0x7323921e4bef9ba420e915946e90c8e7468ffcacffabb06522862785a043d9d9",
+      "proxyTx": "0x0a8d77c63ead321486d964ce24b3e06eea34bd327cebbfc2fdd515e5e5a98692",
+      "nativeWrapEnabled": true,
+      "bridge": "0xa208982212978550594A7FEEB70a61665d129003",
+      "wrapProof": {
+        "depositTx": "0x4207e013e25a94b1810f222f413e1acc7b0c4347d4be12478a32ab2af0feada9",
+        "withdrawTx": "0xd1b6e04475798233a63205dc62189c4ddfbb0f3172941512fbb95b0eae039ee0",
+        "amountWei": "1000000000000000"
+      }
+    },
+    "base": {
+      "token": "0x0E01ca7a99B38a4E021C25B7BE01356E71158B66",
+      "impl": "0x833A5FA9565c8F87De3687a4d663A0A3afaA0669",
+      "implTx": "0xd403741597b3b020dbbd58910a3ec22f622fab18040d8228ba28f649f19a178f",
+      "proxyTx": "0x676f08927c6ae67094cd10c6dd0b76511f91b3dd446871dbf0bb13ce36406c36",
+      "nativeWrapEnabled": false,
+      "bridge": "0xa208982212978550594A7FEEB70a61665d129003",
+      "wrapProof": null
+    }
+  },
+  "blsProbe": {
+    "address": "0x864896C7dD5CA603AA11C3dC0BA329EB78Cc5F78",
+    "tx": "0xb7879a9a5ea4bf0a5ab1b2e78617cd2af0f51a8f39a41498586e771b96d930f6",
+    "available": false,
+    "settler": "0x0000000000000000000000000000000000000000"
+  }
+}

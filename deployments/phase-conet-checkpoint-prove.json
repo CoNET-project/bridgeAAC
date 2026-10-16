@@ -1,0 +1,10 @@
+{
+  "checkpoint": "0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a",
+  "period": "1884",
+  "rootReady": true,
+  "compressedDigest": "0x8e3acb6cc93ea9d9cf7d443e104bde5422eaabe0fbb8b34e88facea7c20fbf91",
+  "participants": "510",
+  "attestedSlot": "15438687",
+  "signatureSlot": "15438688",
+  "prove": "0x40ca04ca8386009042b7228e8c6dc8ca25ac66dee336e13b195ef83a192dff0d"
+}

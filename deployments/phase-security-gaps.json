@@ -1,0 +1,51 @@
+{
+  "phase": "security-gaps",
+  "status": "EXECUTED",
+  "recordedAt": "2026-10-15T05:16:01.263Z",
+  "ownerAuth": "请同时修正安全缺口",
+  "upgradeDelaySeconds": 172800,
+  "payee": {
+    "address": "0xA4559e916b399e3e084Fbc2be5ce04d5e3425C1E",
+    "tx": "0xb25e63078793ae0a701b8a170791b4257e219e73187d81118ed285c4283bc2d8",
+    "smokeBeneficiary": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "smokeGross": "10000"
+  },
+  "settlerF7": {
+    "address": "0x29e10621fF159422237d2a0B9F020303F9BDdD12",
+    "tx": "0xdee212d9a0f3790a954c19a8a7669c6e0672f25a27cb7eb9d677de5cc20cd595",
+    "upgradeTx": "0xfcd5ac800c21502a3d3242bcdaa3fadc2e00c216ad0746b1100bb1e84273c430"
+  },
+  "rootTimelock": {
+    "address": "0x4880137b52d040BD387504bEA2a04C3898879DDa",
+    "tx": "0x5a96860edc53131984b132b545cfdbf20c538bc4841f34e9c3d48162518052cb",
+    "upgradeTx": "0xf6b67784f488ac1c2370a83cace4ed0fedd977a89d6f0adaf13669b053011aa2"
+  },
+  "finalityTimelock": {
+    "address": "0x2e92D5c95ecF269673021D7BD19D26BBAFC891F0",
+    "tx": "0x1daf3aaa2063e6cd372f3a612e65f8433a58b19d95b1193ec7ab7424c7b39342",
+    "upgradeTx": "0x4c24a42689fb88f5b7eb8e73508797fd0bd6543edc2e5bd6e7beadbfb7b9d69c"
+  },
+  "before": {
+    "aac": "0xa1aa63BF44128E9f14260886263c8775C4A2dA00",
+    "root": "0x99B0B90Fc73BFC59f5cCE0cc8C3Fa189eE313B98",
+    "finality": "0xdAF69159597Ea1E993B3af7dFe1Be7003fDA218a"
+  },
+  "afterViews": {
+    "aacOwner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "custodyOpen": false,
+    "headerFinal": false,
+    "rootOwner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "rootPeriod": "1883",
+    "rootReady": true,
+    "finalityOwner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+    "finalityPeriod": "215",
+    "finalityReady": true,
+    "upgradeDelay": "172800",
+    "payee": "0xA4559e916b399e3e084Fbc2be5ce04d5e3425C1E"
+  },
+  "instantUpgradeReverts": true,
+  "usdcVoteBridgeOperation": "left live — pausing it would halt USDC with no AAC release path",
+  "ownerStillEoa": true,
+  "transferOwnership": "present, not called",
+  "ok": true
+}

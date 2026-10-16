@@ -1,0 +1,28 @@
+{
+  "receiptVerifier": {
+    "address": "0x6B44d8469c902F0BbF74333AAfE7E164D020943f",
+    "tx": "0xae8b8aaa689ec524f1b86b4e6756ef3f944ae8b813842f535e15b64b4de26d3d"
+  },
+  "checkpointImpl": {
+    "address": "0xcC64299b08B43c45217f1fB4fef210c0d7a2b728",
+    "tx": "0xc112b3a5fc030a862705154224662b1ca8d908034725f155fba867453fff6885"
+  },
+  "checkpoint": {
+    "address": "0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a",
+    "tx": "0x7b75670f2696853b10a852dbc338ea67b83763d016ef0cb492b980b58c3f6d4d"
+  },
+  "effectReader": {
+    "address": "0x3EFD6b90A19B5d1027b734460672A330764c27Df",
+    "tx": "0xc1f9bd3a23f793c447d9eda41eb2b9e6be433514ab9e6e57e95b3e31bd0559cf"
+  },
+  "cover": {
+    "address": "0xB862FA2351d7910F960eE8e5d2176f89df44b2fa",
+    "tx": "0xd2456c6a70ba7ee36eb03759d54ff8cdfba1f947c02d33e8da4bbacb40752f3a"
+  },
+  "settler": {
+    "address": "0x1C302DE6a6c4d9BE30193A6Bcd65A522C9b9898D",
+    "tx": "0x4715689f345c969f41e4d484b7807f17da9eb1afac575f69defef2d767fd7d7a"
+  },
+  "probeAvailable": false,
+  "chainEffectSettler": "0x0000000000000000000000000000000000000000"
+}
