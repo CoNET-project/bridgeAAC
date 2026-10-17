@@ -16,7 +16,7 @@ and solc 0.8.35 (viaIR, cancun). Use an existing `node_modules` that has them:
 ```bash
 cd solidity-tests
 ln -s /path/to/node_modules node_modules   # if not already installed here
-npx hardhat test test/fix.test.ts test/baseline.test.ts
+npx hardhat test test/fix.test.ts test/baseline.test.ts test/cover-binding.test.ts
 ```
 
 Pass the test files explicitly. A bare `npx hardhat test` in this folder
@@ -28,7 +28,9 @@ in-process Hardhat network.
 ## Mocks
 
 `contracts/Mocks.sol` contains test doubles only (covers, consume-once, GB,
-payee, treasury, effect reader, probe). They are not deployed. The fixed
+payee, treasury, effect reader, probe). `contracts/CoverMocks.sol` holds the
+checkpoint store and output-root proof doubles used by `cover-binding.test.ts`.
+They are not deployed. The fixed
 contracts are tested through their real code, with the hardcoded GB and CONSUME
 addresses placed by `hardhat_setCode`.
 

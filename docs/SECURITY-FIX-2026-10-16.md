@@ -44,6 +44,42 @@ but also halts Base↔CoNET settlement until the verifiers below exist.
 5. **No fork tests yet** on live Base/CoNET state. No bytecode comparison
    against the deployed contracts. No independent audit (waived by owner).
 
+## Cover Base-header binding (2026-10-16, later)
+
+Defect: `AacCheckpointMessageCover` (0x01506527…233) read `receiptsRoot` and
+`parentBeaconBlockRoot` from the caller's `baseHeaderRlp` and never hashed it
+against a Base block. A caller could build a header with a fabricated
+receipts root, a receipt with a TREASURY log, and a real finalized beacon root.
+The cover then returned `messageCovered = true` and `headerFinal = true`.
+Reproduced by `cover-binding.test.ts` (the original cover accepts both the real
+and the fabricated header).
+
+Current control: `gateBase` (`AacAuthenticatedHeaderGate`) checks
+`AUTHORITY.isAuthenticated(8453, keccak(baseHeaderRlp))` before it forwards to
+the cover. So the live F8 path is blocked only by the header authority, which
+is the C1 verifier that is not built yet. The defect is still in the cover. It
+becomes exploitable when a gate uses the cover without that authority check,
+for example a light-client gate, or when anything trusts the cover's return
+value directly.
+
+Fix: `AacCheckpointMessageCoverV2.sol` (new file, original left unchanged, same
+pattern as F7→F8). `cover()` takes an `L1Anchor`. It calls
+`AacBaseOutputRootProof`'s verify (`OUTPUT_ROOT_PROOF` 0x57A4…c34C4, the same
+path as `AacBaseAnchorReceiptRoot`) and requires `keccak256(baseHeaderRlp)` to
+equal the anchored `baseBlockHash`. Only then does it read `receiptsRoot`.
+Beacon finality is unchanged.
+
+Trust boundary: the binding is as strong as the output-root anchor. The
+`trusts the L1 anchor` test documents that boundary.
+
+Not done:
+- V2 is not deployed. Nothing in `deployments/` points at it.
+- The F8 gate still calls the original cover through `gateBase`. Do not wire
+  a gate to the light client until F8 or the gate points at V2 and the new
+  interface is reviewed.
+- `CoverMocks.sol` mocks the store and the output-root proof. The real output-root
+  proof has its own deployment record and is not rerun here.
+
 ## Deployment mapping (values read on 2026-10-16)
 
 - `AacHeaderAuthority(owner = multisig)`
@@ -59,7 +95,8 @@ Deploy only after the C1 verifiers exist, or accept that settlement stays halted
 
 ## Tests
 
-`solidity-tests/`: 29 tests (`fix.test.ts`: 25, `baseline.test.ts`: 4).
+`solidity-tests/`: 36 tests (`fix.test.ts`: 25, `baseline.test.ts`: 4,
+`cover-binding.test.ts`: 7). The cover-binding tests are in the next section.
 Mutation check: removing the header-authority check fails 5 tests, removing the
 replay check fails 2, removing the pause check fails 1.
 The baseline tests reproduce the original C2 and C3 behavior: v1 replay, v1
