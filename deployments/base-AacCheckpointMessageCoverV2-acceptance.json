@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-10-17T00:36:41.077Z",
+  "chainId": 8453,
+  "address": "0x68c2aC69E8F0A81685693D48C5e9B07f0228d394",
+  "originalCover": "0x01506527a4Dab14141038Db15f5341dcF4729233",
+  "originalCoverTx": "0xb08859189eb9e090a3db6a153c575375066af06788fdff1672b59405ebbe336d",
+  "checks": {
+    "bytecodeMatchesCompiled": true,
+    "runtimeCodeHash": "0xd9281c8ac853172334adcf534b340aee0dabe49ab21bd19c45f7e1e07a2346c1",
+    "runtimeCodeHashMatchesRecord": true,
+    "constantsMatchRecord": true,
+    "storePeriodAtCoverTx": "1883",
+    "storePeriodLatest": "1884",
+    "originalReproducesLiveSuccess": true,
+    "originalAcceptsForgedHeader": true,
+    "v2RejectsForgedHeader": true
+  },
+  "originalForgedResult": {
+    "operationId": "0x000000000000000000000000000000000000000000000000000000000000000f",
+    "amount": "10000000",
+    "messageCovered": true,
+    "headerFinal": true
+  },
+  "v2ForgedRevert": {
+    "selector": "0xbabb01dd",
+    "name": "InvalidHeader",
+    "note": "The anchor proof reverts before HeaderNotAnchored, because the dummy anchor input is invalid. The rejection is real, but its reason is the anchor path."
+  },
+  "notRun": [
+    "positive run against a real L1 output-root anchor (needs a valid anchor bundle for a block in period 1883)",
+    "Sourcify verification of the V2 deployment"
+  ],
+  "pass": true,
+  "partial": true
+}

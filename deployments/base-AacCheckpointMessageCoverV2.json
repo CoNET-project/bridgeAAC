@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-10-17T00:35:27.062Z",
+  "chainId": 8453,
+  "contract": "AacCheckpointMessageCoverV2",
+  "address": "0x68c2aC69E8F0A81685693D48C5e9B07f0228d394",
+  "deployTx": "0xc44c542b4ee31aa033c1bd445b12bb41594b40bd4f9d7b7e49149e2ef645a71a",
+  "blockNumber": 52703988,
+  "deployer": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "compiler": "0.8.35+commit.47b9dedd",
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "bytecodeHash": "none"
+  },
+  "standardInput": "deployments/base-AacCheckpointMessageCoverV2-standard-input.json",
+  "runtimeBytes": 6625,
+  "runtimeCodeHash": "0xd9281c8ac853172334adcf534b340aee0dabe49ab21bd19c45f7e1e07a2346c1",
+  "onchainRuntimeMatches": true,
+  "constants": {
+    "STORE": "0xcEE3D699df3df07a573f1aFf642888B97B7aA961",
+    "RECEIPT_VERIFIER": "0xC9D0949f7D54eD827BAdb51fD4970baEdE5B5d10",
+    "TREASURY": "0xa208982212978550594A7FEEB70a61665d129003",
+    "OUTPUT_ROOT_PROOF": "0x57A498086d00A7Da80c8304F6189712b583c34C4",
+    "BRIDGE_TOPIC": "0x3da6c53997af9ec249ba82273b099b7529ae3c371e100fda75e390d8a1f122ba"
+  },
+  "wired": false,
+  "note": "Not wired to any gate. The original cover 0x01506527a4Dab14141038Db15f5341dcF4729233 is unchanged."
+}
