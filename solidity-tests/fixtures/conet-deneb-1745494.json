@@ -1,7 +1,7 @@
 {
   "source": {
-    "beaconRest": "CoNET prysm beacon REST, [redacted host] (127.0.0.1:4100 on the node)",
-    "elRawHeader": "CoNET geth debug_getRawHeader over the node IPC, [redacted host]",
+    "beaconRest": "CoNET prysm beacon REST, {CONET_NODE_A} (127.0.0.1:4100 on the node)",
+    "elRawHeader": "CoNET geth debug_getRawHeader over the node IPC, {CONET_NODE_A}",
     "chainId": 224422,
     "fork": "deneb"
   },

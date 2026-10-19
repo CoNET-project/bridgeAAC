@@ -3,7 +3,7 @@ Description=bridgeAAC Shadow page notifier (posts page open and clear transition
 
 [Service]
 Type=oneshot
-User=peter
-Group=peter
+User={REMOTE_USER}
+Group={REMOTE_USER}
 EnvironmentFile=/etc/default/bridge-aac-notify
-ExecStart=/home/peter/bridgeAAC-prod/deploy/aac-page-notify.sh
+ExecStart={REMOTE_HOME}/bridgeAAC-prod/deploy/aac-page-notify.sh

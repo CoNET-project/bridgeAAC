@@ -8,6 +8,6 @@
   "install": "0xaae4fecf2a5fa677baeb931232f1ebd39932207ecde2b461f67ff18e1d9d7e2e",
   "observers": [
     "https://lodestar-mainnet.chainsafe.io",
-    "lighthouse@38.102.126.50:5052"
+    "{LH_SSH_USER}@{CONET_NODE_B}:5052"
   ]
 }

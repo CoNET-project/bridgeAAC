@@ -20,11 +20,11 @@
   "nextGindex": 87,
   "observers": [
     {
-      "host": "38.102.126.30",
+      "host": "{CONET_NODE_A}",
       "beacon": "https://lodestar-mainnet.chainsafe.io"
     },
     {
-      "host": "216.225.202.82",
+      "host": "{HOST_H}",
       "beacon": "https://ethereum-beacon-api.publicnode.com"
     }
   ],

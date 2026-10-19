@@ -22,7 +22,7 @@ npx hardhat test test/fix.test.ts test/baseline.test.ts test/cover-binding.test.
 Pass the test files explicitly. A bare `npx hardhat test` in this folder
 runs only the Solidity-test stage and does not run the mocha suites.
 
-The config does not read `~/.master.json` and defines no network except the
+The config does not read `{OWNER_KEY_FILE}` and defines no network except the
 in-process Hardhat network.
 
 ## Mocks

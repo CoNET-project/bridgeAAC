@@ -1,12 +1,12 @@
 # CoNET Lighthouse RUNBOOK — current runtime and recovery
 
-Applies to the parallel Lighthouse beacon node on `38.49.214.149`
+Applies to the parallel Lighthouse beacon node on `{HOST_E}`
 (`conet-lighthouse.service`) and to any new CoNET Lighthouse node. Read this
 before changing a flag or restarting Lighthouse. The launcher and health-check
 scripts in this directory are the operational source of truth; `README.md`
 records the pinned build.
 
-The current design deliberately matches the healthy `70.35.205.77` node:
+The current design deliberately matches the healthy `{HOST_D}` node:
 default discovery, one boot ENR, and the binary's default target peer count.
 The only intentional differences are this host's ports and its dedicated
 execution client.
@@ -15,7 +15,7 @@ Files in this directory:
 
 | File | Purpose |
 |---|---|
-| `start-lighthouse.sh` | The only start script. Deployed to `/home/peter/lighthouse-conet/start-lighthouse.sh`. |
+| `start-lighthouse.sh` | The only start script. Deployed to `{REMOTE_HOME}/lighthouse-conet/start-lighthouse.sh`. |
 | `check-lighthouse.sh` | Read-only health check. Run it on the node. |
 | `testnet-conet/config.yaml` | Complete Lighthouse network config. Not the published Prysm overlay. |
 | `testnet-conet/deposit_contract_block.txt` | Deposit contract deploy block (`0`, present at genesis). |
@@ -38,7 +38,7 @@ Files in this directory:
 2. Lighthouse's companion execution client is running and its Engine API
    answers at `LIGHTHOUSE_EXECUTION_ENDPOINT` (default
    `http://127.0.0.1:8552`) with `LIGHTHOUSE_EXECUTION_JWT` (default
-   `/home/peter/lighthouse-conet/jwtsecret`).
+   `{REMOTE_HOME}/lighthouse-conet/jwtsecret`).
 3. Prysm and Lighthouse use different execution datadirs, Engine API ports,
    JWT files, and execution P2P/discovery ports. Do not point Lighthouse at
    Prysm's `8551`, JWT, or datadir.
@@ -71,9 +71,9 @@ The Lighthouse start script enforces this boundary. Its defaults are:
 
 ```bash
 LIGHTHOUSE_EXECUTION_ENDPOINT=http://127.0.0.1:8552
-LIGHTHOUSE_EXECUTION_JWT=/home/peter/lighthouse-conet/jwtsecret
+LIGHTHOUSE_EXECUTION_JWT={REMOTE_HOME}/lighthouse-conet/jwtsecret
 PRYSM_EXECUTION_ENDPOINT=http://127.0.0.1:8551
-PRYSM_EXECUTION_JWT=/home/peter/conet-l1/jwtsecret
+PRYSM_EXECUTION_JWT={REMOTE_HOME}/conet-l1/jwtsecret
 ```
 
 It refuses to start when the Lighthouse and Prysm endpoint or JWT path are
@@ -99,13 +99,13 @@ uses:
 |---|---|
 | Binary | `bin/lighthouse-v5.3.0-conet` |
 | Testnet config | `testnet-conet` |
-| Data directory | `/home/peter/lighthouse-conet/data-conet-v5` |
+| Data directory | `{REMOTE_HOME}/lighthouse-conet/data-conet-v5` |
 | HTTP API | `127.0.0.1:5100` |
 | P2P TCP | `0.0.0.0:5200` |
 | Discovery UDP | `0.0.0.0:5300` |
 | QUIC UDP | `0.0.0.0:5301` |
-| Checkpoint sync | `http://216.225.202.22:4100` |
-| Boot ENR | Prysm hub `216.225.202.22` |
+| Checkpoint sync | `http://{HOST_F}:4100` |
+| Boot ENR | Prysm hub `{HOST_F}` |
 | Per-peer limiter | `beacon_blocks_by_range:32/30` |
 | Genesis backfill | Off by default; enable with `LIGHTHOUSE_GENESIS_BACKFILL=1` |
 
@@ -113,7 +113,7 @@ Do not add `--libp2p-addresses`, `--trusted-peers`, or a hand-written
 `--target-peers` value to this launcher. Those options were the cause of the
 peer-collapse incident, not a recovery mechanism.
 
-### 2b.1 Production Prysm bootstrap identity (`216.225.202.22`)
+### 2b.1 Production Prysm bootstrap identity (`{HOST_F}`)
 
 The production Prysm beacon now starts with `--p2p-static-id`. Its generated
 network key is persisted in the production beacon data directory, so ordinary
@@ -128,7 +128,7 @@ Third-party Lighthouse operators should use the public checkpoint and this
 single ENR:
 
 ```bash
---checkpoint-sync-url http://216.225.202.22:4100 \
+--checkpoint-sync-url http://{HOST_F}:4100 \
 --boot-nodes 'enr:-Mq4QITTJUMUUEx9Wy_Tt4RCgD_lA6sn873OSmilcUrWyIpvF5C5rAmj7VmoeVD-KKqo9Ft2xIo2gSLGiTkaUaU5GrCGAaEKSII_h2F0dG5ldHOIAAAAAADAAACEZXRoMpBuufdeIAAAkwBMBgAAAAAAgmlkgnY0gmlwhNjhyhaEcXVpY4IyyIlzZWNwMjU2azGhA2NcDEzWcqj_YKs-udjlY7vAzmq8xZGJP7Kb8e_Eeoq9iHN5bmNuZXRzAIN0Y3CCEGiDdWRwghDM'
 ```
 
@@ -140,14 +140,14 @@ the production beacon is `:4200` / `:4300`.
 To verify the current value without logging in to `.22`, query:
 
 ```bash
-curl -s http://216.225.202.22:4100/eth/v1/node/identity | jq
+curl -s http://{HOST_F}:4100/eth/v1/node/identity | jq
 ```
 
 If the network key is intentionally deleted or rotated, the peer ID and ENR
 change. Update this section and `start-lighthouse.sh` before asking operators
 to restart or join. A third-party operator does not need shell access to `.22`.
 
-Post-change check of the Lighthouse reference node `70.35.205.77` found about
+Post-change check of the Lighthouse reference node `{HOST_D}` found about
 16 connected peers and no immediate peer-count collapse. It still had the old
 `.22` identity in its disconnected peer records and had not yet established a
 connection to the new `.22` peer ID. This is not evidence of a production
@@ -181,7 +181,7 @@ in git. Download the published genesis and check it before the first start.
 
 ```bash
 # Run from a checkout of CoNET-project/bridgeAAC.
-BASE="${LIGHTHOUSE_BASE:-/home/peter/lighthouse-conet}"
+BASE="${LIGHTHOUSE_BASE:-{REMOTE_HOME}/lighthouse-conet}"
 SRC="$PWD/vendor/lighthouse-conet"
 mkdir -p "$BASE/testnet-conet" "$BASE/bin"
 cp "$SRC/testnet-conet/config.yaml" "$BASE/testnet-conet/config.yaml"
@@ -213,8 +213,8 @@ rejects this network. A locally rebuilt binary with a different SHA-256 is
 not a substitute.
 
 On a new host, set the advertised address to that host's public IPv4. The
-default `38.49.214.149` is only correct for the existing deployment. Keep
-the checkpoint and the single boot ENR of hub `216.225.202.22`; do not add
+default `{HOST_E}` is only correct for the existing deployment. Keep
+the checkpoint and the single boot ENR of hub `{HOST_F}`; do not add
 `--libp2p-addresses`, `--trusted-peers`, or a handwritten `--target-peers`.
 
 ```bash
@@ -353,7 +353,7 @@ the host copy as an evidence/backup file and correct it from the repository.
 ### Healthy means
 
 - `peers` stays at or above 8 for at least 15 minutes. The reference node
-  `70.35.205.77` holds about 16.
+  `{HOST_D}` holds about 16.
 - `sync_distance` is 0 to 2, not optimistic, execution client online.
 - `rate limited` replies since start are 0 (a handful at start is tolerable).
 - `oldest_block_slot` keeps falling until backfill completes.
@@ -379,10 +379,10 @@ the host copy as an evidence/backup file and correct it from the repository.
    many peers. The reference node backfilled 1,551,776 blocks in about 27 h
    over about 16 peers and was never limited.
 4. **Goodbye(Fault) from some hub instances is expected.** This host shares an
-   IP with Prysm; hub instances that do not list `38.49.214.149` in
+   IP with Prysm; hub instances that do not list `{HOST_E}` in
    `--p2p-colocation-whitelist` reject a second peer from one IP. As of
-   2026-10-01 these are `38.102.126.58` (all), `38.102.126.50:4203/4204/4210`,
-   `216.225.202.23:4201/4202` and `216.225.202.22:4210`. It is harmless while
+   2026-10-01 these are `{CONET_NODE_C}` (all), `{CONET_NODE_B}:4203/4204/4210`,
+   `{HOST_G}:4201/4202` and `{HOST_F}:4210`. It is harmless while
    peers stay at 8 or more. Do not chase it from Lighthouse. The fix is a
    hub-side whitelist entry, which needs a production Prysm restart and
    explicit authorisation. The Prysm on this same host is covered in
@@ -392,7 +392,7 @@ the host copy as an evidence/backup file and correct it from the repository.
    `Peer Manager disconnecting peer`) are only in
    `data-conet-v5/beacon/logs/beacon.log`.
 6. **Compare with a healthy node before inventing a cause.** Pull the peer
-   list, flags and Goodbye reasons from `70.35.205.77` first. That comparison
+   list, flags and Goodbye reasons from `{HOST_D}` first. That comparison
    found in minutes what hours of config guessing missed.
 7. **Do not touch hubs, Geth, Prysm or validators from a Lighthouse task.**
    Any chain-infrastructure restart needs explicit written approval in the same
@@ -425,7 +425,7 @@ Work down the list. Stop at the first match.
 Useful read-only commands (on the node):
 
 ```bash
-LOG=/home/peter/lighthouse-conet/data-conet-v5/beacon/logs/beacon.log
+LOG={REMOTE_HOME}/lighthouse-conet/data-conet-v5/beacon/logs/beacon.log
 grep -a "Peer sent Goodbye" $LOG | grep -aoE "reason: [A-Za-z]+" | sort | uniq -c
 grep -ac "reason: rate limited" $LOG
 curl -s http://127.0.0.1:5100/eth/v1/node/peer_count | jq .data
@@ -440,9 +440,9 @@ answered Lighthouse with `Goodbye(Fault/Banned)`.
 Change made on 2026-10-01 (explicitly authorised, only `conet-beacon.service`
 restarted; no validator runs on this host):
 
-- `/home/peter/conet-l1/start-beacon.sh` got one more flag,
-  `--p2p-colocation-whitelist=38.49.214.149/32`.
-- Backup: `/home/peter/conet-l1/start-beacon.sh.bak.whitelist.20261001T050621Z`.
+- `{REMOTE_HOME}/conet-l1/start-beacon.sh` got one more flag,
+  `--p2p-colocation-whitelist={HOST_E}/32`.
+- Backup: `{REMOTE_HOME}/conet-l1/start-beacon.sh.bak.whitelist.20261001T050621Z`.
 - After the restart Prysm was `active`, `sync_distance=0`, 8 peers, and it
   accepted Lighthouse. Check the flag is live with
   `tr '\0' ' ' < /proc/$(pgrep -f prysm.sh | head -1)/cmdline | grep -o 'p2p-colocation-whitelist=[0-9./]*'`.
@@ -474,7 +474,7 @@ Facts, in order:
    - Self limiter `beacon_blocks_by_range:48/1`, `64/8`, `32/10` with a new key
      each time: still rate limited.
    - Dial only six whitelisted hubs: worse, load concentrated.
-4. The reference node `70.35.205.77` held 16 Prysm peers with no Fault in 3.5 h
+4. The reference node `{HOST_D}` held 16 Prysm peers with no Fault in 3.5 h
    and 16 `rate limited` replies total. Its flags were almost identical to
    ours, but it had default discovery and default peers.
 5. Fix: match the reference node (single boot ENR, default discovery and peer

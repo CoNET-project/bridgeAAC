@@ -1,7 +1,7 @@
 # Lighthouse Engine Isolation Acceptance Record
 
 Date: 2026-10-01 (UTC)
-Host: `38.49.214.149`
+Host: `{HOST_E}`
 Scope: technical Lighthouse Engine API isolation only
 
 ## Reassessment — 2026-10-03
@@ -49,9 +49,9 @@ revocation must not be represented as full administrative-control transfer.
 
 The following checks were performed without host credentials:
 
-1. `216.225.202.82:4100` reported the declared peer ID as **connected**,
+1. `{HOST_H}:4100` reported the declared peer ID as **connected**,
    inbound, with the same ENR and QUIC address
-   `/ip4/38.49.214.149/udp/5301/quic-v1`.
+   `/ip4/{HOST_E}/udp/5301/quic-v1`.
 2. The same active reference beacon returned slot `155646` as canonical and
    finalized, with the declared block root, state root and parent root.
 3. Public TCP reachability matched the intended boundary: SSH `22` and
@@ -141,8 +141,8 @@ Lighthouse API:    127.0.0.1:5100
 Lighthouse P2P:    TCP 5200, UDP 5300, QUIC 5301
 Lighthouse Engine API (target): 127.0.0.1:8552 (local-only)
 Prysm Engine API:               127.0.0.1:8551 (local-only)
-Lighthouse data:   /home/peter/lighthouse-conet/data-conet-v5
-Lighthouse JWT:    /home/peter/lighthouse-conet/jwtsecret
+Lighthouse data:   {REMOTE_HOME}/lighthouse-conet/data-conet-v5
+Lighthouse JWT:    {REMOTE_HOME}/lighthouse-conet/jwtsecret
 Geth service:      conet-geth.service
 Prysm service:     conet-beacon.service (active during this acceptance state)
 ```
@@ -199,7 +199,7 @@ slot-root confirmation requirement.
 ## Rollback
 
 If Lighthouse fails after a configuration change, stop the change and restore
-the previous `/home/peter/lighthouse-conet/start-lighthouse.sh` from its
+the previous `{REMOTE_HOME}/lighthouse-conet/start-lighthouse.sh` from its
 timestamped backup, then restore the previous systemd drop-in state and
 restart only `conet-lighthouse.service`. Do not delete
 `data-conet-v5`, rotate the network key, purge the database, or restart Geth,

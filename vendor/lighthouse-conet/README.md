@@ -1,7 +1,7 @@
 # CoNET Lighthouse build
 
 This directory records the exact Lighthouse build used by the parallel
-consensus node on `38.49.214.149`.
+consensus node on `{HOST_E}`.
 
 ## Version
 
@@ -73,7 +73,7 @@ incident record.
 
 | File | Purpose |
 |---|---|
-| `start-lighthouse.sh` | Source of truth for `/home/peter/lighthouse-conet/start-lighthouse.sh` on `38.49.214.149`. Edit here, push, then deploy. |
+| `start-lighthouse.sh` | Source of truth for `{REMOTE_HOME}/lighthouse-conet/start-lighthouse.sh` on `{HOST_E}`. Edit here, push, then deploy. |
 | `check-lighthouse.sh` | Read-only health check, run on the node. `WATCH_MIN=15` samples peers for 15 minutes. |
 | `testnet-conet/config.yaml` | Lighthouse network config. Do not substitute the GitBook Prysm overlay. |
 | `testnet-conet/deposit_contract_block.txt` | Deploy block `0`. |
@@ -82,11 +82,11 @@ incident record.
 The rules in one place:
 
 1. Keep default discovery and default `--target-peers`; one boot ENR, as the
-   healthy reference node `70.35.205.77` does. Never pin a short peer list.
+   healthy reference node `{HOST_D}` does. Never pin a short peer list.
 2. Do not restart repeatedly and do not rotate `network/key` as a fix.
 3. Backfill runs after checkpoint sync even without `--genesis-backfill`.
    Keep per-peer pace gentle (`beacon_blocks_by_range:32/30`) over many peers.
-4. `Goodbye(Fault)` from hub instances that do not whitelist `38.49.214.149`
+4. `Goodbye(Fault)` from hub instances that do not whitelist `{HOST_E}`
    is expected; the fix is a hub-side whitelist entry, not a Lighthouse flag.
 5. Read `data-conet-v5/beacon/logs/beacon.log`; the journal is info level only.
 6. Verify with `check-lighthouse.sh` for 15 minutes, never from one snapshot.
@@ -108,9 +108,9 @@ Lighthouse launcher defaults to:
 
 ```bash
 LIGHTHOUSE_EXECUTION_ENDPOINT=http://127.0.0.1:8552
-LIGHTHOUSE_EXECUTION_JWT=/home/peter/lighthouse-conet/jwtsecret
+LIGHTHOUSE_EXECUTION_JWT={REMOTE_HOME}/lighthouse-conet/jwtsecret
 PRYSM_EXECUTION_ENDPOINT=http://127.0.0.1:8551
-PRYSM_EXECUTION_JWT=/home/peter/conet-l1/jwtsecret
+PRYSM_EXECUTION_JWT={REMOTE_HOME}/conet-l1/jwtsecret
 ```
 
 The launcher refuses identical Lighthouse/Prysm Engine API endpoints or JWT

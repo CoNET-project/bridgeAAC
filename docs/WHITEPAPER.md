@@ -147,7 +147,7 @@ Phase 5 is the production read-only Shadow observer. Two reader paths per chain 
 
 ### 4.1 Production Shadow deployment
 
-Release `bridge-aac-v0.16.0` is deployed on `38.102.126.30` as `bridge-aac-shadow-prod.service`.
+Release `bridge-aac-v0.16.0` is deployed on `{CONET_NODE_A}` as `bridge-aac-shadow-prod.service`.
 
 - Base readers are the independent Base nodes on `.30:8547` and `.58:8547`.
 - CONET readers are the local `.30:8889` archive and the `publicrpc.conet.network` archive cluster.

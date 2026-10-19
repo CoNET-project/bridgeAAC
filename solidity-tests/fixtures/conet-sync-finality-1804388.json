@@ -1,6 +1,6 @@
 {
   "source": {
-    "beaconRest": "CoNET prysm beacon REST via read-only SSH tunnel to [redacted host] (127.0.0.1:4100 on the node)",
+    "beaconRest": "CoNET prysm beacon REST via read-only SSH tunnel to {CONET_NODE_A} (127.0.0.1:4100 on the node)",
     "checkpointWitness": "bridge-aac confirm-checkpoint --period 220 (state root validated by hash_beacon_state)",
     "proofExport": "ssz_state::finalized_root_proof and next_sync_committee_proof (Rust, verified against the state root)",
     "aggregateVerify": "sync_aggregate::verify_participants (blst), 512 participants, epoch 56387",

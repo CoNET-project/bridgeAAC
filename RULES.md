@@ -5,7 +5,7 @@
 - macOS 仅用于本地代码编辑、静态检查和单元测试。
 - macOS 生成的 Mach-O 二进制不得作为 AAC 生产产物，也不得在生产节点运行。
 - AAC 生产二进制必须是 Linux `x86_64-unknown-linux-gnu` ELF。
-- 当前指定的 Linux 构建与部署主机为 `70.35.205.77`。
+- 当前指定的 Linux 构建与部署主机为 `{HOST_D}`。
 
 ## 2. 本地修改，发布后远程构建
 
@@ -13,11 +13,11 @@
 
 ```text
 本地修改 → 本地测试 → commit → push
-→ 70.35.205.77 git fetch/pull exact commit
+→ {HOST_D} git fetch/pull exact commit
 → Linux 构建 → 校验 SHA-256 → 安装已发布产物
 ```
 
-禁止在 `70.35.205.77` 上使用 `vim`、`sed`、Python heredoc 或其它方式直接修改
+禁止在 `{HOST_D}` 上使用 `vim`、`sed`、Python heredoc 或其它方式直接修改
 `.rs`、`.sol`、`.ts`、`dist/` 或生产源码。远程主机只允许拉取已发布 commit、
 构建、安装和运行验收。
 
@@ -74,7 +74,7 @@ x86_64-unknown-linux-gnu
 
 当前 Base reader 为两个公共节点，由不同运营方提供：`mainnet.base.org`（Base）和
 `base.publicnode.com`（Allnodes）。二者都必须返回 `eth_chainId == 8453`，并在同一
-finalized 高度给出相同区块哈希。`38.102.126.30` 与 `38.102.126.58` 同属一个网段
+finalized 高度给出相同区块哈希。`{CONET_NODE_A}` 与 `{CONET_NODE_C}` 同属一个网段
 （Cogent COGENT-A），不被视为两个独立 reader，生产配置中不再使用。
 
 CONET reader 为生产主机本机执行客户端（`127.0.0.1:8545`）与

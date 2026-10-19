@@ -24,7 +24,7 @@ Recorded on 2026-10-16. Custody views stay closed. Release `bridge-aac-v0.33.12`
 | SettlerF7c | Pending implementation `0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44`. `upgradeTo` is allowed only after **2026-10-17T13:25:41Z**. The live AAC implementation is still F7 `0x29e10621fF159422237d2a0B9F020303F9BDdD12` |
 | wCNET | CoNET `0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5` (native wrap on). Base `0x0E01ca7a99B38a4E021C25B7BE01356E71158B66` (wrap off). CoNET completion of wCNET must release locked tokens, not mint |
 | Base → CoNET proof | Probe `0xed2E4B55152A657B43A5065a01B9655dB0033713`, cover `0xA5bB063652A9f21ddF600e78AC1c7db1A0812E06`, settler `0x7285fD9a9e62751e952697f95DD753C82Bb84BbE`. Checkpoint `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` is period **1884**, `rootReady` true. The 0.01 USDC lock `0xa1ed9817ac5361dcf1613d9ef863d8f868e5b54e987fad2710481693dc290b2a` covered with `headerFinal` true. `setSettler` `0xf84d10d8…679a3` installed that settler. `settle` `0x72642602…b34d` minted 0.01 canonical CoNET-USDC to the beneficiary |
-| Execution client | The checked CoNET execution clients (`38.102.126.30:8889`, `38.102.126.50` ports `8888`/`8883`/`8884`, `38.102.126.58:8885`) run patched Geth 1.17.8. Empty `eth_call` to `0x0b` returns `invalid input length`. Prague stays off |
+| Execution client | The checked CoNET execution clients (`{CONET_NODE_A}:8889`, `{CONET_NODE_B}` ports `8888`/`8883`/`8884`, `{CONET_NODE_C}:8885`) run patched Geth 1.17.8. Empty `eth_call` to `0x0b` returns `invalid input length`. Prague stays off |
 
 Do not schedule another AAC upgrade. A second `scheduleUpgrade` resets the 48-hour clock. `sourceInitiateOpen` is true on Base and CoNET. The presence check calls precompile `0x0b` with a 100,000 gas stipend: a reverting precompile burns the whole stipend, and an uncapped call exhausts the receipt proof before the pairing. The earlier probe `0xbaff644E…EB6B` and settler `0x1E160EFB…3814` are superseded.
 
@@ -244,8 +244,8 @@ Any other block is refused.
 ```bash
 bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json \
   --cursor /var/lib/bridge-aac/cursor.json \
-  --base-rpc http://127.0.0.1:8547 --base-rpc http://38.102.126.58:8547 \
-  --conet-rpc http://127.0.0.1:8889 --conet-rpc http://38.102.126.50:8888 \
+  --base-rpc http://127.0.0.1:8547 --base-rpc http://{CONET_NODE_C}:8547 \
+  --conet-rpc http://127.0.0.1:8889 --conet-rpc http://{CONET_NODE_B}:8888 \
   --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --once
 ```
 

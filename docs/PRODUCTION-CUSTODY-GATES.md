@@ -133,7 +133,7 @@ timestamp slot `1014` and root slot `9205` for Ethereum execution block
 `26188529`
 (`0x61ae802d9c0b7412c6c0715eea34b77ce53ca6702ccfd74c19dde7e6faff8f4f`),
 whose `parentBeaconBlockRoot` is the same root. CoNET observers
-`38.102.126.30` and `216.225.202.82` recomputed the same digest from
+`{CONET_NODE_A}` and `{HOST_H}` recomputed the same digest from
 different beacon endpoints. `proveAggregate` transaction
 `0xa2c193ee67a86f35d5e48abe092496659c3c615f1c56591cbbdbdc7857e971c5`
 verified `512` of `512` participants for attested slot `15425644` and
@@ -205,9 +205,9 @@ committee snapshot is period `215`, snapshot slot `1763456`, state root
 `0xa180f47b9c93ed1bd9bfde0b93e6593b1002da27f9518e94bceea6b18c00dbb1`,
 compressed digest
 `0xe26808badfcbbc05761f47f5f1efa366bcc4aaef51bdf6b5bd030f146fae86f7`.
-That digest was recomputed from CoNET beacon host `38.102.126.30`
+That digest was recomputed from CoNET beacon host `{CONET_NODE_A}`
 (`127.0.0.1:4100`) and confirmed against the same committee material on
-`38.102.126.50` (Ethereum `:5052` is not the CoNET beacon). Install
+`{CONET_NODE_B}` (Ethereum `:5052` is not the CoNET beacon). Install
 transaction
 `0x0cb74c4d152e2f0f4a47d7ca653e41cb3dccb9b9792e4e463e7758d0be53e9f7`
 stored the committee separately from the later aggregate. Prove

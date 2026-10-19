@@ -17,11 +17,11 @@
   "compressedDigest": "0xe26808badfcbbc05761f47f5f1efa366bcc4aaef51bdf6b5bd030f146fae86f7",
   "beaconHosts": [
     {
-      "host": "38.102.126.30",
+      "host": "{CONET_NODE_A}",
       "beacon": "http://127.0.0.1:4100"
     },
     {
-      "host": "38.102.126.50",
+      "host": "{CONET_NODE_B}",
       "note": "digest confirmation only; :5052 is Ethereum mainnet"
     }
   ],

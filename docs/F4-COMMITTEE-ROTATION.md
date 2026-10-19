@@ -92,7 +92,7 @@ node scripts/executeF4CommitteeRotate.mjs
 # Validate + eth_estimateGas without broadcast
 F4_UPDATE_JSON=/path/to/update.json node scripts/executeF4CommitteeRotate.mjs
 
-# Broadcast one applyUpdate (owner key from ~/.master.json)
+# Broadcast one applyUpdate (owner key from {OWNER_KEY_FILE})
 PHASE_F4_EXECUTE=1 F4_UPDATE_JSON=/path/to/update.json node scripts/executeF4CommitteeRotate.mjs
 ```
 

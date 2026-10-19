@@ -5,10 +5,10 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=peter
-Group=peter
-WorkingDirectory=/home/peter/bridgeAAC-trial
-ExecStart=/home/peter/bridgeAAC-trial/target/release/bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json --cursor /var/lib/bridge-aac/cursor.json --page /var/lib/bridge-aac/page.txt --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --interval 60
+User={REMOTE_USER}
+Group={REMOTE_USER}
+WorkingDirectory={REMOTE_HOME}/bridgeAAC-trial
+ExecStart={REMOTE_HOME}/bridgeAAC-trial/target/release/bridge-aac shadow-service --journal /var/lib/bridge-aac/journal.json --cursor /var/lib/bridge-aac/cursor.json --page /var/lib/bridge-aac/page.txt --log /var/log/bridge-aac/shadow.log --alert /var/log/bridge-aac/alert.log --interval 60
 Restart=on-failure
 RestartSec=10
 NoNewPrivileges=true
