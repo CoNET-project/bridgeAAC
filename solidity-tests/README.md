@@ -11,18 +11,19 @@ they still have (replay, pause bypass, unrestricted asset and mode).
 ## Run
 
 These tests use Hardhat 3 with `@nomicfoundation/hardhat-toolbox-mocha-ethers`
-and solc 0.8.35 (viaIR, cancun). Use an existing `node_modules` that has them:
+and solc 0.8.35 (viaIR, evmVersion prague). The Hardhat project is the repository root,
+because the audited sources in `contracts/` and the mocks here must both sit under it.
+The toolchain is pinned in `package.json` and `package-lock.json` at the root.
 
 ```bash
-cd solidity-tests
-ln -s /path/to/node_modules node_modules   # if not already installed here
-npx hardhat test test/fix.test.ts test/baseline.test.ts test/cover-binding.test.ts
+npm ci
+npx hardhat test solidity-tests/test/*.test.ts
 ```
 
-Pass the test files explicitly. A bare `npx hardhat test` in this folder
-runs only the Solidity-test stage and does not run the mocha suites.
+Pass the test files explicitly if you want a subset. Expected result on the pinned
+toolchain: 82 passing, 0 failing.
 
-The config does not read `{OWNER_KEY_FILE}` and defines no network except the
+The config does not read the owner key file and defines no network except the
 in-process Hardhat network.
 
 ## Mocks

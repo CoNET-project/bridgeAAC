@@ -1,3 +1,9 @@
 /target
 /artifacts
 /build/
+
+# Solidity test toolchain (see solidity-tests/README.md)
+/node_modules/
+/solidity-tests/artifacts/
+/solidity-tests/cache/
+/solidity-tests/coverage/
