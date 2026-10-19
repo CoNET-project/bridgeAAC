@@ -3,10 +3,10 @@
  * then prove one aggregate in that same period. Does not call setSettler
  * and does not open Base source initiate.
  */
+import { readOwnerKeyFile, conetObserverSshTarget } from './lib/opsEnv.mjs'
 import { execFileSync, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -30,7 +30,7 @@ const abi = [
 ]
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {
@@ -112,11 +112,11 @@ async function main() {
   console.log('observer', BEACONS[0], 'ok')
   const localRaw = execFileSync(
     'ssh',
-    ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=12', 'peter@38.102.126.50', `curl -s -m 30 http://127.0.0.1:5052/eth/v1/beacon/light_client/bootstrap/${beaconRoot}`],
+    ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=12', conetObserverSshTarget(), `curl -s -m 30 http://127.0.0.1:5052/eth/v1/beacon/light_client/bootstrap/${beaconRoot}`],
     { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 },
   )
-  samples.push(bootstrapBody('lighthouse@38.102.126.50:5052', JSON.parse(localRaw)))
-  console.log('observer lighthouse@38.102.126.50:5052 ok')
+  samples.push(bootstrapBody('observer', JSON.parse(localRaw)))
+  console.log('observer ok')
   const first = samples[0]
   const digest = keccak256(getBytes('0x' + first.pubkeys.map((key) => key.replace(/^0x/i, '')).join('')))
   for (const sample of samples.slice(1)) {

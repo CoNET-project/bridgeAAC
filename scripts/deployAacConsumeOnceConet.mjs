@@ -1,3 +1,4 @@
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -90,7 +91,7 @@ const { input, out } = compile();
 const provider = new JsonRpcProvider(rpcUrl);
 const network = await provider.getNetwork();
 if (network.chainId !== 224422n) throw new Error(`chain ${network.chainId}`);
-const master = JSON.parse(fs.readFileSync(path.join(os.homedir(), ".master.json"), "utf8"));
+const master = readOwnerKeyFile();
 const rawKey = master.settle_contractAdmin[0];
 const admin = new Wallet(rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`, provider);
 console.log("deployer", admin.address);

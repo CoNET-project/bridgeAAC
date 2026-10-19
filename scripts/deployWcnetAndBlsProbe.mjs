@@ -4,6 +4,7 @@
  * Does not open source initiate, does not set the CoNET settler, does not
  * add chain 224422 to aacDestinationOpen.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -38,7 +39,7 @@ const probeAbi = ['function available() view returns (bool)']
 const effectAbi = ['function settler() view returns (address)']
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

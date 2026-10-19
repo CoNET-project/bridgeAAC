@@ -3,8 +3,7 @@
  * Never opens Base sourceInitiateOpen, never sets the CoNET settler,
  * never schedules another AAC upgrade, and never treats native CNET as an ERC-20.
  */
-import { readFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -32,7 +31,7 @@ const effectAbi = ['function settler() view returns (address)']
 const rootAbi = ['function period() view returns (uint256)']
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

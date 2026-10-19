@@ -6,6 +6,7 @@
  * The live upgradeTo still clears slots 49–50 when the delay elapses.
  * repairCanaryRecord() restores the known Phase C flag after that upgrade.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -37,7 +38,7 @@ const EXPECTED = {
 }
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   const candidates = []
   if (Array.isArray(raw.settle_contractAdmin)) candidates.push(...raw.settle_contractAdmin)
   if (Array.isArray(raw.beamio_Admins)) candidates.push(...raw.beamio_Admins)

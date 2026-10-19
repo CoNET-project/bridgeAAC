@@ -4,6 +4,7 @@
  * - Base settler F7c scheduled (resets the 48h clock to now + 2 days)
  * - CoNET effect shell is the treasury executor; its settler stays unset
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -31,7 +32,7 @@ const CHAINS = [
 ]
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

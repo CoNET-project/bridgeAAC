@@ -6,8 +6,8 @@
  * Does not scheduleUpgrade, does not open CoNET destination 224422,
  * and does not mint unbacked wCNET on CoNET.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
+import { writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -31,7 +31,7 @@ const W_AMOUNT = 100_000_000_000_000n
 const policyTuple = 'tuple(uint256 sourceChainId, address sourceTreasury, address sourceAsset, address destinationAsset, uint8 mode, uint8 decimals, bool enabled, uint256 version)'
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

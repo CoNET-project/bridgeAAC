@@ -8,10 +8,10 @@
  * F7c calls the original cover 0x01506527...233 directly, without the header
  * authority or the Base header binding. Upgrading to it would put that defect in
  * the mint path. cancelUpgrade() has no time lock, so it can run at any time before
- * upgradeTo. The signer is the owner key, read in-process from the file named by AAC_OWNER_KEY_FILE,
+ * upgradeTo. The signer is the owner key, read in-process from the file named by OWNER_KEY_FILE,
  * and never printed.
  */
-import { readFileSync } from 'node:fs'
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -38,9 +38,7 @@ const OWNER = '0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1'
 const F7C = '0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44'
 
 function loadOwnerKey() {
-  const keyFile = process.env.AAC_OWNER_KEY_FILE
-  if (!keyFile) throw new Error('set AAC_OWNER_KEY_FILE to the operator key file')
-  const raw = JSON.parse(readFileSync(keyFile, 'utf8'))
+  const raw = readOwnerKeyFile()
   const k = raw.settle_contractAdmin?.[0]
   if (typeof k !== 'string' || !/^[0-9a-fA-F]{64}$/.test(k)) {
     throw new Error('settle_contractAdmin[0] missing or not 64 hex')

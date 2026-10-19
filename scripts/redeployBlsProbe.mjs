@@ -3,6 +3,7 @@
  * Redeploy the cover and settler that bind the probe. Does not call setSettler
  * and does not open Base source initiate.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -31,7 +32,7 @@ const SCAN = 'https://mainnet.conet.network'
 const COMPILER = 'v0.8.35+commit.47b9dedd'
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

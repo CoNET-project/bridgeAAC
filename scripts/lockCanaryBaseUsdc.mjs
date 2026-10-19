@@ -3,8 +3,8 @@
  * toward CoNET. Does not set the CoNET settler and does not open CoNET
  * source initiate. The receipt is the sample for the period-1884 proof.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
+import { writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -20,7 +20,7 @@ const AMOUNT = 10_000n
 const CONET = 224422n
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

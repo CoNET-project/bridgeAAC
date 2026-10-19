@@ -3,8 +3,8 @@
  * set the CoNET chain-effect settler and open only the Base source lock.
  * Refuses while the probe is false. Does not schedule an AAC upgrade.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -22,7 +22,7 @@ const SETTLER = DEPLOYED.settler.address
 const CONET = 224422n
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

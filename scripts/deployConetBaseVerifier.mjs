@@ -2,6 +2,7 @@
  * Deploy the CoNET-side Base receipt verifier and destination-224422 settler.
  * Does not call setSettler. Does not open Base source initiate.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -24,7 +25,7 @@ const EFFECT = '0x0661C8116D027907e387667Df5aCad2F2E9ad30b'
 const PROBE = '0x864896C7dD5CA603AA11C3dC0BA329EB78Cc5F78'
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {

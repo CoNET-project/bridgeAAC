@@ -9,11 +9,11 @@
 # Exit code: 0 healthy, 1 warning, 2 failing. See RUNBOOK.md for what to do.
 set -uo pipefail
 
-BASE="${LIGHTHOUSE_BASE:-/home/peter/lighthouse-conet}"
+BASE="${LIGHTHOUSE_BASE:?set LIGHTHOUSE_BASE (see the private maintenance guide)}"
 API="${LIGHTHOUSE_API:-http://127.0.0.1:5100}"
 LOG="$BASE/data-conet-v5/beacon/logs/beacon.log"
 SERVICE="${LIGHTHOUSE_SERVICE:-conet-lighthouse.service}"
-MIN_PEERS="${MIN_PEERS:-8}"      # reference node 70.35.205.77 holds ~16
+MIN_PEERS="${MIN_PEERS:-8}"      # reference node {HOST_D} holds ~16
 WATCH_MIN="${WATCH_MIN:-0}"
 
 rc=0

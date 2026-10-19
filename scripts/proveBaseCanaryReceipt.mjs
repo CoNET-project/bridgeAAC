@@ -4,9 +4,9 @@
  * covered eth_call, installs the settler and settles that same receipt.
  * Does not open CoNET source initiate.
  */
+import { readOwnerKeyFile, requiredEnv, conetObserverSshTarget } from './lib/opsEnv.mjs'
 import { execFileSync, spawnSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -33,7 +33,7 @@ const settleAbi = [
 ]
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {
@@ -46,7 +46,7 @@ function loadOwnerKey() {
 function lighthouse(path) {
   const raw = execFileSync(
     'ssh',
-    ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=12', 'peter@38.102.126.50', `curl -s -m 25 http://127.0.0.1:5052${path}`],
+    ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=12', conetObserverSshTarget(), `curl -s -m 25 http://127.0.0.1:5052${path}`],
     { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 },
   )
   return JSON.parse(raw)
@@ -198,7 +198,7 @@ async function main() {
     headers,
   ]
   const { FetchRequest } = createRequire(join(REPO, 'package.json'))('ethers')
-  const request = new FetchRequest('http://38.102.126.30:8889')
+  const request = new FetchRequest(`http://${requiredEnv('CONET_NODE_A')}:8889`)
   request.timeout = 180_000
   const conet = new JsonRpcProvider(request, 224422, { staticNetwork: true })
   const cover = new Contract(COVER, coverAbi, conet)

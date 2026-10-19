@@ -3,8 +3,8 @@
  * Cutover Phase B: GB.addAdmin(AAC proxy) on CoNET + Base.
  * Owner-authorized B1/B2 only. Does not unpause canaries, open settle, or grant Treasury.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -33,7 +33,7 @@ const GB_ABI = [
 ]
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   const candidates = []
   if (Array.isArray(raw.settle_contractAdmin)) candidates.push(...raw.settle_contractAdmin)
   if (Array.isArray(raw.beamio_Admins)) candidates.push(...raw.beamio_Admins)
@@ -42,7 +42,7 @@ function loadOwnerKey() {
       return `0x${k}`
     }
   }
-  throw new Error('no 64-hex admin key in ~/.master.json')
+  throw new Error('no 64-hex admin key in the owner key file (OWNER_KEY_FILE)')
 }
 
 async function grantOnChain(label, rpc, chainIdExpected) {

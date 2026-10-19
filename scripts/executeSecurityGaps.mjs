@@ -8,6 +8,7 @@
  * Does not pause Treasury voteBridgeOperation (that would halt USDC).
  * Broadcast: SECURITY_GAP_EXECUTE=1
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -46,14 +47,14 @@ const COVER_ABI = [
 ]
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   const candidates = []
   if (Array.isArray(raw.settle_contractAdmin)) candidates.push(...raw.settle_contractAdmin)
   if (Array.isArray(raw.beamio_Admins)) candidates.push(...raw.beamio_Admins)
   for (const k of candidates) {
     if (typeof k === 'string' && /^[0-9a-fA-F]{64}$/.test(k)) return `0x${k}`
   }
-  throw new Error('no 64-hex admin key in ~/.master.json')
+  throw new Error('no 64-hex admin key in the owner key file (OWNER_KEY_FILE)')
 }
 
 function readText(name) {

@@ -5,11 +5,12 @@
  *   node scripts/deployAacCheckpointMessageCoverV2Base.mjs          # dry run: compile, size, balance, gas. No transaction.
  *   node scripts/deployAacCheckpointMessageCoverV2Base.mjs --deploy # send the deployment transaction and write the record.
  *
- * The signer is the contract admin key in ~/.master.json. It is read in-process
+ * The signer is the contract admin key in the owner key file (OWNER_KEY_FILE). It is read in-process
  * and never printed. The V2 cover has no constructor arguments and no owner, so
  * the deployment grants no role and wires nothing. The production gate is not
  * changed.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -54,7 +55,7 @@ const EXPECTED = {
 }
 
 function loadDeployerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   const k = raw.settle_contractAdmin?.[0]
   if (typeof k !== 'string' || !/^[0-9a-fA-F]{64}$/.test(k)) {
     throw new Error('settle_contractAdmin[0] missing or not 64 hex')

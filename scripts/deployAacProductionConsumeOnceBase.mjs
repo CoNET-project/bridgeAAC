@@ -4,6 +4,7 @@
  * CoNET-origin path uses obstacle-3 rootReady (already true).
  * Does not unpause canary, does not upgrade 0x9051…, does not grant Treasury roles.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
@@ -33,7 +34,7 @@ const COVER = '0x01506527a4Dab14141038Db15f5341dcF4729233'
 const COMPILER = '0.8.35+commit.47b9dedd'
 
 function loadDeployerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   const k = raw.settle_contractAdmin?.[0]
   if (typeof k !== 'string' || !/^[0-9a-fA-F]{64}$/.test(k)) {
     throw new Error('settle_contractAdmin[0] missing or not 64 hex')

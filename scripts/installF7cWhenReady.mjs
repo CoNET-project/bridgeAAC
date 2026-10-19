@@ -3,8 +3,8 @@
  * Phase C canary record. Refuses to broadcast before that timestamp.
  * Does not call scheduleUpgrade. Does not change sourceInitiateOpen.
  */
+import { readOwnerKeyFile } from './lib/opsEnv.mjs'
 import { readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -48,7 +48,7 @@ const treasuryAbi = [
 const effectAbi = ['function settler() view returns (address)']
 
 function loadOwnerKey() {
-  const raw = JSON.parse(readFileSync(join(homedir(), '.master.json'), 'utf8'))
+  const raw = readOwnerKeyFile()
   for (const list of [raw.settle_contractAdmin, raw.beamio_Admins]) {
     if (!Array.isArray(list)) continue
     for (const key of list) {
