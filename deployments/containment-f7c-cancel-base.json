@@ -1,0 +1,19 @@
+{
+  "chainId": 8453,
+  "proxy": "0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd",
+  "owner": "0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1",
+  "action": "cancelUpgrade()",
+  "cancelTx": "0x5e0ac9068745b7cc45599e8b0342bafd16ee1f385dbe67ff62e87bdeaf977724",
+  "blockNumber": 52704286,
+  "status": 1,
+  "pendingBefore": "0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44",
+  "upgradeReadyAtBefore": "1792243541",
+  "upgradeReadyAtBeforeUtc": "2026-10-17T13:25:41Z",
+  "pendingAfter": "0x0000000000000000000000000000000000000000",
+  "upgradeReadyAtAfter": "0",
+  "liveImplementation": "0x29e10621fF159422237d2a0B9F020303F9BDdD12",
+  "liveImplementationChanged": false,
+  "reason": "SettlerF7c calls the original cover 0x01506527a4Dab14141038Db15f5341dcF4729233 directly, without the header authority or the Base header binding. Upgrading to it would bring that defect into the mint path.",
+  "script": "scripts/cancelF7cUpgradeBase.mjs",
+  "note": "Containment only. No upgrade was executed. SettlerF9 is not deployed and not scheduled. Owner key is still a hot EOA; multisig and timelock are not set up."
+}
