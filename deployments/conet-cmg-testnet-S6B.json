@@ -1,0 +1,55 @@
+{
+  "network": "CoNET mainnet",
+  "chainId": 224422,
+  "purpose": "S6 part B on CoNET mainnet, authorized by the user in chat. Depositors 1, 2 and 3 withdraw 0.01 cnet each after their lock ends. S8 (pause) is not included.",
+  "startedAt": "2026-10-20T00:50:44.698Z",
+  "completedAt": "2026-10-20T01:38:11.225Z",
+  "addresses": {
+    "operator": "0xa5feF5c981004e569bF2058F6aCc862d0B29C40A",
+    "d1": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+    "d2": "0x831F08FAf04939E57319276D92e5fA2fe613d902",
+    "d3": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+    "target": "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+    "registry": "0x10c9454D4e7bfEA7BBD2a51802b7dBb8BfA74Eda",
+    "core": "0x2806d45ee497d697D843Bde1A7Bb96958cd8c3eA"
+  },
+  "transactions": [
+    {
+      "label": "B1 存款人 1 提款 0.01 cnet",
+      "from": "d1",
+      "txHash": "0x2dc80e3ca6e880befe13ac38fb5a0ee5f27f3ea193b25cc839de05c891cada3a",
+      "blockNumber": 1788822,
+      "gasUsed": "69513"
+    },
+    {
+      "label": "B2 存款人 2 提款 0.01 cnet",
+      "from": "d2",
+      "txHash": "0x32e122395e55bd80c71f89af4471f878a287ab15630897d95d91e6068392a69a",
+      "blockNumber": 1788824,
+      "gasUsed": "69513"
+    },
+    {
+      "label": "B3 存款人 3 提款 0.01 cnet",
+      "from": "d3",
+      "txHash": "0x3ad94e7fcacf2cfe0c7db5432e9f70afb74af03e6df31991178116191afcd079",
+      "blockNumber": 1788848,
+      "gasUsed": "69513"
+    }
+  ],
+  "simulations": [
+    {
+      "label": "超额提款",
+      "method": "withdraw",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "AmountTooLarge",
+      "actual": "AmountTooLarge",
+      "pass": true
+    }
+  ],
+  "state": {
+    "t1": "1792456513",
+    "t2": "1792456519",
+    "t3": "1792456669"
+  },
+  "stoppedWith": null
+}

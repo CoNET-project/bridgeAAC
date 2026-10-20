@@ -1,0 +1,75 @@
+{
+  "network": "CoNET mainnet",
+  "chainId": 224422,
+  "purpose": "S8 on CoNET mainnet, authorized by the user in chat. Operator pauses the registry and the core contract after S6 part B, then runs five simulations.",
+  "startedAt": "2026-10-20T01:38:14.947Z",
+  "completedAt": "2026-10-20T01:38:32.880Z",
+  "addresses": {
+    "operator": "0xa5feF5c981004e569bF2058F6aCc862d0B29C40A",
+    "d1": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+    "d2": "0x831F08FAf04939E57319276D92e5fA2fe613d902",
+    "d3": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+    "target": "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+    "registry": "0x10c9454D4e7bfEA7BBD2a51802b7dBb8BfA74Eda",
+    "core": "0x2806d45ee497d697D843Bde1A7Bb96958cd8c3eA"
+  },
+  "transactions": [
+    {
+      "label": "C1 操作员暂停注册表（停止新存款）",
+      "from": "operator",
+      "txHash": "0x129ff9b91f0156e22b351aca7f105e867621abc7e89fdeb194a127c7a7f81085",
+      "blockNumber": 1788850,
+      "gasUsed": "44595"
+    },
+    {
+      "label": "C2 操作员暂停核心合约",
+      "from": "operator",
+      "txHash": "0xb1cfd9bb79f9a23e3012ab0bc717824c4e7ade3966ab8598461415549d77774f",
+      "blockNumber": 1788852,
+      "gasUsed": "44622"
+    }
+  ],
+  "simulations": [
+    {
+      "label": "暂停时质押",
+      "method": "stake",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "IsPaused",
+      "actual": "IsPaused",
+      "pass": true
+    },
+    {
+      "label": "暂停时提案",
+      "method": "propose",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "IsPaused",
+      "actual": "IsPaused",
+      "pass": true
+    },
+    {
+      "label": "暂停时投票",
+      "method": "vote",
+      "from": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+      "expected": "IsPaused",
+      "actual": "IsPaused",
+      "pass": true
+    },
+    {
+      "label": "暂停时执行",
+      "method": "execute",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "IsPaused",
+      "actual": "IsPaused",
+      "pass": true
+    },
+    {
+      "label": "暂停时提款不被阻止",
+      "method": "withdraw",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "AmountTooLarge",
+      "actual": "AmountTooLarge",
+      "pass": true
+    }
+  ],
+  "stoppedWith": null
+}

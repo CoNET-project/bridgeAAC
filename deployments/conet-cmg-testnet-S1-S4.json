@@ -1,0 +1,74 @@
+{
+  "network": "CoNET mainnet",
+  "chainId": 224422,
+  "purpose": "CMG testnet-only acceptance. Not for production use.",
+  "manifest": "docs/CMG-CONET-TESTNET-MANIFEST-DRAFT-2026-10-19.md (v0.4)",
+  "authorization": "S1 to S4 authorized by the user in chat on 2026-10-19. S6 not yet authorized.",
+  "operator": "0xa5feF5c981004e569bF2058F6aCc862d0B29C40A",
+  "depositors": [
+    {
+      "label": "depositor-1",
+      "address": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C"
+    },
+    {
+      "label": "depositor-2",
+      "address": "0x831F08FAf04939E57319276D92e5fA2fe613d902"
+    },
+    {
+      "label": "depositor-3",
+      "address": "0xB478b1C20687DE652291589CD4b84862CcBbcd42"
+    }
+  ],
+  "parameters": {
+    "gateCENT": "0.01",
+    "capCENT": "0.05",
+    "lockSeconds": 3600,
+    "maturitySeconds": 120,
+    "votingPeriodSeconds": 600,
+    "executionDelaySeconds": 120
+  },
+  "predicted": [
+    "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+    "0x10c9454D4e7bfEA7BBD2a51802b7dBb8BfA74Eda",
+    "0x2806d45ee497d697D843Bde1A7Bb96958cd8c3eA"
+  ],
+  "steps": [
+    {
+      "step": "S1",
+      "contract": "CmgTestTarget",
+      "address": "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+      "txHash": "0x373588a034fd32b87228a0368f516d3f9e40d646e045b0e54c721a36a500886a",
+      "blockNumber": 1783423,
+      "gasUsed": "189462",
+      "estimatedGas": "192133"
+    },
+    {
+      "step": "S2",
+      "contract": "CmgRegistryTestnet",
+      "address": "0x10c9454D4e7bfEA7BBD2a51802b7dBb8BfA74Eda",
+      "txHash": "0x25d9d20ed8d2de520e6b0f29bcf4626d1441b23a51105c1d4978f8da069c0541",
+      "blockNumber": 1783424,
+      "gasUsed": "790668",
+      "estimatedGas": "798110"
+    },
+    {
+      "step": "S3",
+      "contract": "CmgCoreTestnet",
+      "address": "0x2806d45ee497d697D843Bde1A7Bb96958cd8c3eA",
+      "txHash": "0x52b8745ea0a0b637a8d70090816172dc47fb10abf4aa69f4837cbd1dd619bb5d",
+      "blockNumber": 1783425,
+      "gasUsed": "818400",
+      "estimatedGas": "826062"
+    },
+    {
+      "step": "S4",
+      "contract": "CmgTestTarget.setCore",
+      "address": "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+      "txHash": "0x3b354534a0d4c376a35bc61f8a8a4bff5be71570bece39d6d28c54962e922557",
+      "blockNumber": 1783426,
+      "gasUsed": "45009",
+      "estimatedGas": "45389"
+    }
+  ],
+  "completedAt": "2026-10-19T16:35:59.428Z"
+}

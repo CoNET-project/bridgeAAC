@@ -1,0 +1,108 @@
+{
+  "network": "CoNET mainnet",
+  "chainId": 224422,
+  "purpose": "S7 read-only simulations (eth_call) that do not need new on-chain state. No transactions sent.",
+  "simulatedAtBlock": 1784722,
+  "simulatedAtTimestamp": 1792435531,
+  "simulations": [
+    {
+      "label": "非存款人质押",
+      "method": "stake",
+      "from": "0x00000000000000000000000000000000000000f1",
+      "expected": "NotDepositor",
+      "actual": "NotDepositor",
+      "pass": true
+    },
+    {
+      "label": "零金额质押",
+      "method": "stake",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "ZeroValue",
+      "actual": "ZeroValue",
+      "pass": true
+    },
+    {
+      "label": "无存款时提款（索引越界）",
+      "method": "withdraw",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "BadIndex",
+      "actual": "BadIndex",
+      "pass": true
+    },
+    {
+      "label": "非 owner 暂停注册表",
+      "method": "setPaused",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "NotOwner",
+      "actual": "NotOwner",
+      "pass": true
+    },
+    {
+      "label": "非存款人提案",
+      "method": "propose",
+      "from": "0x00000000000000000000000000000000000000f1",
+      "expected": "NotEligible",
+      "actual": "NotEligible",
+      "pass": true
+    },
+    {
+      "label": "非 bump() 调用数据提案",
+      "method": "propose",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "BadCalldata",
+      "actual": "BadCalldata",
+      "pass": true
+    },
+    {
+      "label": "对不存在的提案投票",
+      "method": "vote",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "NoProposal",
+      "actual": "NoProposal",
+      "pass": true
+    },
+    {
+      "label": "执行不存在（未通过）的提案",
+      "method": "execute",
+      "from": "0x00000000000000000000000000000000000000f1",
+      "expected": "NotPassed",
+      "actual": "NotPassed",
+      "pass": true
+    },
+    {
+      "label": "非 owner 暂停核心合约",
+      "method": "setPaused",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "NotOwner",
+      "actual": "NotOwner",
+      "pass": true
+    },
+    {
+      "label": "非注册表调用 bump()",
+      "method": "bump",
+      "from": "0x00000000000000000000000000000000000000f1",
+      "expected": "NotCore",
+      "actual": "NotCore",
+      "pass": true
+    },
+    {
+      "label": "非部署者接线",
+      "method": "setCore",
+      "from": "0x00000000000000000000000000000000000000f1",
+      "expected": "NotDeployer",
+      "actual": "NotDeployer",
+      "pass": true
+    },
+    {
+      "label": "重复接线",
+      "method": "setCore",
+      "from": "0xa5feF5c981004e569bF2058F6aCc862d0B29C40A",
+      "expected": "CoreAlreadySet",
+      "actual": "CoreAlreadySet",
+      "pass": true
+    }
+  ],
+  "allPassed": true,
+  "stoppedWith": null,
+  "completedAt": "2026-10-19T18:45:33.735Z"
+}

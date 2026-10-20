@@ -1,0 +1,144 @@
+{
+  "network": "CoNET mainnet",
+  "chainId": 224422,
+  "purpose": "S6 part A on CoNET mainnet, authorized by the user in chat. Part B (withdrawals) and S8 (pause) are not included.",
+  "startedAt": "2026-10-20T00:35:06.047Z",
+  "completedAt": "2026-10-20T00:47:53.624Z",
+  "addresses": {
+    "operator": "0xa5feF5c981004e569bF2058F6aCc862d0B29C40A",
+    "d1": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+    "d2": "0x831F08FAf04939E57319276D92e5fA2fe613d902",
+    "d3": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+    "target": "0x17A4Ea7e646CFA9Fb71aBDd8a6d04603d811a9a8",
+    "registry": "0x10c9454D4e7bfEA7BBD2a51802b7dBb8BfA74Eda",
+    "core": "0x2806d45ee497d697D843Bde1A7Bb96958cd8c3eA"
+  },
+  "transactions": [
+    {
+      "label": "A1 存款人 1 质押 0.01 cnet",
+      "from": "d1",
+      "txHash": "0xf0a5468b7ef8046ba3edc6eaaa382c5d709f83d0bf40fddc493d257e3572ae56",
+      "blockNumber": 1788219,
+      "gasUsed": "119281"
+    },
+    {
+      "label": "A1 存款人 2 质押 0.01 cnet",
+      "from": "d2",
+      "txHash": "0x0524b81038d6fdfe411bba92944e39eed69302d8ea9f87aa5308beb1ecf6fd67",
+      "blockNumber": 1788220,
+      "gasUsed": "102181"
+    },
+    {
+      "label": "A3 存款人 1 提案",
+      "from": "d1",
+      "txHash": "0xed74c54cba76c5192221587a0c3d58f6b5f44564a9283136af395ebc82d564db",
+      "blockNumber": 1788244,
+      "gasUsed": "205278"
+    },
+    {
+      "label": "A4 存款人 3 质押 0.01 cnet（快照之后）",
+      "from": "d3",
+      "txHash": "0xe4d904bcdeff28a7d3d16a9e0cc405f6ad80aa440ce50c2e187b63500ffdf660",
+      "blockNumber": 1788245,
+      "gasUsed": "102181"
+    },
+    {
+      "label": "A5 存款人 1 投赞成",
+      "from": "d1",
+      "txHash": "0xee0da8432644a559dbef6e47307182013fa261407caaf7b3b0d5c92cb2379111",
+      "blockNumber": 1788246,
+      "gasUsed": "85045"
+    },
+    {
+      "label": "A6 存款人 2 投赞成（越过 2/3）",
+      "from": "d2",
+      "txHash": "0x09c4fc4c3f6e0359836b082a4e64ca2b53c5a46e56b4e16aac9b74391eb02198",
+      "blockNumber": 1788247,
+      "gasUsed": "94094"
+    },
+    {
+      "label": "A7 操作员执行提案 0",
+      "from": "operator",
+      "txHash": "0x3edb1812971335fdbc59a36969a5d434f59cb1fd5ba34aa5bcd2b782c7e4a4b5",
+      "blockNumber": 1788269,
+      "gasUsed": "60679"
+    }
+  ],
+  "simulations": [
+    {
+      "label": "锁定期内提款",
+      "method": "withdraw",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "LockActive",
+      "actual": "LockActive",
+      "pass": true
+    },
+    {
+      "label": "快照之后才成熟的存款人投票",
+      "method": "vote",
+      "from": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+      "expected": "NotEligible",
+      "actual": "NotEligible",
+      "pass": true
+    },
+    {
+      "label": "重复投票",
+      "method": "vote",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "AlreadyVoted",
+      "actual": "AlreadyVoted",
+      "pass": true
+    },
+    {
+      "label": "未通过时执行",
+      "method": "execute",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "NotPassed",
+      "actual": "NotPassed",
+      "pass": true
+    },
+    {
+      "label": "通过后再投票",
+      "method": "vote",
+      "from": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+      "expected": "AlreadyPassed",
+      "actual": "AlreadyPassed",
+      "pass": true
+    },
+    {
+      "label": "延迟内执行",
+      "method": "execute",
+      "from": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+      "expected": "TooEarly",
+      "actual": "TooEarly",
+      "pass": true
+    },
+    {
+      "label": "重复执行",
+      "method": "execute",
+      "from": "0xB478b1C20687DE652291589CD4b84862CcBbcd42",
+      "expected": "AlreadyExecuted",
+      "actual": "AlreadyExecuted",
+      "pass": true
+    },
+    {
+      "label": "投票期外投票",
+      "method": "vote",
+      "from": "0xA779f2bfCF381647415bc5c48b91b9a959F0038C",
+      "expected": "VotingClosed",
+      "actual": "VotingClosed",
+      "pass": true
+    }
+  ],
+  "state": {
+    "t1": "1792456513",
+    "t2": "1792456519",
+    "p0": {
+      "snapshotTime": "1792456663",
+      "votingEnd": "1792457263"
+    },
+    "t3": "1792456669",
+    "executeAfter": "1792456801"
+  },
+  "stoppedWith": null
+}
