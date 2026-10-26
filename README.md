@@ -8,7 +8,7 @@ This repository is phase 6 of that gateway. The shadow command reads public exec
 
 ## Milestones
 
-Recorded on 2026-10-16. Custody views stay closed. Release `bridge-aac-v0.33.12` closes the internal review findings; see [docs/AUDIT-2026-10-16.md](docs/AUDIT-2026-10-16.md).
+Recorded on 2026-10-16 and updated on 2026-10-26 for commits through `70bb284`. Custody views stay closed. Release `bridge-aac-v0.33.12` closes the internal review findings; see [docs/AUDIT-2026-10-16.md](docs/AUDIT-2026-10-16.md). The crate version is `0.33.13` (commit `7b45e0c`, 2026-10-16). The rows dated 2026-10-19 and 2026-10-26 record the later changes.
 
 | Milestone | State |
 | --- | --- |
@@ -25,6 +25,10 @@ Recorded on 2026-10-16. Custody views stay closed. Release `bridge-aac-v0.33.12`
 | wCNET | CoNET `0x5a2D096968fC85861d8FDC7CE9A747Fe4bcb87D5` (native wrap on). Base `0x0E01ca7a99B38a4E021C25B7BE01356E71158B66` (wrap off). CoNET completion of wCNET must release locked tokens, not mint |
 | Base → CoNET proof | Probe `0xed2E4B55152A657B43A5065a01B9655dB0033713`, cover `0xA5bB063652A9f21ddF600e78AC1c7db1A0812E06`, settler `0x7285fD9a9e62751e952697f95DD753C82Bb84BbE`. Checkpoint `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` is period **1884**, `rootReady` true. The 0.01 USDC lock `0xa1ed9817ac5361dcf1613d9ef863d8f868e5b54e987fad2710481693dc290b2a` covered with `headerFinal` true. `setSettler` `0xf84d10d8…679a3` installed that settler. `settle` `0x72642602…b34d` minted 0.01 canonical CoNET-USDC to the beneficiary |
 | Execution client | The checked CoNET execution clients (`{CONET_NODE_A}:8889`, `{CONET_NODE_B}` ports `8888`/`8883`/`8884`, `{CONET_NODE_C}:8885`) run patched Geth 1.17.8. Empty `eth_call` to `0x0b` returns `invalid input length`. Prague stays off |
+| Release | `bridge-aac-v0.33.13` (crate version `0.33.13`, commit `7b45e0c`, 2026-10-16). Acceptance evidence: [docs/THIRD-PARTY-ACCEPTANCE.md](docs/THIRD-PARTY-ACCEPTANCE.md) |
+| G-14 Base cover V4 (2026-10-19) | Source and 15 tests in `solidity-tests/test/conet-base-cover-v4.test.ts` (commit `de17a8b`). V4 binds the Base header hash to the output-root proof and the L1 header to the finalized beacon payload. No V4 deployment record is in `deployments/`, and V4 is not wired to any settler. The cover addresses in this table are unchanged |
+| CMG testnet acceptance on CONET (2026-10-19) | Testnet-only CMG contracts on CONET (chain ID `224422`), commit `70bb284`. Acceptance and source verification are recorded in [docs/CMG-CONET-TESTNET-MANIFEST-DRAFT-2026-10-19.md](docs/CMG-CONET-TESTNET-MANIFEST-DRAFT-2026-10-19.md). The Base side is not covered (manifest R8) |
+| External treasury units, testnet (2026-10-26) | Outside this crate. Six contracts on Base Sepolia (chain ID `84532`) with test proofs and a test token. Three deposits, three activations and three withdrawals passed on chain. 69 local tests pass. Blockscout source verification is pending. Not audited. Record: [docs/EXTERNAL-TREASURY-UNITS-ACCEPTANCE-2026-10-26.md](docs/EXTERNAL-TREASURY-UNITS-ACCEPTANCE-2026-10-26.md) |
 
 Do not schedule another AAC upgrade. A second `scheduleUpgrade` resets the 48-hour clock. `sourceInitiateOpen` is true on Base and CoNET. The presence check calls precompile `0x0b` with a 100,000 gas stipend: a reverting precompile burns the whole stipend, and an uncapped call exhausts the receipt proof before the pairing. The earlier probe `0xbaff644E…EB6B` and settler `0x1E160EFB…3814` are superseded.
 
@@ -143,10 +147,20 @@ Miner `voteBridgeOperation`, `executeMint`, and `executeRelease` revert `VoteBri
 - [Base bridge beacon checkpoint extension acceptance](docs/M4-BASE-BRIDGE-BEACON-CHECKPOINT-EXTENSION-ACCEPTANCE.md)
 - [Production custody gate bridge quote](docs/M4-PRODUCTION-CUSTODY-GATE-BRIDGE.md)
 - [Production custody gate bridge quote acceptance](docs/M4-PRODUCTION-CUSTODY-GATE-BRIDGE-ACCEPTANCE.md)
+- [Settlement fixes C1–C3, 2026-10-16](docs/SECURITY-FIX-2026-10-16.md) (code and tests only; nothing deployed)
+- [Production evaluation](docs/PRODUCTION-EVALUATION.md) (status recorded at the 0.33.10 source candidate)
+- [F4 committee rotation runbook](docs/F4-COMMITTEE-ROTATION.md)
+- [F5 settle-open](docs/F5-SETTLE-OPEN.md)
+- [F6 USDC miner vote closed](docs/F6-USDC.md)
+- [F7 owner key to multisig or timelock](docs/F7-OWNER-KEY.md)
+- [Owner multisig: what needs it, on which chain (2026-10-18)](docs/OWNER-MULTISIG-DECISION-2026-10-18.md) (read-only research)
+- [Owner multisig white paper draft (2026-10-18)](docs/OWNER-MULTISIG-WHITEPAPER-2026-10-18.md)
+- [CMG testnet manifest v0.9, CONET (2026-10-19)](docs/CMG-CONET-TESTNET-MANIFEST-DRAFT-2026-10-19.md)
+- [External treasury units, Base Sepolia acceptance (2026-10-26)](docs/EXTERNAL-TREASURY-UNITS-ACCEPTANCE-2026-10-26.md) (outside this crate)
 
 ## Build on Linux
 
-Requires Rust 1.78 or newer.
+Use the pinned toolchain in `rust-toolchain.toml` (rustc 1.99.1). The release hash depends on it, as explained below.
 
 ```bash
 cargo test
@@ -176,6 +190,15 @@ the release workflow set `RUSTFLAGS` with `--remap-path-prefix` for the checkout
 and the cargo home, so the same commit built on a Linux host and in CI gives the
 same SHA-256. The 0.33.12 artifact was reproduced this way. A binary built with a
 different rustc or from another checkout path will have a different hash.
+
+Solidity tests (settlement fixes, cover bindings, and the CMG testnet tests) run from the repository root with the pinned Hardhat toolchain:
+
+```bash
+npm ci
+npx hardhat test solidity-tests/test/*.test.ts
+```
+
+See [solidity-tests/README.md](solidity-tests/README.md) for the mocks and the test scope.
 
 Compute an AAC id:
 
@@ -280,5 +303,21 @@ It requires Base chain ID `8453`, rejects height zero or a range above the lower
 | `gateway` | `submit`, `reserve`, `consume`, pause |
 | `receipt` | Phase-1 fixture proof builder |
 | `types` | Deposit leaf and AAC id |
+| `error` | Error type shared by the crate |
+| `hash` | Keccak-256 helper |
+| `finality` | Finality verifier interface, and the headers the destination gateway treats as final |
+| `light_client` | Weak-subjectivity checkpoint and a specification-shaped light-client store |
+| `sync_aggregate` | Sync-committee aggregate check |
+| `ssz_state` | Deneb `BeaconState` hash tree root for the CONET interop preset |
+| `forward_committee` | Forward sync-committee updates from the published CONET genesis |
+| `l1_output` | Read-only Base anchor observed on Ethereum L1 |
+| `conet_consensus` | Read-only CONET beacon observation |
+| `gb_mint` | Read-only observation of paid-GB mint authority on CONET |
+| `destination` | Read-only check for the planned destination consume selectors |
+| `consume_spec` | In-process specification of the UUPS consume-once consumer |
+| `custody_gate` | Semantic acceptance for AAC custody gates |
+| `main` | Command-line entry point for `bridge-aac` |
+| `bin/export_receipt` | Export one Base receipt and its Merkle proof. No L1 anchor and no broadcast |
+| `bin/expand_sync_committee` | Expand a sync-committee aggregate into the uncompressed points the checkpoint contract passes to the EIP-2537 precompiles |
 
 Pause rejects new `submit`, `reserve`, and `consume` calls. It does not delete a record that is already stored.
