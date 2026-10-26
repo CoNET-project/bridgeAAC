@@ -129,7 +129,7 @@ The second command needs a funded testnet deployer key in the local environment.
 
 ## Changes in the parent repository
 
-Committed locally on branch `feat/external-treasury-units` as commit `d503e84f`. Not pushed yet.
+Committed on branch `feat/external-treasury-units` as commit `d503e84f` and integrated into the `main` branch of the parent repository on 2026-10-26.
 
 - New: the contracts, the mocks, the local test file, the acceptance script, the module README, and the deployment and verification records under `deployments/`.
 - Changed: `hardhat.config.ts` gained a `blockscout` explorer descriptor for chain `84532`.
