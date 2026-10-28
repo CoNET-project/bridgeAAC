@@ -235,8 +235,7 @@ already say **WAIVED** / Phase B–D **EXECUTED** / Phase E **RECORDED HEALTHY**
 - `src/docs/gitbook/developers/l1-erc20-bridge.md` (if it cites the gate)
 
 Point them at the GitHub acceptance blob / Release **or** the waive note.
-Deploy with the project GitBook script (prefer `REMOTE_USER=peter` on
-`conet.network` if root SSH fails). Smoke
+Deploy with the project GitBook script (prefer a non-root `REMOTE_USER` set in the private operations guide if root SSH fails). Smoke
 `https://gitbook.conet.network/l1/aac-cross-chain.html`.
 
 ### 6.5 If Findings (not Accepted)
