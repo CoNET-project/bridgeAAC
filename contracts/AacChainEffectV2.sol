@@ -32,6 +32,7 @@ contract AacChainEffectV2 {
     address public immutable treasury;
     address public immutable gb;
     address public owner;
+    address public pendingOwner;
     address public settler;
 
     mapping(bytes32 => bool) public consumed;
@@ -45,10 +46,13 @@ contract AacChainEffectV2 {
     error RouteNotAllowed();
     error AmountOverCap();
     error BridgePaused();
+    error NotPendingOwner();
 
     event SettlerSet(address indexed settler);
     event RouteSet(address indexed asset, uint8 mode, bool allowed, uint256 maxAmount);
     event Completed(bytes32 indexed operationId, address indexed asset, address indexed to, uint256 amount, uint8 mode);
+    event OwnershipNominated(address indexed nominee);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyOwner() {
         if (msg.sender != owner) revert NotOwner();
@@ -62,9 +66,19 @@ contract AacChainEffectV2 {
         owner = owner_;
     }
 
-    function setOwner(address next) external onlyOwner {
+    /// @notice Step one of the owner handoff. The nominee must call acceptOwnership.
+    function transferOwnership(address next) external onlyOwner {
         if (next == address(0)) revert BadAddress();
-        owner = next;
+        pendingOwner = next;
+        emit OwnershipNominated(next);
+    }
+
+    /// @notice Step two of the owner handoff, called by the nominee.
+    function acceptOwnership() external {
+        if (msg.sender != pendingOwner) revert NotPendingOwner();
+        emit OwnershipTransferred(owner, pendingOwner);
+        owner = pendingOwner;
+        pendingOwner = address(0);
     }
 
     function setSettler(address settler_) external onlyOwner {

@@ -8,6 +8,7 @@ pragma solidity 0.8.35;
 ///      authenticate a CoNET header or the reverse (H2).
 contract AacHeaderAuthority {
     address public owner;
+    address public pendingOwner;
     address public verifier;
 
     mapping(uint256 => mapping(bytes32 => bool)) private _authenticated;
@@ -15,10 +16,13 @@ contract AacHeaderAuthority {
     error NotOwner();
     error NotVerifier();
     error BadAddress();
+    error NotPendingOwner();
 
     event VerifierSet(address indexed verifier);
     event HeaderAuthenticated(uint256 indexed chainId, bytes32 indexed headerHash);
     event HeaderRevoked(uint256 indexed chainId, bytes32 indexed headerHash);
+    event OwnershipNominated(address indexed nominee);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyOwner() {
         if (msg.sender != owner) revert NotOwner();
@@ -30,9 +34,19 @@ contract AacHeaderAuthority {
         owner = owner_;
     }
 
-    function setOwner(address next) external onlyOwner {
+    /// @notice Step one of the owner handoff. The nominee must call acceptOwnership.
+    function transferOwnership(address next) external onlyOwner {
         if (next == address(0)) revert BadAddress();
-        owner = next;
+        pendingOwner = next;
+        emit OwnershipNominated(next);
+    }
+
+    /// @notice Step two of the owner handoff, called by the nominee.
+    function acceptOwnership() external {
+        if (msg.sender != pendingOwner) revert NotPendingOwner();
+        emit OwnershipTransferred(owner, pendingOwner);
+        owner = pendingOwner;
+        pendingOwner = address(0);
     }
 
     function setVerifier(address verifier_) external onlyOwner {
