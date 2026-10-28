@@ -92,3 +92,25 @@ These are out of scope but the auditor must be told. They are facts, not claims 
 3. Owner: O6 (which untracked drafts go into the handoff).
 4. Team: freeze the candidate after O1–O6, then run section 5.
 5. Owner, before any deployment: O7, O8, O9. These are not audit blockers for the code, but the auditor will ask for them, and O8 and O9 change the owner handoff and the trust root.
+
+---
+
+## 8. CoNET finality V2 install procedure (draft, O9)
+
+The committee installed in `AacConetSourceFinalityV2` is the trust root for CoNET headers. The install therefore needs independent observers, as the Ethereum checkpoint did (obstacle 1).
+
+1. Choose a finalized CoNET checkpoint: slot `S` with state root `R`, in the current sync period.
+2. Two independent archive nodes must return the same finalized header (slot, state root, body root) and the same committee: the same 512 validator indices and the same committee digest `D`, which is `keccak256` of the 512 compressed public keys concatenated in committee order.
+3. Record `S`, `R`, `D`, the period and the observers in a deployment record before any transaction.
+4. The owner approves the exact install transaction (512 compressed keys, `S`, `R`) by name. This follows the hard-stop rule in `CUTOVER-CUSTODY.md`.
+5. After installation, run `verifyAggregate` read-only on a later aggregate in the same period. It must return `ok = true`. This does not change state.
+6. Only `AacConetSourceFinalityV2` is installed for CoNET headers. The V1 contract on Base (`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`) is not used for them after this (D8).
+
+Example from the read-only check on 2026-10-28. The install must use a fresh checkpoint, not these values:
+
+- finalized slot 1973664 (epoch 61677, sync period 240);
+- state root `0x1e3d1f74bd03ea97990f3533255ef5093370f5be662424d442373d9cd8c83eee`;
+- committee digest `0xb520f522d13d5416fe324d19f10523f67b6e5aec2ac865426d0a4c8bd6e4c19c`;
+- two independent archive nodes agree on the header, the committee indices and the digest.
+
+O9 stays open until the owner approves a checkpoint and the install transaction.
