@@ -77,6 +77,18 @@ confirm at least:
 6. **No silent unpause** — historical canaries stay paused; unpause out of
    scope for the current cutover proposal.
 
+### 3.1 Assumptions the scope relies on
+
+The security of the items above rests on these cryptographic primitives:
+
+- **Hash functions.** keccak-256 is preimage- and collision-resistant (MPT receipt proofs, Base output roots, `operationId`, `consumeOnce` keys). SHA-256 is collision-resistant (SSZ merkleization and the beacon branches).
+- **Signatures.** secp256k1 ECDSA is unforgeable, so `ecrecover` in the relay verifiers accepts only attestations from the signer keys.
+- **Pairing group.** BLS12-381 aggregate signatures are unforgeable (sync committee; EIP-2537 precompiles `0x0b`–`0x11`).
+
+**Not assumed:** the Exponential Time Hypothesis (ETH), the Strong ETH (SETH), Gap-ETH, or any NP-hardness statement. A search of `src/bridgeAAC` and `docs/` on 2026-10-27 found no gate or proof that depends on them. An unreviewed preprint dated 2026-10-25 claims ETH is false ([openai/math](https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf)). It contains no algorithm for discrete logarithms or for keccak-256 or SHA-256 preimages, so it does not affect the three assumptions above.
+
+Governance and operational assumptions are listed in [OWNER-MULTISIG-WHITEPAPER-2026-10-18.md](OWNER-MULTISIG-WHITEPAPER-2026-10-18.md) §4.1.
+
 Out of scope for this audit gate (unless SOW explicitly adds them):
 
 - Authorizing Phase B role grants (needs a **separate** owner message).
