@@ -10,7 +10,7 @@ This scope covers the Base and CoNET cover versions, the CoNET header verifiers 
 
 | Repository | Candidate pin | Covers |
 |---|---|---|
-| `src/bridgeAAC`, branch `feat/aac-f11-and-ownership` | `7d6c93d` | Covers, verifiers (Deneb and Fulu), settlers (F11), chain effect and header authority (two-step handoff), tests, fixtures |
+| `src/bridgeAAC`, branch `feat/aac-f11-and-ownership` | `1c6b3e8` (a test-only fix over `7d6c93d`) | Covers, verifiers (Deneb and Fulu), settlers (F11), chain effect and header authority (two-step handoff), tests, fixtures |
 | `src/bridgeAAC`, branch `docs/aac-audit-scope-2026-10-28` (PR #1) | the commit that contains this document | This scope, `INDEPENDENT-AUDIT.md` §3.1, the readiness record |
 | Parent repository, branch `feat/external-treasury-units` | `3ed37d29` | `src/b-unit/TreasuryBridgeV3.sol` (not changed by this work) |
 
@@ -66,7 +66,7 @@ The auditor reads this section before testing. Each row names the scope items it
 | D7 | **G-18.** `AacHeaderAuthority` is not deployed, so the C1 gate has no authority data. | S10 | Open. Not deployed. Reverts at construction without an authority. Owner handoff is two-step. | Confirm that the gate fails closed without it. |
 | D8 | **G-07.** The V1 finality contract hard-codes `0x20000093`. V2 is fork-aware and tested for the Deneb, Electra and Fulu epochs. | S1, S12 | V2 in code, tested. Open: the installation procedure, and V1 must not be installed. | Confirm that V2 is the only finality path after installation. |
 | D9 | **G-14.** The earlier CoNET-side cover did not bind the Base header. | S5 | Fixed in code (V4). Not deployed. | Verify the binding. |
-| D10 | **G-02.** The live F7 settler lacks the GB pause check. F9 (`AacProductionCustodyGateSettlerF9.sol:246`), F10 (`AacProductionCustodyGateSettlerF10.sol:277`) and F11 have it. | S6, S7, S11 | Closed in code. | Verify. |
+| D10 | **G-02.** The live F7 settler lacks the GB pause check. F9 (`AacProductionCustodyGateSettlerF9.sol:246`), F10 (`AacProductionCustodyGateSettlerF10.sol:277`) and F11 have it. | S6, S7, S11 | Closed in code for F9, F10 and F11. The GB token's own `mintPaid` is open (G-03, §4.1). | Verify. |
 
 Live-path issues are disclosed but out of scope (see §6): G-02 on live F7, G-15 (original cover `0x0150…`), G-16 (no pause or closed flag on live F7), G-03 and G-04 (GB admin roles), G-13 (CoNET GB mint policy), G-19 (owner key), G-20 (Safe premise).
 
@@ -85,7 +85,7 @@ Checked against the source, the existing tests and read-only RPC on Base (chain 
 - **D5.** `AacChainEffectV2` and `AacHeaderAuthority` now use `transferOwnership` and `acceptOwnership` (10 tests). `TreasuryBridgeV3` uses OpenZeppelin `OwnableUpgradeable`, which is one-step.
 - **D7.** `AacAuthenticatedHeaderGate` reverts in its constructor if the authority, the Base cover or the CoNET inclusion address is zero. A gate cannot be deployed without an authority. The behaviour of a contract deployed at the authority address is not tested.
 - **D9.** `conet-base-cover-v4` has 15 tests, including negative cases for the Base header binding, the receipts root, the L1 payload branch and the store proof. This is evidence, not an audit result.
-- **D10.** F9 (line 246), F10 (line 277) and F11 check `bridgePaused()` before `mintPaid`. Tests `f9-light-gate`, `f10-conet-settler` and `f11-settler` refuse minting while the bridge is paused. F7 has no such check. On 2026-10-28 the GB `bridgePaused()` flag read `true` on Base and on CoNET.
+- **D10.** F9 (line 246), F10 (line 277) and F11 check `bridgePaused()` before `mintPaid`. Tests `f9-light-gate`, `f10-conet-settler` and `f11-settler` refuse minting while the bridge is paused. F7 has no such check. On 2026-10-28 the GB `bridgePaused()` flag read `true` on Base and on CoNET. GB's own `mintPaid` has no such check either (G-03): every caller is a GB admin, and the flag does not stop them. A read-only simulation on Base and CoNET confirmed this on 2026-10-28.
 - **Operational-detail scan.** The handoff documents contain no home paths, no `user@host` strings and no key file names. The only addresses are `127.0.0.1` and placeholders such as `{CONET_NODE_C}`. The Fulu fixture contains no hosts, paths or accounts.
 
 ### 4.2 Changes since the 2026-10-27 draft
@@ -101,7 +101,7 @@ Checked against the source, the existing tests and read-only RPC on Base (chain 
 
 | Item | Location or command |
 |---|---|
-| Solidity tests | `npx hardhat test solidity-tests/test/*.test.ts` in `src/bridgeAAC`. Run on 2026-10-28 at `7d6c93d`: 145 passing, 0 failing. |
+| Solidity tests | `npx hardhat test solidity-tests/test/*.test.ts` in `src/bridgeAAC`. Run on 2026-10-28 on a clean export of `1c6b3e8` (`7d6c93d` plus the test fix): 145 passing, 0 failing. `cargo test --locked` at `1c6b3e8`: 129 passing, 0 failing. |
 | Compiler and EVM | `pragma solidity 0.8.35`. Hardhat `evmVersion` is `prague` (`hardhat.config.ts` at the root of `src/bridgeAAC`). |
 | CoNET chain-rule regression | `scripts/conetHistoryRegression.mjs`. Read-only. Needs `CONET_SSH_USER` and `CONET_NODES_FILE`. The node list is not in the repository. Latest run against four archive nodes: all checks pass. |
 | CoNET fixtures, Deneb | `solidity-tests/fixtures/conet-*.json`. Deneb-era, slots 1745494 and 1804388. |
@@ -119,7 +119,7 @@ Checked against the source, the existing tests and read-only RPC on Base (chain 
 - The live F7 proxy and cutover phases B to D (see [INDEPENDENT-AUDIT.md](INDEPENDENT-AUDIT.md) §3).
 - Owner multisig deployment, Safe setup and key custody (G-19, G-20). The multisig whitepaper is reference only.
 - The Base executor for CoNET DAO governance. The owner chose DAO governance as the AAC owner on 2026-10-28. The executor is not in this candidate and needs its own scope.
-- CoNET GB supply and mint policy (G-13), and GB admin roles (G-03, G-04).
+- CoNET GB supply and mint policy (G-13), and GB admin roles (G-03, G-04). CoNET GB has ten current admins by event replay (2026-10-28); they are not classified in this document.
 - Phase 2 rotation (G-08, G-10).
 - Economic parameters: route caps, per-operation caps and canary amounts.
 

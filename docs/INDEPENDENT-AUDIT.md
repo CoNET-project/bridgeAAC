@@ -36,7 +36,7 @@ Phase B *may* be proposed for a later, separately authorized task.
 | **Findings** | Auditor reports defects; cutover stays frozen; gates docs re-open; no role grants. |
 | **Not Passed** | Anything short of written acceptance — including engineering smoke alone. |
 
-**107 local tests ≠ independent audit.** Phase A preflight ≠ audit Passed.
+**129 local tests (2026-10-28, `1c6b3e8`) ≠ independent audit.** Phase A preflight ≠ audit Passed.
 
 ---
 
@@ -112,7 +112,7 @@ Pin a **single git commit** of this repo (or a release tag) and ship:
 | Settler / consumer source | `contracts/` + `deployments/` cited in the gates doc |
 | Live Base RPC reads | `https://base-rpc.conet.network` — script or curl pack matching ASSURANCE §2 |
 | Live CoNET reads (GB admins) | `https://rpc1.conet.network` — Phase A table |
-| Local tests | `cargo test --tests` → expect **107** passed / **0** failed on the pinned commit |
+| Local tests | `cargo test --tests` → expect **129** passed / **0** failed on the pinned commit (count at `1c6b3e8`, 2026-10-28) |
 | Explorer / verification | Blockscout / Basescan links for proxy, settler, cover, finality, consume-once |
 | Non-claims | ASSURANCE §6 — copy into SOW so the auditor does not equate smoke with custody open |
 

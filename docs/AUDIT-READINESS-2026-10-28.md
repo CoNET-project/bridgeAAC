@@ -10,7 +10,7 @@ The scope itself is in [AUDIT-SCOPE-2026-10-27.md](AUDIT-SCOPE-2026-10-27.md) (u
 
 | Repository | Branch | Commit | Contents |
 |---|---|---|---|
-| `src/bridgeAAC` | `feat/aac-f11-and-ownership` | `7d6c93d` | Contracts, tests, fixtures: F11 settler, Fulu CoNET authenticator, two-step owner handoffs |
+| `src/bridgeAAC` | `feat/aac-f11-and-ownership` | `1c6b3e8` | Contracts, tests, fixtures: F11 settler, Fulu CoNET authenticator, two-step owner handoffs. `1c6b3e8` adds a test-only fix over `7d6c93d` |
 | `src/bridgeAAC` | `docs/aac-audit-scope-2026-10-28` (PR #1) | the commit that contains this record | Scope draft, `INDEPENDENT-AUDIT.md` §3.1, this record |
 | Parent repository | `feat/external-treasury-units` | `3ed37d29` | `src/b-unit/TreasuryBridgeV3.sol` (unchanged by this work) |
 
@@ -29,6 +29,8 @@ The scope itself is in [AUDIT-SCOPE-2026-10-27.md](AUDIT-SCOPE-2026-10-27.md) (u
 | O7 | Route caps and per-operation caps for `AacChainEffectV2` | Set values before any deployment | Deployment (not audit) |
 | O8 | Owner of the AAC settler after deployment: the CoNET DAO governance contract (decided 2026-10-28), operated through a Base executor | Build and scope the executor before the handoff | Handoff |
 | O9 | How CoNET finality V2 is installed on Base: re-install from a recent trusted checkpoint (decided 2026-10-28), with multi-observer checks | Design the checkpoint and observer procedure; it changes the trust root and needs its own owner approval | Production path, not the code audit |
+| O10 | GB admin set before the audit (G-03, whitepaper §10). Event replay on CoNET (2026-10-28) gives ten current admins, the owner EOA among them; none is classified in this repository. (a) Base `removeAdmin(AAC proxy)`: content approved, sending method open. The owner EOA stays a Base admin. (b) Owner EOA to Safe (whitepaper §9, step 9): needs a Safe on CoNET first (G-20) | (a) Owner picks the sending method, then sends. Classify the ten CoNET admins before any removal. Keep the owner EOA admin until a Safe can act on each chain | D10; handoff |
+| O11 | Operational account name in git history: removed from the working tree in `d89bf70`, still in `af60ca6` and older. Removing it rewrites the docs branch and needs a force push | Owner decides: rewrite before handoff, or accept the history | Handoff hygiene |
 
 ---
 
@@ -45,9 +47,9 @@ The scope itself is in [AUDIT-SCOPE-2026-10-27.md](AUDIT-SCOPE-2026-10-27.md) (u
 | D7. Authority not deployed | Open. Not deployed. Reverts at construction without an authority | Scope §4.1 |
 | D8. Finality fork versions | V2 is fork-aware and tested for Deneb, Electra and Fulu. Open: installation (O9) | `conet-bls-v2` (4 tests) |
 | D9. V4 binding | Covered by tests. Not deployed | `conet-base-cover-v4` (15 tests) |
-| D10. GB pause check | **Closed** in F9, F10 and F11. The live F7 lacks it (disclosed, out of scope) | `f9-light-gate`, `f10-conet-settler`, `f11-settler` |
+| D10. GB pause check | **Closed** for the settlers: F9, F10 and F11 refuse minting while the bridge is paused. The live F7 lacks the check (disclosed, out of scope). **Open** for the GB token: `mintPaid` does not check `bridgePaused`, so admin callers can mint while paused (G-03). Checked 2026-10-28 | `f9-light-gate`, `f10-conet-settler`, `f11-settler`; read-only simulation on Base and CoNET, 2026-10-28 |
 
-Full test suite at `7d6c93d`: **145 passing, 0 failing** (115 at the 2026-10-27 pin, plus 11 for F11, 10 for the two-step handoffs, 9 for the Fulu authenticator).
+Full test suite at `1c6b3e8` (`7d6c93d` plus the test fix): **145 passing, 0 failing** (115 at the 2026-10-27 pin, plus 11 for F11, 10 for the two-step handoffs, 9 for the Fulu authenticator). Rust: `cargo test --locked` at `1c6b3e8`: **129 passing, 0 failing** (lib 74, integration 55).
 
 ---
 
@@ -55,11 +57,12 @@ Full test suite at `7d6c93d`: **145 passing, 0 failing** (115 at the 2026-10-27 
 
 | Item | Status |
 |---|---|
-| Solidity tests | Passing at `7d6c93d` (145). Re-run at the freeze SHA |
+| Solidity tests | Passing at `1c6b3e8` (145; clean export of that commit on 2026-10-28). Re-run at the freeze SHA |
+| Rust tests | `cargo test --locked` at `1c6b3e8` (2026-10-28): 129 passing, 0 failing. INDEPENDENT-AUDIT §4 had 107 (2026-10-15); corrected. Re-run at the freeze SHA |
 | Storage layouts | Dry run done on 2026-10-28 for F7, F8, F9, F10, F7c and F11. The final JSON comes from the compiler output at the freeze SHA |
-| Live reads, Base | 2026-10-28: proxy implementation, owner, canary slots, GB `bridgePaused()` on Base and CoNET. Re-read at freeze |
+| Live reads, Base and CoNET | 2026-10-28, around Base block 53222346 and CoNET block 1917775: proxy implementation, owner, canary slots, F7 `custodyOpen` and `headerFinal` false, GB `bridgePaused()` true on both chains, GB `admins(AAC proxy)` true on Base and false on CoNET, owner EOA an admin on both. Re-read at freeze |
 | CoNET Fulu data | Light-client finality update captured on 2026-10-28; the fixture was built with three consistency checks |
-| Operational-detail scan | Clean as of 2026-10-28 for the handoff documents. Re-run at freeze |
+| Operational-detail scan | Clean in the working tree at `d89bf70` for the handoff documents. The account name remains in earlier commits (`af60ca6` and older): see O11. Re-run at freeze |
 
 ---
 
@@ -78,7 +81,7 @@ Full test suite at `7d6c93d`: **145 passing, 0 failing** (115 at the 2026-10-27 
 These are out of scope but the auditor must be told. They are facts, not claims about safety.
 
 - The live Base proxy `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` runs F7 (`0x29e10621fF159422237d2a0B9F020303F9BDdD12`) with cover `0x01506527a4Dab14141038Db15f5341dcF4729233`. F7 has no GB pause check (G-02, G-15).
-- The paid GB bridge is paused on Base and on CoNET (`bridgePaused()` read `true` on 2026-10-28). The containment depends on this pause. Whether GB's own `mintPaid` also refuses while paused was not verified in this record.
+- The paid GB bridge is paused on Base and on CoNET (`bridgePaused()` read `true` on 2026-10-28). The pause does not stop GB admins: GB's own `mintPaid` does not check it (G-03). A read-only simulation on both chains and the `GBTokenV2.sol` source confirmed this on 2026-10-28. Event replay of the CoNET GB from block 0 (2026-10-28) gives ten current admins, the owner EOA among them. None is classified in this repository (G-03). Of those ten, the owner EOA and one other are also Base admins (2026-10-28). The AAC proxy's CoNET role was removed at block 1798441 (2026-10-20). Its Base role is still active, and its removal is prepared but not sent (O10).
 - The live proxy holds canary residue in slots 49–52 (scope §4.1, D3).
 - The owner is an externally owned account. Its key is held in a plaintext file on the operator's workstation (G-19). The owner handoff in O8 replaces it.
 - CoNET finality on Base (`0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9`) is the V1 Deneb contract. Its last installed period was 215 as of the 2026-10-18 read. It cannot verify Fulu signatures until V2 is installed (O9).
@@ -88,8 +91,8 @@ These are out of scope but the auditor must be told. They are facts, not claims 
 ## 7. What is left before an audit can start
 
 1. Owner: O1 (scope approval and the auditor's name).
-2. Owner: O2, O3, O4, O5 (decisions that change the code or the scope).
-3. Owner: O6 (which untracked drafts go into the handoff).
+2. Owner: O2, O3, O4, O5 and O10 (decisions that change the code, the scope or the live GB admin set).
+3. Owner: O6 (which untracked drafts go into the handoff) and O11 (the account name in history).
 4. Team: freeze the candidate after O1–O6, then run section 5.
 5. Owner, before any deployment: O7, O8, O9. These are not audit blockers for the code, but the auditor will ask for them, and O8 and O9 change the owner handoff and the trust root.
 

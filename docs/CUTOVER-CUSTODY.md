@@ -321,7 +321,7 @@ Re-run: `node scripts/monitorPhaseE.mjs` (exit `0` = HEALTHY; exit `2` = SYMPTOM
 | Action | Status |
 | --- | --- |
 | Treasury role grant to AAC proxy | **Not sent** (F6 BLOCKED — no live setter) |
-| GB role grant to AAC proxy | **EXECUTED** Phase B; **REVOKED** F1; **RE-GRANTED** F5 |
+| GB role grant to AAC proxy | **EXECUTED** Phase B; **REVOKED** F1; **RE-GRANTED** F5; **REVOKED** on CoNET again at block `1798441` (2026-10-20; recorded from chain events on 2026-10-28) |
 | Peer role grant | **Not sent** |
 | Paid-GB miner `voteBridgeMint` pause (`setBridgePaused(true)`) | **EXECUTED** (Phase D — CoNET + Base; see above) |
 | Treasury USDC `voteBridgeOperation` disable | **EXECUTED** (2026-10-15; `voteBridgeClosed=true` on Base and CoNET) |
@@ -357,6 +357,8 @@ JSON: [deployments/phase-F1-off-canary.json](../deployments/phase-F1-off-canary.
 | Base `GB.removeAdmin(AAC)` | `0x732050aa…f6e2` | `52624242` | `admins(AAC)=false` |
 
 Verify: no-arg settle closed; canary selectors gone; owners remain GB admin.
+
+**Status (2026-10-28):** superseded for GB admins. F5 re-granted `admins(AAC)` on Base (block `52625416`) and on CoNET (block `1719111`). The CoNET role was removed again at block `1798441` (2026-10-20). See F5.
 
 ---
 
@@ -439,10 +441,16 @@ JSON: [deployments/phase-F5-settle-open.json](../deployments/phase-F5-settle-ope
 
 | Step | Result |
 | --- | --- |
-| CoNET + Base `GB.addAdmin(AAC)` | `admins(AAC)=true` both chains |
+| CoNET `GB.addAdmin(AAC)`, block `1719111` (tx `0xe583cf0c…67cd`); Base `GB.addAdmin(AAC)`, block `52625416` (tx `0xcb294358…456a`). Both sent by the owner EOA | `admins(AAC)=true` on both chains after F5 |
 | AAC `upgradeTo(F5)` | live SettlerF5 |
 | COVER smoke settle | `AlreadyConsumed` (opId from F3; expected) |
 | Views | `custodyOpen=false`, `headerFinal=false` |
+
+Later change, not part of F1–F7 (recorded from chain events on 2026-10-28):
+
+| Step | Result |
+| --- | --- |
+| CoNET `GB.removeAdmin(AAC)`, block `1798441`, 2026-10-20 17:40:31 UTC, tx `0xc15fac44…7e8a`, sent by the owner EOA, status success | `admins(AAC)=false` on CoNET. Not in the F1–F7 record before this entry |
 
 Pass: settle APIs take `mintTo` + `effect`; same tx `consumeFromSettler` then
 `GB.mintPaid(mintTo, amount)`. Live mint of a **new** lock needs a fresh
