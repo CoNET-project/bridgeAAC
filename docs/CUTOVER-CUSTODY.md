@@ -316,6 +316,20 @@ Re-run: `node scripts/monitorPhaseE.mjs` (exit `0` = HEALTHY; exit `2` = SYMPTOM
 
 ---
 
+## 2026-10-28 owner actions (sent through the operator's ops script)
+
+| Action | Chain | Block | Transaction | Result |
+| --- | --- | --- | --- | --- |
+| CoNET GB `removeAdmin(TreasuryBridgeV3 0xa208…)` | CoNET 224422 | `1918566` | `0x576123e7136e18f32778befb6a66169f9b24192687a251b059514afece935f97` | success; the treasury is no longer a GB admin |
+| Base treasury `setAacExecutor(owner EOA)` | Base 8453 | `53224719` | `0x55cfc060ee404cc2adf2579de214a5b516abd6662d8fd85881aa98028484f6ff` | success; the executor was the AAC proxy |
+| Base treasury `completeFromAac(opId, USDC, to, 47859948, BurnRelease)` | Base 8453 | `53224722` | `0x20ad1487d05636fbf7fb65ea08514590875e8ec4fa5d7e5ee237f9279cc3ed80` | success; 47.859948 USDC moved to an externally owned wallet named by the owner; the treasury holds 0 USDC |
+
+Not changed on 2026-10-28:
+
+- The old Base treasury still holds 0.001 GB, its `sourceInitiateOpen` is true, and its owner can upgrade it.
+- On CoNET, `conet-USDC` (`0x5209…`) and `TGB5` (`0xeb8c…`) still accept user-signed Mint. The owner chose to keep this for now (O12).
+- The CoNET treasury's `treasuryAssetKind(GB)` is still GbPaid. The GB path is closed by the removed admin role; if the treasury becomes a GB admin again, it reopens.
+
 ## Explicit non-execution / execution record (updated 2026-10-15 F1–F7)
 
 | Action | Status |
