@@ -79,7 +79,7 @@ Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-a
 (`ok:true`),
 [deployments/phase-F6-usdc.json](../deployments/phase-F6-usdc.json)
 (`status: BLOCKED`),
-[deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+`{OWNER_KEY_FILE}`
 (`status: BLOCKED`).
 
 ---
@@ -164,10 +164,10 @@ Live post-grant (2026-10-15, CoNET `rpc1` + Base `base-rpc`):
 | GB `admins(AAC)` `0x429b62e5` | `true` | `true` |
 | GB `admins(OWNER)` | `true` | `true` |
 | GB `owner()` | reverts (admin map) | reverts |
-| GBToken | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | same |
+| GB proxy | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | same |
 | Settler `settle()` | — | still reverts (custody closed) |
 
-Source: `src/b-unit/GBToken.sol` / `GBTokenV2.sol` — `addAdmin(address)` is
+Source: `src/b-unit/GBToken.sol` (Base) / `GBTokenV2.sol` (CoNET) — `addAdmin(address)` is
 `onlyAdmin` (`0x70480275`); paid mint is `mintPaid` (`0x970cab06`).
 
 Script: `scripts/grantGbAdminAacPhaseB.mjs`. Snapshot:
@@ -501,7 +501,7 @@ accepted residual that USDC stays on miner vote.
 Owner auth: same F1–F7 message (probe only — no invent).  
 Doc: [F7-OWNER-KEY.md](F7-OWNER-KEY.md)  
 Script: [scripts/executeF7OwnerKey.mjs](../scripts/executeF7OwnerKey.mjs)  
-JSON: [deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+JSON: `{OWNER_KEY_FILE}`
 (`status: BLOCKED`)
 
 | Probe | Result |
