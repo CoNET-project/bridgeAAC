@@ -68,7 +68,7 @@ Phase 1 does not use this path. Phase 2 would.
 | Base | Ethereum checkpoint root (timelock variant, implementation `0x4880…`) | `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` | Ethereum finality trust root | EOA owner [memo]. Two-step. Two-day upgrade delay [repo: `AacEthereumCheckpointRootTimelock.sol:13`] |
 | Base | CoNET finality (V1 family, timelock variant) | `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9` | CoNET sync-committee finality | EOA owner [memo]. Two-step. Upgrade path present [memo] |
 | Base | Ethereum committee store | `0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a` | Ethereum sync-committee store | EOA [memo]. `upgradeTo` only per memo. Ownership function not confirmed |
-| Base and CoNET | GBToken | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | Paid GB. Flat admin role, no `owner()` | Admin map includes the AAC proxy and the EOA on both chains [repo: `src/b-unit/GBToken.sol:61, 295–350`; record: `docs/CUTOVER-CUSTODY.md:160–170`] |
+| Base and CoNET | GBToken (Base); GBTokenV2 (CoNET) | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | Paid GB. Flat admin role, no `owner()` | Admin map includes the AAC proxy and the EOA on both chains [repo: `src/b-unit/GBToken.sol:60, 294–349` (Base); `src/b-unit/GBTokenV2.sol` (CoNET); record: `docs/CUTOVER-CUSTODY.md:160–170`] |
 | Base | ConsumeOnce | `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F` | Consume-once registry | Role-based [memo]. Roles not enumerated here |
 | CoNET | Ethereum checkpoint | `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` | Ethereum finality on CoNET | EOA [memo] |
 | CoNET | ConsumeOnce proxy | `0xA13843C75f68F726e1DC4dbA75d07597EE18d999` | Consume-once registry | `rescueAdmin` = EOA [memo] |
@@ -227,7 +227,7 @@ Run these before any owner moves to a Safe.
 | Ethereum checkpoint root (Base) | Two-step (timelock variant) [memo] | Two-step | None known | Same as above |
 | CoNET finality (Base) | Two-step (timelock variant) [memo] | Two-step. Ownership transfer does not fix G-07 | None for the handoff itself | Same as above |
 | Ethereum committee store (Base) | `upgradeTo` only [memo] | Confirm whether an ownership function exists. If not, add two-step in an upgrade first | Not confirmed | `owner()` |
-| GBToken (Base and CoNET) | Flat admin map. No `owner()` [repo: `src/b-unit/GBToken.sol:61, 295–350`] | Add the Owner Safe as admin. The EOA cannot remove itself, because `removeAdmin` reverts when the account is `msg.sender` [repo: `GBToken.sol:304`]. The Owner Safe removes the EOA. Add the pause adapter as admin only after review | G-03 | `admins(Owner Safe)` = true. `admins(EOA)` = false. Review `AdminAdded` and `AdminRemoved` logs |
+| GBToken (Base); GBTokenV2 (CoNET) | Flat admin map. No `owner()` [repo: `src/b-unit/GBToken.sol:60, 294–349` (Base); `src/b-unit/GBTokenV2.sol` (CoNET)] | Add the Owner Safe as admin. The EOA cannot remove itself, because `removeAdmin` reverts when the account is `msg.sender` [repo: `GBToken.sol:303`]. The Owner Safe removes the EOA. Add the pause adapter as admin only after review | G-03 | `admins(Owner Safe)` = true. `admins(EOA)` = false. Review `AdminAdded` and `AdminRemoved` logs |
 | ConsumeOnce (Base) | Role-based [memo] | Enumerate roles. Move each to the Owner Safe | Roles not enumerated | Role reads |
 | ConsumeOnce (CoNET) | `rescueAdmin` = EOA [memo] | Change to CoNET Safe | None known | Read |
 | Ethereum checkpoint (CoNET) | Owner = EOA [memo] | Two-step to CoNET Safe. Confirm the function name | Not confirmed | `owner()` |
@@ -400,7 +400,7 @@ Each step has a precondition, an action, a check, and a rollback. No owner-side 
 | --- | --- | --- | --- | --- | --- |
 | G-01 | Canary-slot collision. Slots 49 to 51 (`pendingImplementation`, `upgradeReadyAt`, `pendingOwner`) alias the Phase C canary record in F7, F8, F10. F7b and F7c use slots 53 to 55 | [memo table]; [record: `docs/F7-OWNER-KEY.md:4, 49`] | An F8, F9, or F10 upgrade or an F7 `transferOwnership` corrupts the canary record | F11 with F7c layout (§8.1) | Open |
 | G-02 | Live F7 mint path does not check GB `bridgePaused`. F8 and F10 do. F7c does not | `contracts/AacProductionCustodyGateSettlerF7.sol:214`; F8 `:234`; F10 `:277`; F7c `:255` (no check) | GB pause does not stop the live settler's mint path | F11 includes the check. Operator to confirm the live closure (G-16) | Open |
-| G-03 | GB admin role is flat. Any admin can `mintPaid`, `mint`, `mintReward`, change admins, change validators, pause, and unpause. The pause does not block admin `mintPaid` | `src/b-unit/GBToken.sol:295–350`; [record: `docs/CUTOVER-CUSTODY.md:276`] | Any remaining EOA admin keeps full power after the pause | Restrict the admin set. Enumerate from events. Remove EOA. Add adapter only | Open |
+| G-03 | GB admin role is flat. Any admin can upgrade the implementation (`_authorizeUpgrade`), mint free GB (`mint`, `mintReward`, `airdrop`, `airdropEqual`) or paid GB (`mintPaid`), burn any account's paid GB (`burnPaidFrom`), change admins, change validators, pause, and unpause. CoNET's GBTokenV2 adds `consumeFree` (burns any account's free GB), `consumeGb` (any account's free GB, then paid GB), `burnFreeFrom` (admins may burn any account's free GB) and `setValidatorDepositRedeem` (sets the contract that authorizes node-wallet burns). The pause does not block admin `mintPaid`. The pause stops new votes but not execution: `executeBridgeMint`, which anyone can call, has no pause check on either chain. Once `removeValidator` lowers `requiredVotes()` to a pending proposal's vote count or below, that proposal can execute while the bridge is paused | `src/b-unit/GBToken.sol:156, 294–373, 403, 441, 473–484` (Base); `src/b-unit/GBTokenV2.sol:178, 286–293, 319–434, 477, 515, 547–558` (CoNET); [record: `docs/CUTOVER-CUSTODY.md:276`] | Any remaining EOA admin keeps full power after the pause | Restrict the admin set. Enumerate from events. Remove EOA. Add adapter only | Open |
 | G-04 | GB admin can unpause (`setBridgePaused(false)`). This is the documented emergency re-enable path | [record: `docs/CUTOVER-CUSTODY.md:273`] | Guardian must not be a GB admin | Guardian uses the adapter (§8.2) | Design |
 | G-05 | Treasury ownership is one-step (OpenZeppelin 5.4.0 `OwnableUpgradeable`) | `src/b-unit/TreasuryBridgeV3.sol:5, 36` | A mistyped transfer is unrecoverable | Two-step upgrade (§8.4) before handoff | Open |
 | G-06 | `AacHeaderAuthority.setOwner` and `AacChainEffectV2.setOwner` are one-step | `contracts/AacHeaderAuthority.sol:33`; `contracts/AacChainEffectV2.sol:65` | Same as G-05 once deployed | Two-step before deployment | Open (pre-deployment) |
@@ -465,7 +465,7 @@ Each step has a precondition, an action, a check, and a rollback. No owner-side 
   - `contracts/AacEthereumCheckpointRootTimelock.sol`, `contracts/AacConetSourceFinalityTimelock.sol`
   - `contracts/AacConetSourceFinality.sol` (V1, reference for G-07)
   - `src/b-unit/TreasuryBridgeV3.sol` (owner functions; two-step upgrade to build)
-  - `src/b-unit/GBToken.sol` (admin functions as used)
+  - `src/b-unit/GBToken.sol` (Base) and `src/b-unit/GBTokenV2.sol` (CoNET) (admin functions as used)
 - **Tests.** `solidity-tests/test/` (12 files).
 
 ### 13.2 Out of scope
@@ -532,21 +532,21 @@ The operator team drafted this document with AI assistance. Every claim should b
 
 | Item | Chain | Value | Source |
 | --- | --- | --- | --- |
-| AAC settlement proxy | Base | `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` | [repo] `deployments/phase-F7-owner-key.json`; [memo] |
+| AAC settlement proxy | Base | `0x9051e08aBA3EC1A1323f36f0F5c3745C81912aAd` | [repo] `{OWNER_KEY_FILE}`; [memo] |
 | Live F7 implementation | Base | `0x29e10621fF159422237d2a0B9F020303F9BDdD12` | [repo] `deployments/containment-f7c-cancel-base.json` |
 | F7c (pending, cancelled) | Base | `0xefb038ec81aaBfEe9E5a2625B7e50ee3e1FABE44` | [repo] `deployments/containment-f7c-cancel-base.json` |
 | Original Base cover (constant in F7) | Base | `0x01506527a4Dab14141038Db15f5341dcF4729233` | [repo] `contracts/AacProductionCustodyGateSettlerF7.sol:19` |
 | Base cover V2 (unwired) | Base | `0x68c2aC69E8F0A81685693D48C5e9B07f0228d394` | [repo] `deployments/base-AacCheckpointMessageCoverV2.json` |
-| TreasuryBridgeV3 | Base and CoNET | `0xa208982212978550594A7FEEB70a61665d129003` | [memo]; [repo] `deployments/phase-F7-owner-key.json` |
+| TreasuryBridgeV3 | Base and CoNET | `0xa208982212978550594A7FEEB70a61665d129003` | [memo]; [repo] `{OWNER_KEY_FILE}` |
 | Ethereum checkpoint root | Base | `0xcEE3D699df3df07a573f1aFf642888B97B7aA961` | [memo] |
 | Checkpoint root timelock implementation | Base | `0x4880137b52d040BD387504bEA2a04C3898879DDa` | [repo] `deployments/phase-security-gaps.json` |
 | CoNET finality (V1 family) | Base | `0xE4f6c834eb63f726cbE65b4F864620e4a6F7a6c9` | [memo] |
 | Ethereum committee store | Base | `0x9D3e1111CBBC8658Bff54620f4FE8d95783De09a` | [memo] |
-| GBToken | Base and CoNET | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | [repo] `docs/CUTOVER-CUSTODY.md:167` |
+| GBToken (Base); GBTokenV2 (CoNET) | Base and CoNET | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | [repo] `docs/CUTOVER-CUSTODY.md:167` |
 | ConsumeOnce | Base | `0xC6CBcC0c629ac1A80DB95e8b80927e713E82Cf4F` | [memo] |
 | Ethereum checkpoint | CoNET | `0x52b3bc7A8c58EC64A57a62783E2e1F8CB8457b3a` | [memo] |
 | ConsumeOnce proxy | CoNET | `0xA13843C75f68F726e1DC4dbA75d07597EE18d999` | [memo] |
-| Owner EOA | Base and CoNET | `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` | [repo] `deployments/phase-F7-owner-key.json`; [memo] |
+| Owner EOA | Base and CoNET | `0x87cAeD4e51C36a2C2ece3Aaf4ddaC9693d2405E1` | [repo] `{OWNER_KEY_FILE}`; [memo] |
 | Safe v1.4.1 singleton (plain) | Base | `0x41675C099F32341bf84BFc5382aF534df5C7461a` | Research session. Re-verify (G-20) |
 | Safe v1.4.1 proxy factory | Base | `0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67` | Research session. Re-verify (G-20) |
 | Arachnid deterministic deployer | Base and CoNET | `0x4e59b44847b379578588920ca78fbf26c0b4956c` | [memo] |
@@ -560,7 +560,7 @@ The operator team drafted this document with AI assistance. Every claim should b
 | --- | --- | --- | --- |
 | AAC proxy F7 (Base) | `scheduleUpgrade`, `cancelUpgrade`, `upgradeTo`, `transferOwnership` | `msg.sender == owner` [repo: F7 lines 128–157] | Owner Safe (Base) |
 | AAC proxy F7 (Base) | `acceptOwnership` | `msg.sender == pendingOwner` [repo: F7 line 161] | Owner Safe (Base) |
-| GBToken (Base and CoNET) | `addAdmin`, `removeAdmin`, `mint`, `mintReward`, `mintPaid`, `setBridgePaused`, `addValidator`, `removeValidator` | `admins[msg.sender]` [repo: `GBToken.sol:134`] | Owner Safe (admin). Pause adapter (admin; can only pause) |
+| GBToken (Base); GBTokenV2 (CoNET) | `addAdmin`, `removeAdmin`, `addValidator`, `removeValidator`, `setBridgePaused`, `mint`, `mintReward`, `mintPaid`, `airdrop`, `airdropEqual`, `burnPaidFrom`, `_authorizeUpgrade`; GBTokenV2 also `consumeFree`, `consumeGb`, `setValidatorDepositRedeem` | `admins[msg.sender]` [repo: `GBToken.sol:133`] | Owner Safe (admin). Pause adapter (admin; can only pause) |
 | TreasuryBridgeV3 (Base and CoNET) | `transferOwnership` (one-step) and all `onlyOwner` functions | OpenZeppelin `onlyOwner` | Owner Safe, after two-step upgrade |
 | TreasuryBridgeV3 (Base and CoNET) | Miner-vote functions. `voteBridgeOperation` closed [record] | Per source | Enumerate. Leave closed |
 | Checkpoint root timelock (Base) | `scheduleUpgrade`, `upgradeTo`, `transferOwnership`, `acceptOwnership` | Owner or pending owner | Owner Safe |

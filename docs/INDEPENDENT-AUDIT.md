@@ -36,7 +36,7 @@ Phase B *may* be proposed for a later, separately authorized task.
 | **Findings** | Auditor reports defects; cutover stays frozen; gates docs re-open; no role grants. |
 | **Not Passed** | Anything short of written acceptance — including engineering smoke alone. |
 
-**107 local tests ≠ independent audit.** Phase A preflight ≠ audit Passed.
+**129 local tests (2026-10-28, `1c6b3e8`) ≠ independent audit.** Phase A preflight ≠ audit Passed.
 
 ---
 
@@ -77,6 +77,18 @@ confirm at least:
 6. **No silent unpause** — historical canaries stay paused; unpause out of
    scope for the current cutover proposal.
 
+### 3.1 Assumptions the scope relies on
+
+The security of the items above rests on these cryptographic primitives:
+
+- **Hash functions.** keccak-256 is preimage- and collision-resistant (MPT receipt proofs, Base output roots, `operationId`, `consumeOnce` keys). SHA-256 is collision-resistant (SSZ merkleization and the beacon branches).
+- **Signatures.** secp256k1 ECDSA is unforgeable, so `ecrecover` in the relay verifiers accepts only attestations from the signer keys.
+- **Pairing group.** BLS12-381 aggregate signatures are unforgeable (sync committee; EIP-2537 precompiles `0x0b`–`0x11`).
+
+**Not assumed:** the Exponential Time Hypothesis (ETH), the Strong ETH (SETH), Gap-ETH, or any NP-hardness statement. A search of `src/bridgeAAC` and `docs/` on 2026-10-27 found no gate or proof that depends on them. An unreviewed preprint dated 2026-10-25 claims ETH is false ([openai/math](https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf)). It contains no algorithm for discrete logarithms or for keccak-256 or SHA-256 preimages, so it does not affect the three assumptions above.
+
+Governance and operational assumptions are listed in [OWNER-MULTISIG-WHITEPAPER-2026-10-18.md](OWNER-MULTISIG-WHITEPAPER-2026-10-18.md) §4.1.
+
 Out of scope for this audit gate (unless SOW explicitly adds them):
 
 - Authorizing Phase B role grants (needs a **separate** owner message).
@@ -100,7 +112,7 @@ Pin a **single git commit** of this repo (or a release tag) and ship:
 | Settler / consumer source | `contracts/` + `deployments/` cited in the gates doc |
 | Live Base RPC reads | `https://base-rpc.conet.network` — script or curl pack matching ASSURANCE §2 |
 | Live CoNET reads (GB admins) | `https://rpc1.conet.network` — Phase A table |
-| Local tests | `cargo test --tests` → expect **107** passed / **0** failed on the pinned commit |
+| Local tests | `cargo test --tests` → expect **129** passed / **0** failed on the pinned commit (count at `1c6b3e8`, 2026-10-28) |
 | Explorer / verification | Blockscout / Basescan links for proxy, settler, cover, finality, consume-once |
 | Non-claims | ASSURANCE §6 — copy into SOW so the auditor does not equate smoke with custody open |
 
@@ -223,8 +235,7 @@ already say **WAIVED** / Phase B–D **EXECUTED** / Phase E **RECORDED HEALTHY**
 - `src/docs/gitbook/developers/l1-erc20-bridge.md` (if it cites the gate)
 
 Point them at the GitHub acceptance blob / Release **or** the waive note.
-Deploy with the project GitBook script (prefer `REMOTE_USER=peter` on
-`conet.network` if root SSH fails). Smoke
+Deploy with the project GitBook script (prefer a non-root `REMOTE_USER` set in the private operations guide if root SSH fails). Smoke
 `https://gitbook.conet.network/l1/aac-cross-chain.html`.
 
 ### 6.5 If Findings (not Accepted)

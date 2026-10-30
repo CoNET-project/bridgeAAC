@@ -4,7 +4,7 @@
 **Status:** **SCHEDULED** — F7's timelock variables overlapped the Phase C canary record. SettlerF7b keeps slots 49–52 as that record and starts the timelock at slot 53. `scheduleUpgrade` is in Base block `52639991`. `upgradeTo` is allowed after **2026-10-17T13:02:09Z**. Owner is still the EOA; no multisig was named.  
 **Owner auth:** 「请依据审计报告, 依次移除生产前障碍」  
 **Script:** [scripts/executeF7OwnerKey.mjs](../scripts/executeF7OwnerKey.mjs)  
-**JSON:** [deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json) and [deployments/phase-F7b-storage-fix.json](../deployments/phase-F7b-storage-fix.json)
+**JSON:** `{OWNER_KEY_FILE}` and [deployments/phase-F7b-storage-fix.json](../deployments/phase-F7b-storage-fix.json)
 
 ---
 

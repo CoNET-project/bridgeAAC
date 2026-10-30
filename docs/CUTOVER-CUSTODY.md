@@ -79,7 +79,7 @@ Evidence: [deployments/phase-B-gb-addAdmin-aac.json](../deployments/phase-B-gb-a
 (`ok:true`),
 [deployments/phase-F6-usdc.json](../deployments/phase-F6-usdc.json)
 (`status: BLOCKED`),
-[deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+`{OWNER_KEY_FILE}`
 (`status: BLOCKED`).
 
 ---
@@ -164,10 +164,10 @@ Live post-grant (2026-10-15, CoNET `rpc1` + Base `base-rpc`):
 | GB `admins(AAC)` `0x429b62e5` | `true` | `true` |
 | GB `admins(OWNER)` | `true` | `true` |
 | GB `owner()` | reverts (admin map) | reverts |
-| GBToken | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | same |
+| GB proxy | `0xC3EF02DaE632b4C10abB66e07d92a387c10838D8` | same |
 | Settler `settle()` | — | still reverts (custody closed) |
 
-Source: `src/b-unit/GBToken.sol` / `GBTokenV2.sol` — `addAdmin(address)` is
+Source: `src/b-unit/GBToken.sol` (Base) / `GBTokenV2.sol` (CoNET) — `addAdmin(address)` is
 `onlyAdmin` (`0x70480275`); paid mint is `mintPaid` (`0x970cab06`).
 
 Script: `scripts/grantGbAdminAacPhaseB.mjs`. Snapshot:
@@ -316,12 +316,26 @@ Re-run: `node scripts/monitorPhaseE.mjs` (exit `0` = HEALTHY; exit `2` = SYMPTOM
 
 ---
 
+## 2026-10-28 owner actions (sent through the operator's ops script)
+
+| Action | Chain | Block | Transaction | Result |
+| --- | --- | --- | --- | --- |
+| CoNET GB `removeAdmin(TreasuryBridgeV3 0xa208…)` | CoNET 224422 | `1918566` | `0x576123e7136e18f32778befb6a66169f9b24192687a251b059514afece935f97` | success; the treasury is no longer a GB admin |
+| Base treasury `setAacExecutor(owner EOA)` | Base 8453 | `53224719` | `0x55cfc060ee404cc2adf2579de214a5b516abd6662d8fd85881aa98028484f6ff` | success; the executor was the AAC proxy |
+| Base treasury `completeFromAac(opId, USDC, to, 47859948, BurnRelease)` | Base 8453 | `53224722` | `0x20ad1487d05636fbf7fb65ea08514590875e8ec4fa5d7e5ee237f9279cc3ed80` | success; 47.859948 USDC moved to an externally owned wallet named by the owner; the treasury holds 0 USDC |
+
+Not changed on 2026-10-28:
+
+- The old Base treasury still holds 0.001 GB, its `sourceInitiateOpen` is true, and its owner can upgrade it.
+- On CoNET, `conet-USDC` (`0x5209…`) and `TGB5` (`0xeb8c…`) still accept user-signed Mint. The owner chose to keep this for now (O12).
+- The CoNET treasury's `treasuryAssetKind(GB)` is still GbPaid. The GB path is closed by the removed admin role; if the treasury becomes a GB admin again, it reopens.
+
 ## Explicit non-execution / execution record (updated 2026-10-15 F1–F7)
 
 | Action | Status |
 | --- | --- |
 | Treasury role grant to AAC proxy | **Not sent** (F6 BLOCKED — no live setter) |
-| GB role grant to AAC proxy | **EXECUTED** Phase B; **REVOKED** F1; **RE-GRANTED** F5 |
+| GB role grant to AAC proxy | **EXECUTED** Phase B; **REVOKED** F1; **RE-GRANTED** F5; **REVOKED** on CoNET again at block `1798441` (2026-10-20; recorded from chain events on 2026-10-28) |
 | Peer role grant | **Not sent** |
 | Paid-GB miner `voteBridgeMint` pause (`setBridgePaused(true)`) | **EXECUTED** (Phase D — CoNET + Base; see above) |
 | Treasury USDC `voteBridgeOperation` disable | **EXECUTED** (2026-10-15; `voteBridgeClosed=true` on Base and CoNET) |
@@ -357,6 +371,8 @@ JSON: [deployments/phase-F1-off-canary.json](../deployments/phase-F1-off-canary.
 | Base `GB.removeAdmin(AAC)` | `0x732050aa…f6e2` | `52624242` | `admins(AAC)=false` |
 
 Verify: no-arg settle closed; canary selectors gone; owners remain GB admin.
+
+**Status (2026-10-28):** superseded for GB admins. F5 re-granted `admins(AAC)` on Base (block `52625416`) and on CoNET (block `1719111`). The CoNET role was removed again at block `1798441` (2026-10-20). See F5.
 
 ---
 
@@ -439,10 +455,16 @@ JSON: [deployments/phase-F5-settle-open.json](../deployments/phase-F5-settle-ope
 
 | Step | Result |
 | --- | --- |
-| CoNET + Base `GB.addAdmin(AAC)` | `admins(AAC)=true` both chains |
+| CoNET `GB.addAdmin(AAC)`, block `1719111` (tx `0xe583cf0c…67cd`); Base `GB.addAdmin(AAC)`, block `52625416` (tx `0xcb294358…456a`). Both sent by the owner EOA | `admins(AAC)=true` on both chains after F5 |
 | AAC `upgradeTo(F5)` | live SettlerF5 |
 | COVER smoke settle | `AlreadyConsumed` (opId from F3; expected) |
 | Views | `custodyOpen=false`, `headerFinal=false` |
+
+Later change, not part of F1–F7 (recorded from chain events on 2026-10-28):
+
+| Step | Result |
+| --- | --- |
+| CoNET `GB.removeAdmin(AAC)`, block `1798441`, 2026-10-20 17:40:31 UTC, tx `0xc15fac44…7e8a`, sent by the owner EOA, status success | `admins(AAC)=false` on CoNET. Not in the F1–F7 record before this entry |
 
 Pass: settle APIs take `mintTo` + `effect`; same tx `consumeFromSettler` then
 `GB.mintPaid(mintTo, amount)`. Live mint of a **new** lock needs a fresh
@@ -479,7 +501,7 @@ accepted residual that USDC stays on miner vote.
 Owner auth: same F1–F7 message (probe only — no invent).  
 Doc: [F7-OWNER-KEY.md](F7-OWNER-KEY.md)  
 Script: [scripts/executeF7OwnerKey.mjs](../scripts/executeF7OwnerKey.mjs)  
-JSON: [deployments/phase-F7-owner-key.json](../deployments/phase-F7-owner-key.json)
+JSON: `{OWNER_KEY_FILE}`
 (`status: BLOCKED`)
 
 | Probe | Result |
